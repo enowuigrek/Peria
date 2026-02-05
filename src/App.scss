@@ -21,7 +21,7 @@ body {
     background-attachment: fixed;
     font-family: $font-stack;
     color: $text-primary;
-    overflow: auto;
+    overflow: hidden; // Blokuje scroll całej strony - aplikacja ma fixed height
 }
 
 #root {
