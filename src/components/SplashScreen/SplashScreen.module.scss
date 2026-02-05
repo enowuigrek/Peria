@@ -1,0 +1,172 @@
+@use '../../styles/variables' as *;
+
+.splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: $bg-gradient-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+  overflow: hidden;
+
+  &.fadeOut {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, $category-mynotes 0%, $category-checklists 50%, $category-events 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 2s ease-in-out infinite;
+  background-size: 200% 200%;
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: $text-secondary;
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  animation: fadeInDelayed 0.6s ease-out 0.3s both;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+@keyframes fadeInDelayed {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gradient1,
+.gradient2,
+.gradient3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.gradient1 {
+  width: 300px;
+  height: 300px;
+  background: $category-mynotes;
+  top: 20%;
+  left: 10%;
+  animation: float1 4s ease-in-out infinite;
+}
+
+.gradient2 {
+  width: 250px;
+  height: 250px;
+  background: $category-checklists;
+  top: 50%;
+  right: 15%;
+  animation: float2 5s ease-in-out infinite;
+}
+
+.gradient3 {
+  width: 200px;
+  height: 200px;
+  background: $category-events;
+  bottom: 20%;
+  left: 30%;
+  animation: float3 6s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -20px) scale(1.1);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(1.05);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(15px, -15px) scale(1.08);
+  }
+}

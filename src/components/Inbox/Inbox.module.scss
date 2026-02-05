@@ -211,6 +211,27 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &.sectionMynotes {
+    border-color: rgba(74, 147, 150, 0.3);
+    border-left: 4px solid $category-mynotes;
+    background: rgba(74, 147, 150, 0.05);
+  }
+
+  &.sectionChecklists {
+    border-color: rgba(253, 208, 59, 0.3);
+    border-left: 4px solid $category-checklists;
+    background: rgba(253, 208, 59, 0.05);
+  }
+
+  &.sectionEvents {
+    border-color: rgba(203, 127, 7, 0.3);
+    border-left: 4px solid $category-events;
+    background: rgba(203, 127, 7, 0.05);
+  }
 }
 
 .sectionHeader {
@@ -218,12 +239,13 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .sectionTitle {
   font-size: 0.85rem;
   font-weight: 600;
-  color: $text-secondary;
+  color: $text-primary;
   flex: 1;
 }
 
@@ -326,14 +348,31 @@
   padding: 0.375rem 0.5rem;
   border-radius: 4px;
   transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);
   }
+}
 
-  &::marker {
-    color: $text-secondary;
-  }
+.originalChevron {
+  width: 12px;
+  height: 12px;
+  stroke: $text-secondary;
+  stroke-width: 2;
+  fill: none;
+  transition: transform 0.3s ease;
+}
+
+details[open] .originalChevron {
+  transform: rotate(90deg);
 }
 
 .originalText {

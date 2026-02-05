@@ -14,6 +14,40 @@ export default function Inbox() {
     localStorage.setItem('peria_inbox', JSON.stringify(notes))
   }, [notes])
 
+  // Check if exported items still exist in sections
+  useEffect(() => {
+    const checkExportedItems = () => {
+      setNotes(prev => prev.map(note => {
+        if (!note.exported) return note
+
+        const updatedExported = { ...note.exported }
+        let hasChanges = false
+
+        // Check each section
+        Object.keys(updatedExported).forEach(section => {
+          if (updatedExported[section]) {
+            const storageKey = `peria_${section}`
+            const sectionItems = JSON.parse(localStorage.getItem(storageKey) || '[]')
+            const itemExists = sectionItems.some(item => item.sourceNoteId === note.id)
+
+            if (!itemExists) {
+              updatedExported[section] = false
+              hasChanges = true
+            }
+          }
+        })
+
+        return hasChanges ? { ...note, exported: updatedExported } : note
+      }))
+    }
+
+    checkExportedItems()
+
+    // Listen for storage changes from other tabs/windows
+    window.addEventListener('storage', checkExportedItems)
+    return () => window.removeEventListener('storage', checkExportedItems)
+  }, [])
+
   const toggleExpand = (id) => {
     // Mark as read when expanded for the first time
     setNotes(prev => prev.map(n =>
@@ -189,7 +223,7 @@ export default function Inbox() {
                 <div className={styles.noteBody}>
                   {/* Notatka (uporządkowana treść) */}
                   {note.detected?.note && (
-                    <div className={styles.section}>
+                    <div className={`${styles.section} ${styles.sectionMynotes}`}>
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>📝 Notatka</span>
                         <button
@@ -208,7 +242,7 @@ export default function Inbox() {
 
                   {/* Checklista */}
                   {note.detected?.checklist?.length > 0 && (
-                    <div className={styles.section}>
+                    <div className={`${styles.section} ${styles.sectionChecklists}`}>
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>✅ Checklista ({note.detected.checklist.length})</span>
                         <button
@@ -233,7 +267,7 @@ export default function Inbox() {
 
                   {/* Wydarzenia */}
                   {note.detected?.events?.length > 0 && (
-                    <div className={styles.section}>
+                    <div className={`${styles.section} ${styles.sectionEvents}`}>
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
                         <button
@@ -261,7 +295,12 @@ export default function Inbox() {
 
                   {/* Oryginalna wiadomość (ukryta pod przyciskiem) */}
                   <details className={styles.originalToggle}>
-                    <summary className={styles.originalSummary}>Pokaż oryginał</summary>
+                    <summary className={styles.originalSummary}>
+                      <span>Pokaż oryginał</span>
+                      <svg className={styles.originalChevron} viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </summary>
                     <div className={styles.originalText}>
                       {note.sourceText}
                     </div>

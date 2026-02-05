@@ -7,8 +7,10 @@ import MyNotes from './components/MyNotes/MyNotes.jsx'
 import Checklists from './components/Checklists/Checklists.jsx'
 import Events from './components/Events/Events.jsx'
 import NavBar from './components/NavBar/NavBar.jsx'
+import SplashScreen from './components/SplashScreen/SplashScreen.jsx'
 
 function App() {
+    const [showSplash, setShowSplash] = useState(true)
     const [activeView, setActiveView] = useState('chat') // Domyślnie ekran nagrywania
 
     const addTask = useCallback((text) => {
@@ -28,6 +30,7 @@ function App() {
 
     return (
         <div className="app-wrapper">
+            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
             <div className="app-container">
 
                 {/* Sekcja środkowa - główny content */}
