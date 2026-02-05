@@ -395,9 +395,26 @@
   }
 
   &.sectionEvents {
-    border-color: rgba(203, 127, 7, 0.3);
-    border-left: 4px solid $category-events;
-    background: rgba(203, 127, 7, 0.05);
+    border: none;
+    background: $bg-gradient-start; // Czarne tło
+    border-left: 4px solid $category-events; // Niebieski pasek
+    border-radius: 0; // Ostre rogi
+
+    .sectionTitle {
+      color: $text-primary; // Biały tekst na czarnym
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &::before {
+        content: '📅'; // Ikona kalendarza
+      }
+    }
+
+    .eventList li {
+      background: rgba(255, 255, 255, 0.05); // Delikatniejsze tło dla itemów
+      color: $text-primary;
+    }
   }
 }
 

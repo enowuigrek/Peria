@@ -255,7 +255,7 @@ export default function ChatVoiceFirst({ onAdd }) {
         resultText += `Zawiera: ${parts.join(', ')}\n`
       }
 
-      resultText += `\n📥 Zobacz w Inbox`
+      resultText += `\n[INBOX_BUTTON]`
 
       setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
 
@@ -285,22 +285,41 @@ export default function ChatVoiceFirst({ onAdd }) {
       </div>
 
       <div className={styles.chatMessages}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
-          >
-            {msg.text === '...' ? (
-              <span className={styles.loadingDots}>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-              </span>
-            ) : (
-              msg.text
-            )}
-          </div>
-        ))}
+        {messages.map((msg, index) => {
+          const hasInboxButton = msg.text.includes('[INBOX_BUTTON]')
+          const textWithoutButton = msg.text.replace('[INBOX_BUTTON]', '').trim()
+
+          return (
+            <div
+              key={index}
+              className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
+            >
+              {msg.text === '...' ? (
+                <span className={styles.loadingDots}>
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                </span>
+              ) : (
+                <>
+                  {textWithoutButton}
+                  {hasInboxButton && (
+                    <button
+                      onClick={() => window.location.hash = '#/inbox'}
+                      className={styles.inboxButton}
+                      title="Przejdź do Inbox"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+                        <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                      </svg>
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          )
+        })}
         <div ref={messagesEndRef} />
       </div>
 

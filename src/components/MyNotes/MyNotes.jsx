@@ -127,7 +127,7 @@ export default function MyNotes() {
           const isEditingTitle = editingTitleId === note.id
 
           return (
-            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${note.isNew ? styles.isNew : ''} ${copiedNoteId === note.id ? styles.copied : ''}`}>
+            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${note.isNew ? styles.isNew : ''}`}>
               <div
                 className={styles.noteHeader}
                 onClick={() => !isEditing && toggleExpand(note.id)}
@@ -245,7 +245,7 @@ export default function MyNotes() {
                     </div>
                   ) : (
                     <>
-                      <div className={styles.noteContent}>
+                      <div className={`${styles.noteContent} ${copiedNoteId === note.id ? styles.copied : ''}`}>
                         {note.content}
                       </div>
 

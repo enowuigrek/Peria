@@ -370,7 +370,7 @@ export default function Inbox() {
                   {note.detected?.events?.length > 0 && (
                     <div className={`${styles.section} ${styles.sectionEvents}`}>
                       <div className={styles.sectionHeader}>
-                        <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
+                        <span className={styles.sectionTitle}>Wydarzenia ({note.detected.events.length})</span>
                         <button
                           onClick={(e) => addToSection(
                             note,
