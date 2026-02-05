@@ -338,10 +338,19 @@ export default function ChatVoiceFirst({ onAdd }) {
           title={isRecording ? 'Zatrzymaj nagrywanie' : 'Nagraj głosem'}
           style={{ flex: showTextInput ? '0 0 auto' : '1 1 auto' }}
         >
-          {isRecording ? `⏹ ${recordingTime}s` : showTextInput ? '🎤' : '🎤 Nagraj myśl'}
+          {isRecording ? (
+            <>⏹ {recordingTime}s</>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          )}
         </button>
 
-        {/* Text input (opcjonalny, małe) */}
+        {/* Text input (opcjonalny) */}
         {showTextInput && (
           <>
             <input
@@ -359,6 +368,14 @@ export default function ChatVoiceFirst({ onAdd }) {
             >
               {isLoading ? '⏳' : '➤'}
             </button>
+            {/* Zamknij text input */}
+            <button
+              onClick={() => setShowTextInput(false)}
+              className={styles.closeInputButton}
+              title="Zamknij"
+            >
+              ✕
+            </button>
           </>
         )}
 
@@ -366,18 +383,17 @@ export default function ChatVoiceFirst({ onAdd }) {
         {!showTextInput && !isRecording && (
           <button
             onClick={() => setShowTextInput(true)}
-            className={styles.clearButton}
-            style={{ minWidth: '44px', fontSize: '1.1rem' }}
+            className={styles.textInputToggle}
             title="Wpisz tekstem"
           >
             ✏️
           </button>
         )}
 
-        {/* Clear chat */}
-        {messages.length > 0 && showTextInput && (
-          <button onClick={clearChat} className={styles.clearButton} title="Wyczyść czat">
-            ✕
+        {/* Clear chat (zawsze widoczne, małe) */}
+        {messages.length > 0 && !showTextInput && (
+          <button onClick={clearChat} className={styles.clearChatButton} title="Wyczyść czat">
+            🗑️
           </button>
         )}
       </div>
