@@ -13,10 +13,21 @@ export default function MyNotes() {
   const [editContent, setEditContent] = useState('')
   const [editingTitleId, setEditingTitleId] = useState(null)
   const [editTitleText, setEditTitleText] = useState('')
+  const [copiedNoteId, setCopiedNoteId] = useState(null)
 
   useEffect(() => {
     localStorage.setItem('peria_mynotes', JSON.stringify(notes))
   }, [notes])
+
+  const copyToClipboard = async (note) => {
+    try {
+      await navigator.clipboard.writeText(note.content)
+      setCopiedNoteId(note.id)
+      setTimeout(() => setCopiedNoteId(null), 800)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
 
   const toggleExpand = (id) => {
     // Mark as not new when expanded
@@ -116,7 +127,7 @@ export default function MyNotes() {
           const isEditingTitle = editingTitleId === note.id
 
           return (
-            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${note.isNew ? styles.isNew : ''}`}>
+            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${note.isNew ? styles.isNew : ''} ${copiedNoteId === note.id ? styles.copied : ''}`}>
               <div
                 className={styles.noteHeader}
                 onClick={() => !isEditing && toggleExpand(note.id)}
@@ -259,6 +270,16 @@ export default function MyNotes() {
                           className={styles.editButton}
                         >
                           ✎ Edytuj
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(note)}
+                          className={`${styles.copyButton} ${copiedNoteId === note.id ? styles.copied : ''}`}
+                          title="Kopiuj"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                          </svg>
                         </button>
                         <button
                           onClick={() => exportToAppleNotes(note)}

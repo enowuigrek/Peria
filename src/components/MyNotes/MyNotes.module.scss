@@ -51,6 +51,31 @@
     border-left: 6px solid $category-mynotes;
     background: $category-mynotes;
     box-shadow: 0 0 15px $category-mynotes, 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    // Czarne ikony na jasnym tle
+    .expandIcon svg,
+    .deleteButton svg {
+      stroke: $bg-gradient-start;
+    }
+
+    .deleteButton {
+      color: $bg-gradient-start;
+    }
+  }
+
+  &.copied {
+    animation: noteCopied 0.8s ease;
+  }
+}
+
+@keyframes noteCopied {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px $category-mynotes, 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -211,13 +236,25 @@
 .noteContent {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: $text-primary;
+  color: $bg-gradient-start; // Czarny tekst sticky notes
   white-space: pre-wrap;
   word-wrap: break-word;
   padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.2);
+  background: $category-mynotes; // Żółte tło sticky notes
   border-radius: 4px;
-  // Usunięto pasek po lewej - nie jest potrzebny wewnątrz rozwiniętej notatki
+  position: relative;
+
+  // Gradient na prawym dolnym rogu jak karteczka
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+    border-radius: 0 0 4px 0;
+  }
 }
 
 .noteActions {
@@ -243,7 +280,8 @@
   }
 }
 
-.exportButton {
+.exportButton,
+.copyButton {
   padding: 0.5rem;
   border: 1px solid $category-mynotes;
   background: $category-mynotes;
@@ -263,6 +301,22 @@
   &:hover {
     background: darken($category-mynotes, 10%);
     border-color: darken($category-mynotes, 10%);
+  }
+}
+
+.copyButton.copied {
+  animation: copiedPulse 0.6s ease;
+}
+
+@keyframes copiedPulse {
+  0%, 100% {
+    transform: scale(1);
+    background: $category-mynotes;
+  }
+  50% {
+    transform: scale(1.1);
+    background: darken($category-mynotes, 15%);
+    box-shadow: 0 0 15px $category-mynotes;
   }
 }
 

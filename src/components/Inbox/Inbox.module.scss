@@ -75,6 +75,36 @@
     .noteTitle {
       color: $bg-gradient-start; // Czarny tytuł
     }
+
+    // Czarne ikony na jasnym tle
+    .expandIcon svg {
+      stroke: $bg-gradient-start;
+    }
+
+    .deleteButton {
+      color: $bg-gradient-start;
+
+      svg {
+        stroke: $bg-gradient-start;
+      }
+    }
+  }
+
+  // Czarne ikony dla wszystkich NEW items na kolorowym tle
+  &.categoryMyNotes .noteCard,
+  &.categoryChecklists .noteCard,
+  &.categoryEvents .noteCard {
+    .expandIcon svg {
+      stroke: $bg-gradient-start;
+    }
+
+    .deleteButton {
+      color: $bg-gradient-start;
+
+      svg {
+        stroke: $bg-gradient-start;
+      }
+    }
   }
 }
 
@@ -332,9 +362,30 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   &.sectionMynotes {
-    border-color: rgba(74, 147, 150, 0.3);
-    border-left: 4px solid $category-mynotes;
-    background: rgba(74, 147, 150, 0.05);
+    border: none;
+    background: $category-mynotes; // Żółte tło sticky notes
+    position: relative;
+
+    // Gradient na prawym dolnym rogu jak karteczka
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+      border-radius: 0 0 4px 0;
+    }
+
+    .sectionTitle {
+      color: $bg-gradient-start; // Czarny tytuł
+    }
+
+    .sectionContent {
+      background: transparent; // Przezroczyste tło
+      color: $bg-gradient-start; // Czarny tekst
+    }
   }
 
   &.sectionChecklists {
@@ -374,7 +425,7 @@
   padding: 0.5rem 0.75rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  border-left: 3px solid $primary-gradient-start;
+  // Usunięto border-left - nie jest potrzebny
 }
 
 .checklist {
@@ -391,7 +442,7 @@
     padding: 0.375rem 0.75rem;
     background: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
-    border-left: 3px solid rgba(100, 200, 100, 0.5);
+    // Usunięto border-left - wystarczy checkbox przed tekstem
 
     &::before {
       content: '□ ';
@@ -415,7 +466,7 @@
     padding: 0.5rem 0.75rem;
     background: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
-    border-left: 3px solid rgba(255, 165, 0, 0.5);
+    // Usunięto border-left - nie jest potrzebny
     line-height: 1.4;
 
     strong {
