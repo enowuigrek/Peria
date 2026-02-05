@@ -36,7 +36,6 @@ function App() {
     return (
         <div className="app-wrapper">
             <div className="app-container">
-                <h1 className="app-title">🧠 Mój Asystent Dnia</h1>
                 <TaskInput onAdd={addTask} />
                 <TaskList tasks={tasks} onToggle={toggleTask} onRemove={removeTask} onEdit={editTask} />
             </div>
