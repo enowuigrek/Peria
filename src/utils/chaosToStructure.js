@@ -32,6 +32,12 @@ ROZPOZNAWANIE TYPU:
 
 - "note": użytkownik dzieli się pomysłem, refleksją, inspiracją
   Przykłady: "A co jeśli bohater umiera w rozdziale trzecim?", "Ciekawy pomysł na startup..."
+  WAŻNE: Notatki powinny zachowywać PEŁNĄ treść oryginalnej wypowiedzi, nie skracaj ich!
+  - Popraw błędy gramatyczne i literówki
+  - Usuń powtórzenia wynikające z mowy (np. gdy ktoś coś powie dwa razy)
+  - Podziel na czytelne akapity
+  - Dodaj punktowanie tam gdzie ma to sens
+  - Możesz dodać emotikony dla lepszej czytelności (opcjonalnie)
 
 - "calendar_event": użytkownik mówi o spotkaniu, terminie
   Przykłady: "Spotkajmy się we wtorek o 10", "Jutro mam dentystę"
@@ -82,17 +88,25 @@ Output: {
   }
 }
 
-Input: "A co jeśli w powieści główny bohater nie umiera, tylko udaje śmierć i wraca jako antagonista w drugiej części?"
+Input: "A co jeśli w powieści główny bohater nie umiera, tylko udaje śmierć i wraca jako antagonista w drugiej części? To mogłoby, to mogłoby naprawdę zmienić całą dynamikę relacji z innymi postaciami. I wtedy wszyscy czytelnicy byliby w szoku, bo nikt by się tego nie spodziewał."
 Output: {
   "type": "note",
   "confidence": 0.92,
   "title": "Twist fabularny - fałszywa śmierć bohatera",
-  "content": "Pomysł na nieoczekiwany zwrot akcji: bohater udaje śmierć i powraca jako antagonista w sequelu.",
+  "content": "A co jeśli w powieści główny bohater nie umiera, tylko udaje śmierć i wraca jako antagonista w drugiej części? 🎭
+
+To mogłoby naprawdę zmienić całą dynamikę relacji z innymi postaciami. Wszyscy czytelnicy byliby w szoku, bo nikt by się tego nie spodziewał.
+
+Elementy do rozwinięcia:
+• Motywacja bohatera do udania śmierci
+• Transformacja z protagonisty w antagonistę
+• Reakcje pozostałych postaci na powrót
+• Emocjonalny wpływ na czytelnika",
   "structured": {
     "paragraphs": [
-      "Główny bohater udaje swoją śmierć zamiast naprawdę umierać.",
-      "W drugiej części powraca jako antagonista, co tworzy zaskakujący twist.",
-      "To może zmienić całą dynamikę relacji z pozostałymi postaciami."
+      "A co jeśli w powieści główny bohater nie umiera, tylko udaje śmierć i wraca jako antagonista w drugiej części?",
+      "To mogłoby naprawdę zmienić całą dynamikę relacji z innymi postaciami. Wszyscy czytelnicy byliby w szoku, bo nikt by się tego nie spodziewał.",
+      "Elementy do rozwinięcia: motywacja bohatera, transformacja charakteru, reakcje innych postaci, wpływ emocjonalny."
     ],
     "tags": ["pisanie", "fabuła", "twist", "pomysł"]
   }
