@@ -75,40 +75,86 @@
   padding: 0.75rem;
   background: $card-bg-lighter;
   border-top: 1px solid $border-color;
-  align-items: stretch;
+  align-items: center;
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
 }
 
-.chatInputBar input {
+// Wrapper dla inputa z przyciskiem wewnątrz
+.inputWrapper {
+  position: relative;
   flex: 1;
-  padding: 0.75rem 0.875rem;
-  border-radius: 4px;
-  border: 1px solid $border-color;
-  background: rgba(0, 0, 0, 0.2);
-  color: $text-primary;
-  font-size: 0.9rem;
-  min-height: 44px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  display: flex;
+  align-items: center;
 
-  &::placeholder {
-    color: $text-muted;
-    font-size: 0.85rem;
-  }
+  input {
+    flex: 1;
+    padding: 0.75rem 3rem 0.75rem 0.875rem; // Więcej paddingu po prawej na przycisk
+    border-radius: 4px;
+    border: 1px solid $border-color;
+    background: rgba(0, 0, 0, 0.2);
+    color: $text-primary;
+    font-size: 0.9rem;
+    height: $button-height;
+    transition: border-color 0.2s ease, background 0.2s ease;
 
-  &:focus {
-    outline: none;
-    border-color: $primary-gradient-start;
-    background: rgba(0, 0, 0, 0.3);
-  }
+    &::placeholder {
+      color: $text-muted;
+      font-size: 0.85rem;
+    }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    &:focus {
+      outline: none;
+      border-color: $primary-gradient-start;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 }
 
+// Przycisk wysyłania wewnątrz inputa
+.sendButtonInside {
+  position: absolute;
+  right: 0.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $primary-gradient-start;
+  cursor: pointer;
+  transition: $button-transition;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  &:hover:not(:disabled) {
+    background: rgba(74, 147, 150, 0.15);
+    transform: scale(1.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Stary przycisk wysyłania - zostawiam na wszelki wypadek
 .sendButton {
   padding: 0;
   border: none;

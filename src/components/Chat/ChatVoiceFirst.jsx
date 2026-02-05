@@ -304,10 +304,10 @@ export default function ChatVoiceFirst({ onAdd }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input bar - VOICE FIRST */}
+      {/* Input bar - VOICE FIRST, mobile redesign */}
       <div className={styles.chatInputBar}>
-        {/* Podczas nagrywania: licznik + przycisk stop po prawej */}
         {isRecording ? (
+          // Podczas nagrywania: licznik + przycisk stop
           <>
             <div className={styles.recordingIndicator}>
               <span className={styles.recordingDot}></span>
@@ -323,64 +323,69 @@ export default function ChatVoiceFirst({ onAdd }) {
               </svg>
             </button>
           </>
-        ) : (
-          <button
-            onClick={startRecording}
-            disabled={isLoading}
-            className={styles.micButton}
-            title="Nagraj głosem"
-            style={{ flex: showTextInput ? '0 0 auto' : '1 1 auto' }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
-          </button>
-        )}
-
-        {/* Text input (opcjonalny) */}
-        {showTextInput && (
+        ) : showTextInput ? (
+          // Tryb tekstowy: input z przyciskiem wewnątrz + X do zamknięcia
           <>
-            <input
-              type="text"
-              placeholder="Wpisz myśl..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isLoading || isRecording}
-            />
-            <button
-              onClick={handleTextSend}
-              disabled={isLoading || !input.trim() || isRecording}
-              className={styles.sendButton}
-            >
-              {isLoading ? '⏳' : '➤'}
-            </button>
-            {/* Zamknij text input */}
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                placeholder="Wpisz myśl..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isLoading}
+                autoFocus
+              />
+              <button
+                onClick={handleTextSend}
+                disabled={isLoading || !input.trim()}
+                className={styles.sendButtonInside}
+                title="Wyślij"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </div>
             <button
               onClick={() => setShowTextInput(false)}
               className={styles.closeInputButton}
               title="Zamknij"
             >
-              ✕
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           </>
-        )}
-
-        {/* Toggle text input (mała ikona) */}
-        {!showTextInput && !isRecording && (
-          <button
-            onClick={() => setShowTextInput(true)}
-            className={styles.textInputToggle}
-            title="Wpisz tekstem"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
+        ) : (
+          // Domyślny widok: przycisk pisania po lewej, nagrywania po prawej
+          <>
+            <button
+              onClick={() => setShowTextInput(true)}
+              className={styles.textInputToggle}
+              title="Wpisz tekstem"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button
+              onClick={startRecording}
+              disabled={isLoading}
+              className={styles.micButton}
+              title="Nagraj głosem"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+          </>
         )}
       </div>
     </div>
