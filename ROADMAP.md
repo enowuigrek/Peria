@@ -25,24 +25,89 @@
 
 ---
 
-## 1. UX – MINIMALNY DESIGN (NAJPIERW!)
+## 1. ✅ UX – MINIMALNY DESIGN (ZAKOŃCZONE!)
 **Cel:** Zaprojektować przepływ przed kodowaniem
 
-- [ ] Mockup głównego ekranu (Figma/papier/Excalidraw)
-- [ ] Stan: **idle** - główny przycisk "Nagraj" (duży, centralny)
-- [ ] Stan: **recording** - pulsujący przycisk, timer nagrywania
-- [ ] Stan: **processing** - spinner + "Przetwarzam..." + możliwość anulowania
-- [ ] Stan: **result** - lista zadań z checkboxami
-- [ ] Przejścia między stanami (animacje, timing)
-- [ ] Mobile-first: wszystko musi działać jednym kciukiem
+- [x] Mockup głównego ekranu (UX-DESIGN.md)
+- [x] Stan: **idle** - główny przycisk "Nagraj" (duży, centralny)
+- [x] Stan: **recording** - pulsujący przycisk, timer nagrywania
+- [x] Stan: **processing** - spinner + "Przetwarzam..." + możliwość anulowania
+- [x] Stan: **result** - 3 warianty (checklist, note, calendar_event)
+- [x] Stan: **ask_user** - pytanie o typ gdy confidence <0.7
+- [x] Przejścia między stanami (animacje, timing)
+- [x] Mobile-first: wszystko musi działać jednym kciukiem
 
 **Kryteria akceptacji:**
-- Mogę pokazać mockup komuś i wyjaśnić flow w 30 sekund
-- Każdy stan jest jasny wizualnie
+- ✅ Mogę pokazać mockup komuś i wyjaśnić flow w 30 sekund
+- ✅ Każdy stan jest jasny wizualnie
+- ✅ 3 typy contentu uwzględnione
+- ✅ Export flow zaprojektowany
 
 ---
 
-## 2. WEB MVP – AUDIO INPUT
+## 2. PWA – iOS READY (NAJPIERW - BO CHCESZ TESTOWAĆ NA SPACERACH!)
+**Cel:** Aplikacja działa jak natywna na iPhone, możesz testować tekstowo
+
+- [ ] Stwórz `manifest.json` (nazwa, ikona, kolor, display: "standalone")
+- [ ] Dodaj Service Worker (cache static assets)
+- [ ] Ikona 512x512 + 192x192 (wygeneruj lub użyj placeholdera)
+- [ ] Splash screen (opcjonalnie)
+- [ ] Deploy na Vercel/Netlify z HTTPS (wymagane dla PWA!)
+- [ ] Testuj "Add to Home Screen" na iOS
+- [ ] Sprawdź czy chat działa offline (cached)
+
+**manifest.json:**
+```json
+{
+  "name": "VoiceThoughts",
+  "short_name": "VoiceThoughts",
+  "display": "standalone",
+  "background_color": "#0f0c29",
+  "theme_color": "#667eea",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
+**Kryteria akceptacji:**
+- Mogę dodać do ekranu głównego iPhone'a
+- Otwiera się fullscreen bez paska Safari
+- Offline: pokazuje cached stronę
+- **Mogę używać na spacerze (tekstowo przez chat)** ✨
+
+---
+
+## 3. TESTOWANIE NA SPACERACH (TEKSTOWA WERSJA)
+**Cel:** Walidacja use case przed dodaniem audio
+
+- [ ] Używaj aplikacji na spacerze przez tydzień (tekstowo)
+- [ ] Wpisuj pomysły przez chat podczas spaceru
+- [ ] Sprawdź czy chat → AI → structured output działa
+- [ ] Oceń: czy brakuje Ci mikrofonu czy tekst wystarczy?
+- [ ] Zbierz feedback: co działa, co nie
+
+**Kryteria akceptacji:**
+- Używałeś aplikacji na spacerze minimum 5 razy
+- Wiesz czy tekstowy input jest wystarczający czy NAPRAWDĘ potrzebujesz audio
+- Masz listę problemów do naprawy przed dodaniem audio
+
+⚠️ **WAŻNE:** Jeśli tekstowy input wystarczy, audio może nie być konieczne w MVP!
+
+---
+
+## 4. WEB MVP – AUDIO INPUT (JEŚLI POTRZEBNE PO TESTACH)
 **Cel:** Nagrywanie głosu w przeglądarce
 
 - [ ] Dodać przycisk nagrywania (MediaRecorder API)
@@ -60,7 +125,7 @@
 
 ---
 
-## 3. TRANSKRYPCJA (WHISPER API)
+## 5. TRANSKRYPCJA (WHISPER API) - po implementacji audio
 **Cel:** Zamiana audio → tekst
 
 - [ ] Wysyłać blob do OpenAI Whisper API
@@ -77,21 +142,21 @@
 
 ---
 
-## 4. WERYFIKACJA END-TO-END
-**Cel:** Sprawdzić czy podstawowy flow działa
+## 6. WERYFIKACJA END-TO-END (AUDIO)
+**Cel:** Sprawdzić czy audio flow działa
 
 - [ ] Nagraj → Transkrybuj → Wyświetl tekst (jedna pełna ścieżka)
-- [ ] Testuj na telefonie (Chrome Android / Safari iOS)
+- [ ] Testuj na telefonie (Safari iOS)
 - [ ] Sprawdź w różnych warunkach: cicho, hałas, długie zdanie
 - [ ] Zapisz przykładowe nagrania i transkrypcje do testów
 
 **Kryteria akceptacji:**
-- Mogę użyć aplikacji na telefonie podczas spaceru
+- Mogę użyć aplikacji na telefonie podczas spaceru z audio
 - 8/10 nagrań transkrybuje się poprawnie
 
 ---
 
-## 5. ROZPOZNANIE INTENCJI (LLM) - CHAOS → STRUKTURA
+## 7. ROZPOZNANIE INTENCJI (LLM) - CHAOS → STRUKTURA
 **Cel:** Zamienić chaotyczną wypowiedź w uporządkowaną strukturę
 
 - [ ] Wysłać transkrypcję do GPT-4o lub GPT-4o-mini
@@ -148,7 +213,7 @@ Przykłady:
 
 ---
 
-## 6. STORAGE – PODSTAWOWY (UNIWERSALNY)
+## 8. STORAGE – PODSTAWOWY (UNIWERSALNY)
 **Cel:** Zapisywać dane lokalnie (checklisty, notatki, eventy)
 
 - [ ] localStorage dla wszystkich typów (klucz: `items`)
@@ -211,7 +276,7 @@ Przykłady:
 
 ---
 
-## 7. CHECKLISTY – GENEROWANIE (READ ONLY)
+## 9. CHECKLISTY – GENEROWANIE (READ ONLY)
 **Cel:** Pokazać wygenerowaną listę zadań
 
 - [ ] Parsuj JSON z LLM → UI elements
@@ -227,7 +292,7 @@ Przykłady:
 
 ---
 
-## 8. CHECKLISTY – CRUD
+## 10. CHECKLISTY – CRUD
 **Cel:** Pełna edycja checklisty
 
 - [ ] Toggle done (już jest z punktu 7)
@@ -243,7 +308,7 @@ Przykłady:
 
 ---
 
-## 9. ERROR HANDLING
+## 11. ERROR HANDLING
 **Cel:** Obsłużyć wszystkie błędy gracefully
 
 - [ ] Brak internetu → "Brak połączenia. Spróbuj ponownie" + przycisk retry
@@ -259,7 +324,7 @@ Przykłady:
 
 ---
 
-## 10. NOTATKI (OPCJONALNE NA MVP)
+## 12. NOTATKI (OPCJONALNE NA MVP)
 **Cel:** Zapisywanie notatek i podsumowań
 
 - [ ] Zapisz pełną transkrypcję jako notatkę
@@ -273,7 +338,7 @@ Przykłady:
 
 ---
 
-## 11. PWA – iOS READY
+## 13. DODATKOWE OPTYMALIZACJE PWA (opcjonalne)
 **Cel:** Aplikacja działa jak natywna
 
 - [ ] Stwórz `manifest.json` (nazwa, ikona, kolor, display: "standalone")
@@ -302,7 +367,7 @@ Przykłady:
 
 ---
 
-## 12. EKSPORT – iOS & ANDROID (KLUCZOWE!)
+## 14. EKSPORT – iOS & ANDROID (KLUCZOWE!)
 **Cel:** Jeden klick → dane w natywnej aplikacji
 
 ### iOS Export
@@ -360,7 +425,7 @@ Notatki: Zadzwonić w sprawie wyników
 
 ---
 
-## 13. WALIDACJA
+## 15. WALIDACJA (FINALNA)
 **Cel:** Sprawdzić czy appka rozwiązuje problem
 
 - [ ] Używam aplikacji codziennie przez tydzień
@@ -375,7 +440,7 @@ Notatki: Zadzwonić w sprawie wyników
 
 ---
 
-## 14. MONETYZACJA (PO WALIDACJI)
+## 16. MONETYZACJA (PO WALIDACJI)
 **Cel:** Zarabiać na aplikacji
 
 - [ ] **FREE tier:**
@@ -395,7 +460,7 @@ Notatki: Zadzwonić w sprawie wyników
 
 ---
 
-## 15. WIDGET – iOS & ANDROID (PO MVP)
+## 17. WIDGET – iOS & ANDROID (PO MVP)
 **Cel:** Jedno kliknięcie z ekranu głównego → nagrywanie
 
 ### iOS Widget (React Native / Swift)
@@ -421,7 +486,7 @@ Notatki: Zadzwonić w sprawie wyników
 
 ---
 
-## 16. KOLEJNE KROKI (PO WIDGETACH)
+## 18. KOLEJNE KROKI (PO WIDGETACH)
 **Cel:** Skalowanie
 
 - [ ] React Native / Expo (natywne aplikacje iOS/Android)
@@ -445,9 +510,19 @@ Notatki: Zadzwonić w sprawie wyników
 - Gradientowy UI z animacjami
 - **UX Design document** (UX-DESIGN.md) - 5 stanów, przejścia, animacje, error handling
 
-### 🎯 Następne kroki:
-1. **Zaktualizować UX-DESIGN.md** zgodnie z nową wizją (chaos→struktura, auto-rozpoznanie typu, eksport)
-2. Rozpocząć implementację punktu **#2: WEB MVP – AUDIO INPUT**
+### 🎯 Następne kroki (ZMIENIONA KOLEJNOŚĆ!):
+1. ✅ **UX Design** - zakończone (UX-DESIGN.md)
+2. **#2: PWA – iOS READY** ← ZACZYNAMY TUTAJ!
+   - Manifest + Service Worker + deploy HTTPS
+   - Żebyś mógł testować na spacerach (tekstowo)
+3. **#3: TESTOWANIE NA SPACERACH** (tekstowa wersja)
+   - Walidacja czy tekst wystarczy czy NAPRAWDĘ potrzebujesz audio
+4. **#4-6: AUDIO** (jeśli potrzebne po testach)
+
+**Dlaczego ta kolejność?**
+- ✅ Możesz używać aplikacji JUŻ TERAZ na spacerach (tekstowo)
+- ✅ Walidacja use case przed inwestowaniem czasu w audio
+- ✅ Może się okazać, że tekst wystarczy (mniej kosztów API Whisper)
 
 ---
 
