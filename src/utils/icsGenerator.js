@@ -154,8 +154,8 @@ export async function downloadOrShareICS(icsContent, filename = 'event') {
     // Tak samo jak PKP, Booksy, bilety lotnicze
     const dataUri = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`
 
-    // Otwórz w nowej karcie - iOS automatycznie przekieruje do Kalendarza
-    window.open(dataUri, '_blank')
+    // WAŻNE: window.location.href zamiast window.open() - nie otwiera nowej karty
+    window.location.href = dataUri
 
     return { success: true, method: 'ios-calendar' }
   }

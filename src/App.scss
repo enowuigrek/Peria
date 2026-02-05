@@ -12,6 +12,7 @@ body {
     padding: 0;
     width: 100%;
     height: 100%;
+    background: #0a1923; // Fallback - czarne tło (na wypadek safe area)
     background: linear-gradient(
         135deg,
         $bg-gradient-start 0%,
