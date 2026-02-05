@@ -148,11 +148,6 @@ export default function Inbox() {
         ? { ...n, exported: { ...n.exported, [section]: true } }
         : n
     ))
-
-    // Show success message after animation starts
-    setTimeout(() => {
-      alert(`✅ Dodano do ${section === 'mynotes' ? 'Notatek' : section === 'checklists' ? 'Checklisty' : 'Wydarzeń'}`)
-    }, 100)
   }
 
   if (notes.length === 0) {
