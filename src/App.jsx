@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { nanoid } from 'nanoid'
 import './App.scss'
 import TaskInput from './components/TaskInput/TaskInput.jsx'
 import TaskList from './components/TaskList/TaskList.jsx'
@@ -21,7 +22,7 @@ function App() {
         setTasks((prev) => [
           ...prev,
           {
-            id: crypto.randomUUID(),
+            id: nanoid(),
             text,
             done: false,
           },
