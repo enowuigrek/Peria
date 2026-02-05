@@ -207,6 +207,11 @@
   border-radius: 4px;
   border-left: 3px solid rgba(253, 208, 59, 0.5);
   transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
 
   &.completed {
     opacity: 0.6;
@@ -238,11 +243,6 @@
   display: flex;
   gap: 0.375rem;
   flex-shrink: 0;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.checklistItem:hover .itemActions {
   opacity: 1;
 }
 

@@ -233,9 +233,10 @@ export default function Checklists() {
                         <div
                           key={idx}
                           className={styles.checklistItem}
+                          onClick={() => !isEditing && toggleItem(checklist.id, idx)}
                         >
                           {isEditing ? (
-                            <div className={styles.editContainer}>
+                            <div className={styles.editContainer} onClick={(e) => e.stopPropagation()}>
                               <input
                                 type="text"
                                 className={styles.editInput}
@@ -267,9 +268,10 @@ export default function Checklists() {
                                 checked={item.completed || false}
                                 onChange={() => toggleItem(checklist.id, idx)}
                                 className={styles.checkbox}
+                                onClick={(e) => e.stopPropagation()}
                               />
                               <span className={styles.itemText}>{item.text}</span>
-                              <div className={styles.itemActions}>
+                              <div className={styles.itemActions} onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => startEditItem(checklist.id, idx, item.text)}
                                   className={styles.editItemButton}
@@ -307,9 +309,10 @@ export default function Checklists() {
                         <div
                           key={idx}
                           className={`${styles.checklistItem} ${styles.completed}`}
+                          onClick={() => !isEditing && toggleItem(checklist.id, idx)}
                         >
                           {isEditing ? (
-                            <div className={styles.editContainer}>
+                            <div className={styles.editContainer} onClick={(e) => e.stopPropagation()}>
                               <input
                                 type="text"
                                 className={styles.editInput}
@@ -341,9 +344,10 @@ export default function Checklists() {
                                 checked={item.completed || false}
                                 onChange={() => toggleItem(checklist.id, idx)}
                                 className={styles.checkbox}
+                                onClick={(e) => e.stopPropagation()}
                               />
                               <span className={styles.itemText}>{item.text}</span>
-                              <div className={styles.itemActions}>
+                              <div className={styles.itemActions} onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => startEditItem(checklist.id, idx, item.text)}
                                   className={styles.editItemButton}
