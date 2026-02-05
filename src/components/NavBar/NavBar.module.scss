@@ -25,11 +25,6 @@
     min-height: $button-height;
     max-height: $button-height;
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        transform: translateY(-2px);
-    }
-
     &:active {
         transform: scale(0.95) translateY(0);
     }
@@ -117,10 +112,6 @@
     color: $text-secondary;
     border-color: rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.03);
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
 
     &.active {
         background: rgba(150, 180, 150, 0.15);

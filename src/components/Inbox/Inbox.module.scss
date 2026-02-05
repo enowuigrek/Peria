@@ -26,10 +26,6 @@
   &::-webkit-scrollbar-thumb {
     background: $border-color;
     border-radius: 10px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
   }
 }
 
@@ -124,10 +120,6 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.3);
-  }
 }
 
 .completedTitle {
@@ -210,10 +202,6 @@
   align-items: center;
   padding: 0.875rem;
   transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
 }
 
 .noteHeaderLeft {
@@ -249,10 +237,6 @@
   font-size: 0.85rem;
   flex-shrink: 0;
   transition: color 0.2s ease;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.6);
-  }
 }
 
 .titleInput {
@@ -322,10 +306,6 @@
     width: 16px;
     height: 16px;
   }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
 }
 
 .noteBody {
@@ -364,6 +344,7 @@
   &.sectionMynotes {
     border: none;
     background: $category-mynotes; // Żółte tło sticky notes
+    border-radius: 0; // Ostre rogi
     position: relative;
 
     // Gradient na prawym dolnym rogu jak karteczka
@@ -375,7 +356,6 @@
       width: 40px;
       height: 40px;
       background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
-      border-radius: 0 0 4px 0;
     }
 
     .sectionTitle {
@@ -390,14 +370,12 @@
 
   &.sectionChecklists {
     border-color: rgba(253, 208, 59, 0.3);
-    border-left: 4px solid $category-checklists;
     background: rgba(253, 208, 59, 0.05);
   }
 
   &.sectionEvents {
     border: none;
     background: $bg-gradient-start; // Czarne tło
-    border-left: 4px solid $category-events; // Niebieski pasek
     border-radius: 0; // Ostre rogi
 
     .sectionTitle {
@@ -513,11 +491,6 @@
     height: 18px;
   }
 
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
   &:active:not(:disabled) {
     transform: translateY(0);
   }
@@ -530,46 +503,52 @@
 
 .exportButtonMyNotes {
   @extend .exportButton;
-  background: $category-mynotes;
+  background: darken($category-mynotes, 10%); // Ciemniejszy kolor domyślnie
+  border-color: darken($category-mynotes, 10%);
   color: $bg-gradient-start;
-
-  &:hover:not(:disabled) {
-    background: darken($category-mynotes, 10%);
-  }
 
   &:disabled {
     background: $category-mynotes;
     color: $bg-gradient-start;
   }
+
+  &:active:not(:disabled) {
+    background: $category-mynotes; // Jasny tylko po kliknięciu
+    transform: scale(0.95);
+  }
 }
 
 .exportButtonChecklists {
   @extend .exportButton;
-  background: $category-checklists;
+  background: darken($category-checklists, 10%);
+  border-color: darken($category-checklists, 10%);
   color: $bg-gradient-start;
-
-  &:hover:not(:disabled) {
-    background: darken($category-checklists, 10%);
-  }
 
   &:disabled {
     background: $category-checklists;
     color: $bg-gradient-start;
   }
+
+  &:active:not(:disabled) {
+    background: $category-checklists;
+    transform: scale(0.95);
+  }
 }
 
 .exportButtonEvents {
   @extend .exportButton;
-  background: $category-events;
+  background: darken($category-events, 10%);
+  border-color: darken($category-events, 10%);
   color: $bg-gradient-start;
-
-  &:hover:not(:disabled) {
-    background: darken($category-events, 10%);
-  }
 
   &:disabled {
     background: $category-events;
     color: $bg-gradient-start;
+  }
+
+  &:active:not(:disabled) {
+    background: $category-events;
+    transform: scale(0.95);
   }
 }
 
@@ -594,10 +573,6 @@
 
   &::-webkit-details-marker {
     display: none;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
   }
 }
 

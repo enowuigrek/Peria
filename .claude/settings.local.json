@@ -24,7 +24,8 @@
       "Bash(npx expo install:*)",
       "Bash(npx expo start:*)",
       "Bash(kill:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(grep:*)"
     ]
   }
 }
