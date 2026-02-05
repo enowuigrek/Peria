@@ -39,20 +39,49 @@
     }
 }
 
-// GRUPA 1: Sekcje (małe, kwadratowe przyciski) - jeden spójny kolor ramki
+// GRUPA 1: Sekcje (małe, kwadratowe przyciski) - każdy ma swój kolor
 .sectionButton {
     flex: 0 0 $button-height;
     width: $button-height;
     color: $text-secondary;
-    border-color: rgba(74, 147, 150, 0.25);
+    border-color: rgba(255, 255, 255, 0.15);
 
-    &.active {
-        background: rgba(74, 147, 150, 0.15);
-        border-color: rgba(74, 147, 150, 0.5);
-        color: #4a9396;
+    // MyNotes - teal
+    &:nth-of-type(1) {
+        &.active {
+            background: rgba(74, 147, 150, 0.15);
+            border-color: rgba(74, 147, 150, 0.5);
+            color: $category-mynotes;
 
-        &::after {
-            background: #4a9396;
+            &::after {
+                background: $category-mynotes;
+            }
+        }
+    }
+
+    // Checklists - yellow
+    &:nth-of-type(2) {
+        &.active {
+            background: rgba(253, 208, 59, 0.1);
+            border-color: rgba(253, 208, 59, 0.5);
+            color: $category-checklists;
+
+            &::after {
+                background: $category-checklists;
+            }
+        }
+    }
+
+    // Events - orange
+    &:nth-of-type(3) {
+        &.active {
+            background: rgba(203, 127, 7, 0.15);
+            border-color: rgba(203, 127, 7, 0.5);
+            color: $category-events;
+
+            &::after {
+                background: $category-events;
+            }
         }
     }
 }
@@ -64,20 +93,20 @@
     margin: 0.25rem 0.125rem;
 }
 
-// GRUPA 2: Akcje (dzielą przestrzeń po połowie) - jeden spójny kolor ramki
+// GRUPA 2: Akcje (dzielą przestrzeń po połowie) - stonowane kolory
 .actionButton {
     flex: 1;
     min-width: $button-height;
     color: $text-secondary;
-    border-color: rgba(253, 208, 59, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
 
     &.active {
-        background: rgba(253, 208, 59, 0.1);
-        border-color: rgba(253, 208, 59, 0.5);
-        color: #fdd03b;
+        background: rgba(100, 150, 170, 0.15);
+        border-color: rgba(100, 150, 170, 0.4);
+        color: #6496aa;
 
         &::after {
-            background: #fdd03b;
+            background: #6496aa;
         }
     }
 }
@@ -86,7 +115,7 @@
     flex: 1;
     min-width: $button-height;
     color: $text-secondary;
-    border-color: rgba(253, 208, 59, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.03);
 
     &:hover {
@@ -94,12 +123,12 @@
     }
 
     &.active {
-        background: rgba(253, 208, 59, 0.1);
-        border-color: rgba(253, 208, 59, 0.5);
-        color: #fdd03b;
+        background: rgba(150, 180, 150, 0.15);
+        border-color: rgba(150, 180, 150, 0.4);
+        color: #96b496;
 
         &::after {
-            background: #fdd03b;
+            background: #96b496;
         }
     }
 }
