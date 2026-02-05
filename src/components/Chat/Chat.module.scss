@@ -263,3 +263,38 @@
     box-shadow: 0 2px 20px rgba(203, 127, 7, 0.8);
   }
 }
+
+.exportBar {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  background: $card-bg-lighter;
+  border-top: 1px solid $border-color;
+}
+
+.exportButton {
+  padding: 0.875rem 1.5rem;
+  border: none;
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  color: $text-primary;
+  border-radius: $radius-small;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow-hover;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}

@@ -13,6 +13,7 @@ export default function Chat({ onAdd }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
+  const [lastResult, setLastResult] = useState(null)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const recordingIntervalRef = useRef(null)
@@ -215,12 +216,59 @@ export default function Chat({ onAdd }) {
     }
   }
 
+  const exportToReminders = async () => {
+    if (!lastResult) return
+
+    const today = new Date().toISOString().split('T')[0]
+
+    // Format dla Apple Reminders
+    let exportText = `📋 Peria - ${lastResult.title}\n\n`
+
+    if (lastResult.type === 'checklist' && lastResult.structured?.items) {
+      exportText += lastResult.structured.items.map(item => `☐ ${item}`).join('\n')
+    } else if (lastResult.type === 'note') {
+      exportText += lastResult.content
+    } else if (lastResult.type === 'calendar_event') {
+      exportText += `📅 ${lastResult.structured?.datetime || today}\n\n${lastResult.content}`
+    }
+
+    // Spróbuj Web Share API (działa na iOS)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Peria - ${lastResult.title}`,
+          text: exportText
+        })
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error)
+          fallbackCopyToClipboard(exportText)
+        }
+      }
+    } else {
+      // Fallback: kopiuj do schowka
+      fallbackCopyToClipboard(exportText)
+    }
+  }
+
+  const fallbackCopyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ Skopiowano do schowka!\n\nOtwórz Apple Reminders → Nowa lista → Wklej')
+    }).catch((error) => {
+      console.error('Clipboard error:', error)
+      alert('❌ Błąd kopiowania. Spróbuj ponownie.')
+    })
+  }
+
   const processChaosToStructure = async (text) => {
     const thinkingMessage = { from: 'bot', text: '🧠 Porządkuję chaos...' }
     setMessages((prev) => [...prev, thinkingMessage])
 
     try {
       const result = await chaosToStructure(text)
+
+      // Zapisz rezultat do eksportu
+      setLastResult(result)
 
       // Usuń "thinking" message
       setMessages((prev) => prev.slice(0, -1))
@@ -271,6 +319,13 @@ export default function Chat({ onAdd }) {
           </div>
         ))}
       </div>
+      {lastResult && (
+        <div className={styles.exportBar}>
+          <button onClick={exportToReminders} className={styles.exportButton}>
+            📤 Eksportuj do Reminders
+          </button>
+        </div>
+      )}
       <div className={styles.chatInputBar}>
         <button
           onClick={isRecording ? stopRecording : startRecording}
