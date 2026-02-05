@@ -37,36 +37,23 @@ export default function MyNotes() {
   const startEdit = (note) => {
     setEditingId(note.id)
     setEditContent(note.content)
+    setEditingTitleId(note.id)
+    setEditTitleText(note.title)
   }
 
   const saveEdit = (id) => {
     setNotes(prev => prev.map(n =>
-      n.id === id ? { ...n, content: editContent } : n
+      n.id === id ? { ...n, content: editContent, title: editTitleText } : n
     ))
     setEditingId(null)
     setEditContent('')
+    setEditingTitleId(null)
+    setEditTitleText('')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditContent('')
-  }
-
-  const startEditTitle = (note, e) => {
-    e.stopPropagation()
-    setEditingTitleId(note.id)
-    setEditTitleText(note.title)
-  }
-
-  const saveTitle = (id) => {
-    setNotes(prev => prev.map(n =>
-      n.id === id ? { ...n, title: editTitleText } : n
-    ))
-    setEditingTitleId(null)
-    setEditTitleText('')
-  }
-
-  const cancelEditTitle = () => {
     setEditingTitleId(null)
     setEditTitleText('')
   }
@@ -123,8 +110,8 @@ export default function MyNotes() {
             <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''}`}>
               <div
                 className={styles.noteHeader}
-                onClick={() => !isEditing && !isEditingTitle && toggleExpand(note.id)}
-                style={{ cursor: (isEditing || isEditingTitle) ? 'default' : 'pointer' }}
+                onClick={() => !isEditing && toggleExpand(note.id)}
+                style={{ cursor: isEditing ? 'default' : 'pointer' }}
               >
                 <div className={styles.noteHeaderLeft}>
                   {isEditingTitle ? (
@@ -133,19 +120,11 @@ export default function MyNotes() {
                       className={styles.titleInput}
                       value={editTitleText}
                       onChange={(e) => setEditTitleText(e.target.value)}
-                      onBlur={() => saveTitle(note.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveTitle(note.id)
-                        if (e.key === 'Escape') cancelEditTitle()
-                      }}
                       autoFocus
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div
-                      className={styles.noteTitle}
-                      onClick={(e) => startEditTitle(note, e)}
-                    >
+                    <div className={styles.noteTitle}>
                       {note.title}
                     </div>
                   )}

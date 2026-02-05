@@ -26,15 +26,19 @@ export default function Events() {
     })
   }
 
-  const startEditTitle = (event, e) => {
-    e.stopPropagation()
+  const startEditTitle = (event) => {
     setEditingTitleId(event.id)
     setEditTitleText(event.title)
+    setExpandedEvents(prev => {
+      const newSet = new Set(prev)
+      newSet.add(event.id)
+      return newSet
+    })
   }
 
-  const saveTitle = (id) => {
+  const saveTitle = () => {
     setEvents(prev => prev.map(e =>
-      e.id === id ? { ...e, title: editTitleText } : e
+      e.id === editingTitleId ? { ...e, title: editTitleText } : e
     ))
     setEditingTitleId(null)
     setEditTitleText('')
@@ -155,19 +159,16 @@ export default function Events() {
                       className={styles.titleInput}
                       value={editTitleText}
                       onChange={(e) => setEditTitleText(e.target.value)}
-                      onBlur={() => saveTitle(event.id)}
+                      onBlur={() => saveTitle()}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveTitle(event.id)
+                        if (e.key === 'Enter') saveTitle()
                         if (e.key === 'Escape') cancelEditTitle()
                       }}
                       autoFocus
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div
-                      className={styles.eventTitle}
-                      onClick={(e) => startEditTitle(event, e)}
-                    >
+                    <div className={styles.eventTitle}>
                       {event.title}
                     </div>
                   )}
@@ -233,6 +234,12 @@ export default function Events() {
                   </div>
 
                   <div className={styles.eventActions}>
+                    <button
+                      onClick={() => startEditTitle(event)}
+                      className={styles.editButton}
+                    >
+                      ✎ Edytuj tytuł
+                    </button>
                     <button
                       onClick={() => exportToCalendar(event)}
                       className={styles.exportButton}

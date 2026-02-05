@@ -74,15 +74,19 @@ export default function Checklists() {
     setEditText('')
   }
 
-  const startEditTitle = (checklist, e) => {
-    e.stopPropagation()
+  const startEditTitle = (checklist) => {
     setEditingTitleId(checklist.id)
     setEditTitleText(checklist.title)
+    setExpandedChecklists(prev => {
+      const newSet = new Set(prev)
+      newSet.add(checklist.id)
+      return newSet
+    })
   }
 
-  const saveTitle = (id) => {
+  const saveTitle = () => {
     setChecklists(prev => prev.map(c =>
-      c.id === id ? { ...c, title: editTitleText } : c
+      c.id === editingTitleId ? { ...c, title: editTitleText } : c
     ))
     setEditingTitleId(null)
     setEditTitleText('')
@@ -175,19 +179,16 @@ export default function Checklists() {
                       className={styles.titleInput}
                       value={editTitleText}
                       onChange={(e) => setEditTitleText(e.target.value)}
-                      onBlur={() => saveTitle(checklist.id)}
+                      onBlur={() => saveTitle()}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveTitle(checklist.id)
+                        if (e.key === 'Enter') saveTitle()
                         if (e.key === 'Escape') cancelEditTitle()
                       }}
                       autoFocus
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div
-                      className={styles.checklistTitle}
-                      onClick={(e) => startEditTitle(checklist, e)}
-                    >
+                    <div className={styles.checklistTitle}>
                       {checklist.title}
                     </div>
                   )}
@@ -375,6 +376,12 @@ export default function Checklists() {
                   </div>
 
                   <div className={styles.checklistActions}>
+                    <button
+                      onClick={() => startEditTitle(checklist)}
+                      className={styles.editButton}
+                    >
+                      ✎ Edytuj tytuł
+                    </button>
                     <button
                       onClick={() => exportToReminders(checklist)}
                       className={styles.exportButton}
