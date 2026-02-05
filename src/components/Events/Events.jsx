@@ -114,10 +114,8 @@ export default function Events() {
     const filename = `${item.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
 
     try {
-      const result = await downloadOrShareICS(icsContent, filename)
-      if (result.success && !result.cancelled) {
-        alert('✅ Wydarzenie dodane do kalendarza!')
-      }
+      await downloadOrShareICS(icsContent, filename)
+      // Nie pokazujemy alertu - iOS pokaże swój dialog
     } catch (error) {
       console.error('Export error:', error)
       alert('❌ Błąd eksportu wydarzenia')
@@ -137,11 +135,8 @@ export default function Events() {
     const filename = `${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_wydarzenia`
 
     try {
-      const result = await downloadOrShareICS(icsContent, filename)
-      if (result.success && !result.cancelled) {
-        const count = eventItems.length
-        alert(`✅ Dodano ${count} ${count === 1 ? 'wydarzenie' : 'wydarzenia'} do kalendarza!`)
-      }
+      await downloadOrShareICS(icsContent, filename)
+      // Nie pokazujemy alertu - iOS pokaże swój dialog
     } catch (error) {
       console.error('Export error:', error)
       alert('❌ Błąd eksportu wydarzeń')
