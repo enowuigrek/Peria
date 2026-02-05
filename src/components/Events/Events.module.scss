@@ -247,25 +247,13 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: $bg-gradient-start; // Czarne tło
+  background: #000000; // Czarne tło
   border-radius: 0; // Ostre rogi
   border-left: 4px solid $category-events; // Niebieski pasek z lewej
   transition: all 0.2s ease;
-  position: relative;
-
-  // Gradient na prawym dolnym rogu jak karteczka
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, transparent 50%, rgba(74, 147, 150, 0.2) 50%);
-  }
 
   &:hover {
-    background: lighten($bg-gradient-start, 5%);
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 
