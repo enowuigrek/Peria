@@ -4,11 +4,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-PWA%20Live-brightgreen" />
-  <img src="https://img.shields.io/badge/React-19-blue" />
-  <img src="https://img.shields.io/badge/Vite-?-purple" />
-  <img src="https://img.shields.io/badge/AI-GPT%2FWhisper-orange" />
-  <img src="https://img.shields.io/badge/PWA-Yes-teal" />
+    <img src="https://img.shields.io/badge/Status-PWA%20Live-brightgreen" />
+    <img src="https://img.shields.io/badge/React-19-blue" />
+    <img src="https://img.shields.io/badge/Vite-purple" />
+    <img src="https://img.shields.io/badge/OpenAI-GPT%20%2B%20Whisper-black" />
+    <img src="https://img.shields.io/badge/PWA-Yes-teal" />
 </p>
 
 # Peria
@@ -39,15 +39,6 @@ Peria works as a Progressive Web App — install it to your device and use offli
 
 ---
 
-## 🖼 Screenshots
-
-_Add screenshots here:_
-
-![Home Screen](./screenshots/home.png)
-![Recording](./screenshots/recording.png)
-
----
-
 ## 🛠 Tech Stack
 
 - React 19
@@ -57,15 +48,6 @@ _Add screenshots here:_
 - PWA
 
 ---
-
-## 🧪 Local Setup
-
-```bash
-git clone https://github.com/enowuigrek/Peria.git
-cd Peria
-npm install
-npm run dev
-```
 
 Runs at http://localhost:5173
 
