@@ -150,7 +150,7 @@
     top: -6px;
     right: -6px;
     background: $primary-gradient-start;
-    color: #fff;
+    color: $bg-gradient-start; // Czarny kolor tekstu dla lepszej widoczności
     font-size: 0.65rem;
     font-weight: 700;
     min-width: 16px;

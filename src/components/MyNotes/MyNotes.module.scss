@@ -88,6 +88,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: calc(100% - 30px); // Rezerwuje miejsce dla ikonki
+
+  .noteCard.isNew & {
+    color: $bg-gradient-start; // Czarny kolor na kolorowym tle
+  }
 }
 
 .editTitleIcon {

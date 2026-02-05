@@ -58,6 +58,13 @@ Twoim zadaniem jest:
 
    a) NOTATKA (note) - uporządkowana treść notatki, pomysły, teksty, myśli
       Przykłady: "pomysł na startup X", "zwrotka rapowa o Y", "refleksja o Z"
+      ZASADY dla notatek:
+      - Zachowaj DOKŁADNY tekst dyktowany przez użytkownika
+      - Popraw błędy gramatyczne i ortograficzne
+      - Usuń ewidentne powtórzenia słów
+      - Podziel tekst na akapity (używaj \n\n między akapitami)
+      - Dodaj emotikony tam, gdzie pasują do treści
+      - Zadbaj o to, aby tekst był przyjemny do czytania
 
    b) CHECKLISTA (checklist) - konkretne akcje do zrobienia
       Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
@@ -70,8 +77,9 @@ Twoim zadaniem jest:
       - "za tydzień" → ${currentDate} + 7 dni
       Jeśli użytkownik wspomina przedział czasowy (np. "od 16 do 17"), dodaj endTime
 
-ZASADY:
-- NIE zmieniaj treści użytkownika, tylko kategoryzuj
+ZASADY OGÓLNE:
+- Dla notatek: poprawiaj gramatykę, usuń powtórzenia, dodaj emotikony i akapity
+- Dla checklist i events: przepisz dokładnie bez zmian
 - Date/time w formacie: "YYYY-MM-DD" i "HH:MM"
 - Jeśli brak elementów danego typu → zwróć [] lub null
 - Tytuł ma być krótki i opisowy

@@ -94,6 +94,46 @@ export default function Inbox() {
     }
   }
 
+  // Get category styling for NEW notes
+  const getCategoryStyle = (note) => {
+    if (!note.detected) return { className: '', style: {} }
+
+    const hasNote = note.detected.note
+    const hasChecklist = note.detected.checklist?.length > 0
+    const hasEvents = note.detected.events?.length > 0
+
+    const categories = []
+    if (hasNote) categories.push('mynotes')
+    if (hasChecklist) categories.push('checklists')
+    if (hasEvents) categories.push('events')
+
+    // Single category
+    if (categories.length === 1) {
+      const categoryMap = {
+        mynotes: styles.categoryMyNotes,
+        checklists: styles.categoryChecklists,
+        events: styles.categoryEvents
+      }
+      return { className: categoryMap[categories[0]], style: {} }
+    }
+
+    // Multi-category gradient
+    if (categories.length > 1) {
+      const colorMap = {
+        mynotes: '#fdd03b',
+        checklists: '#5db85f',
+        events: '#4a9396'
+      }
+      const gradientColors = categories.map(cat => colorMap[cat]).join(', ')
+      return {
+        className: styles.categoryMulti,
+        style: { '--gradient-colors': gradientColors }
+      }
+    }
+
+    return { className: '', style: {} }
+  }
+
   // Check if note is fully categorized (all detected content has been exported)
   const isFullyCategorized = (note) => {
     if (!note.detected) return false
@@ -269,10 +309,21 @@ export default function Inbox() {
                         <span className={styles.sectionTitle}>📝 Notatka</span>
                         <button
                           onClick={(e) => addToSection(note, 'mynotes', note.detected.note, e)}
-                          className={styles.exportButton}
+                          className={styles.exportButtonMyNotes}
                           disabled={note.exported?.mynotes}
+                          title={note.exported?.mynotes ? 'Dodano do Notatek' : 'Dodaj do Notatek'}
                         >
-                          {note.exported?.mynotes ? '✓ Dodano' : '→ Notatki'}
+                          {note.exported?.mynotes ? (
+                            <span>✓</span>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                              <polyline points="14 2 14 8 20 8"/>
+                              <line x1="16" y1="13" x2="8" y2="13"/>
+                              <line x1="16" y1="17" x2="8" y2="17"/>
+                              <line x1="10" y1="9" x2="8" y2="9"/>
+                            </svg>
+                          )}
                         </button>
                       </div>
                       <div className={styles.sectionContent}>
@@ -293,10 +344,18 @@ export default function Inbox() {
                             note.detected.checklist,
                             e
                           )}
-                          className={styles.exportButton}
+                          className={styles.exportButtonChecklists}
                           disabled={note.exported?.checklists}
+                          title={note.exported?.checklists ? 'Dodano do Checklist' : 'Dodaj do Checklist'}
                         >
-                          {note.exported?.checklists ? '✓ Dodano' : '→ Checklisty'}
+                          {note.exported?.checklists ? (
+                            <span>✓</span>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M9 11l3 3L22 4"/>
+                              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                          )}
                         </button>
                       </div>
                       <ul className={styles.checklist}>
@@ -319,10 +378,20 @@ export default function Inbox() {
                             note.detected.events,
                             e
                           )}
-                          className={styles.exportButton}
+                          className={styles.exportButtonEvents}
                           disabled={note.exported?.events}
+                          title={note.exported?.events ? 'Dodano do Wydarzeń' : 'Dodaj do Wydarzeń'}
                         >
-                          {note.exported?.events ? '✓ Dodano' : '→ Wydarzenia'}
+                          {note.exported?.events ? (
+                            <span>✓</span>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                              <line x1="16" y1="2" x2="16" y2="6"/>
+                              <line x1="8" y1="2" x2="8" y2="6"/>
+                              <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                          )}
                         </button>
                       </div>
                       <ul className={styles.eventList}>
@@ -358,11 +427,18 @@ export default function Inbox() {
     <div className={styles.notesWrapper}>
       <div className={styles.notesList}>
         {/* NEW Notes - unread */}
-        {newNotes.map((note) => (
-          <div key={note.id} className={styles.newNoteWrapper}>
-            {renderNote(note)}
-          </div>
-        ))}
+        {newNotes.map((note) => {
+          const categoryStyle = getCategoryStyle(note)
+          return (
+            <div
+              key={note.id}
+              className={`${styles.newNoteWrapper} ${categoryStyle.className}`}
+              style={categoryStyle.style}
+            >
+              {renderNote(note)}
+            </div>
+          )
+        })}
 
         {/* PENDING Notes - read but not fully exported */}
         {pendingNotes.map((note) => renderNote(note))}
