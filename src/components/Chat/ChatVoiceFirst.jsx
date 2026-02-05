@@ -173,11 +173,22 @@ export default function ChatVoiceFirst({ onAdd }) {
 
       // Zapisz rezultat
       const result = {
+        id: Date.now().toString(),
         sourceText: text,
         detected: detected,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        exported: {
+          reminders: false,
+          notes: false,
+          calendar: false
+        }
       }
       setLastResult(result)
+
+      // Zapisz do localStorage jako notatka
+      const notes = JSON.parse(localStorage.getItem('peria_notes') || '[]')
+      notes.unshift(result) // Dodaj na początek (najnowsze na górze)
+      localStorage.setItem('peria_notes', JSON.stringify(notes))
 
       // Wyświetl rezultat
       let resultText = `📋 **Wykryto strukturę**\n\n`

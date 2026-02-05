@@ -6,32 +6,25 @@ function NavBar({ activeView, onSwitch }) {
     return (
         <nav className={styles.navBar}>
             <button
-                className={activeView === 'tasks' ? styles.active : ''}
-                onClick={() => onSwitch('tasks')}
-                aria-label="Zadania"
+                className={activeView === 'notes' ? styles.active : ''}
+                onClick={() => onSwitch('notes')}
+                aria-label="Notatki"
             >
-                ☰
+                📝
             </button>
             <button
                 className={activeView === 'chat' ? styles.active : ''}
                 onClick={() => onSwitch('chat')}
-                aria-label="Czat"
+                aria-label="Nagraj"
             >
-                ◐
-            </button>
-            <button
-                className={activeView === 'calendar' ? styles.active : ''}
-                onClick={() => onSwitch('calendar')}
-                aria-label="Kalendarz"
-            >
-                ⊞
+                🎤
             </button>
         </nav>
     )
 }
 
 NavBar.propTypes = {
-    activeView: PropTypes.oneOf(['tasks', 'chat', 'calendar']).isRequired,
+    activeView: PropTypes.oneOf(['notes', 'chat']).isRequired,
     onSwitch: PropTypes.func.isRequired,
 }
 
