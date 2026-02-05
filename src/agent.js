@@ -69,13 +69,21 @@ Twoim zadaniem jest:
    b) CHECKLISTA (checklist) - konkretne akcje do zrobienia
       Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
 
-   c) WYDARZENIA (events) - daty, godziny, spotkania
+   c) WYDARZENIA (events) - daty, godziny, spotkania, okresy czasowe
       Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00", "trening od 16 do 17"
       OBLICZ konkretną datę:
       - "jutro" → ${currentDate} + 1 dzień
       - "w przyszłą środę" → oblicz najbliższą środę po dzisiejszym dniu
       - "za tydzień" → ${currentDate} + 7 dni
-      Jeśli użytkownik wspomina przedział czasowy (np. "od 16 do 17"), dodaj endTime
+
+      WAŻNE dla przedziałów czasowych:
+      - Jeśli użytkownik wspomina przedział (np. "podróż do Grecji na dwa tygodnie"):
+        * Ustaw date jako dzień rozpoczęcia (np. jutro)
+        * Oblicz datę końcową i wpisz jako drugi wpis w tablicy events
+        * Pierwszy wpis: "Podróż do Grecji - start", date: "2026-01-11"
+        * Drugi wpis: "Podróż do Grecji - koniec", date: "2026-01-25"
+      - Dla godzin w ciągu dnia (np. "od 16 do 17"): użyj time i endTime
+      - Dla okresów wielodniowych: stwórz dwa oddzielne wydarzenia (start i koniec)
 
 ZASADY OGÓLNE:
 - Dla notatek: poprawiaj gramatykę, usuń powtórzenia, dodaj emotikony i akapity
