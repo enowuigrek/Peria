@@ -55,16 +55,18 @@ function TaskItem({
                 onClick={() => setEditingId(task.id)}
                 className={styles.editButton}
                 title="Edytuj zadanie"
+                aria-label="Edytuj"
             >
-                ✏️
+                ✎
             </button>
 
             <button
                 onClick={() => onRemove(task.id)}
                 className={styles.deleteButton}
                 title="Usuń zadanie"
+                aria-label="Usuń"
             >
-                🗑
+                ✕
             </button>
         </li>
     )
