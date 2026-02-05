@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { askAgent } from '../../agent'
+import { chaosToStructure, isConfident, getTypeLabel } from '../../utils/chaosToStructure'
 import styles from './Chat.module.scss'
 
 export default function Chat({ onAdd }) {
@@ -10,6 +11,11 @@ export default function Chat({ onAdd }) {
   })
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingTime, setRecordingTime] = useState(0)
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+  const recordingIntervalRef = useRef(null)
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages))
@@ -101,6 +107,150 @@ export default function Chat({ onAdd }) {
     }
   }
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        stream.getTracks().forEach(track => track.stop())
+        await processAudioBlob(audioBlob)
+      }
+
+      mediaRecorder.start()
+      setIsRecording(true)
+      setRecordingTime(0)
+
+      // Timer
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingTime(prev => {
+          if (prev >= 60) {
+            stopRecording()
+            return 60
+          }
+          return prev + 1
+        })
+      }, 1000)
+
+    } catch (error) {
+      console.error('Błąd dostępu do mikrofonu:', error)
+      alert('Nie można uzyskać dostępu do mikrofonu. Sprawdź uprawnienia w ustawieniach przeglądarki.')
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current)
+      }
+    }
+  }
+
+  const processAudioBlob = async (audioBlob) => {
+    setIsLoading(true)
+    const thinkingMessage = { from: 'bot', text: '🎤 Transkrybuję nagranie...' }
+    setMessages((prev) => [...prev, thinkingMessage])
+
+    try {
+      // Wysyłanie do Whisper API
+      const formData = new FormData()
+      formData.append('file', audioBlob, 'recording.webm')
+      formData.append('model', 'whisper-1')
+      formData.append('language', 'pl')
+
+      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Błąd transkrypcji: ' + response.statusText)
+      }
+
+      const data = await response.json()
+      const transcription = data.text
+
+      if (!transcription || !transcription.trim()) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated.pop()
+          return [...updated, { from: 'bot', text: '❌ Nie wykryto mowy. Spróbuj ponownie.' }]
+        })
+        setIsLoading(false)
+        return
+      }
+
+      // Dodaj transkrypcję jako wiadomość użytkownika
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated.pop()
+        return [...updated, { from: 'user', text: transcription }]
+      })
+
+      // Przetwórz przez chaos→structure
+      await processChaosToStructure(transcription)
+
+    } catch (error) {
+      console.error('Błąd przetwarzania audio:', error)
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated.pop()
+        return [...updated, { from: 'bot', text: '❌ Błąd transkrypcji: ' + error.message }]
+      })
+      setIsLoading(false)
+    }
+  }
+
+  const processChaosToStructure = async (text) => {
+    const thinkingMessage = { from: 'bot', text: '🧠 Porządkuję chaos...' }
+    setMessages((prev) => [...prev, thinkingMessage])
+
+    try {
+      const result = await chaosToStructure(text)
+
+      // Usuń "thinking" message
+      setMessages((prev) => prev.slice(0, -1))
+
+      // Wyświetl rezultat
+      const resultText = `📋 **${result.title}**\n\nTyp: ${getTypeLabel(result.type)}\nPewność: ${Math.round(result.confidence * 100)}%\n\n${
+        Array.isArray(result.structured?.items)
+          ? result.structured.items.map((item, i) => `${i + 1}. ${item}`).join('\n')
+          : result.content
+      }`
+
+      setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
+
+      // Dodaj do listy zadań jeśli to checklist
+      if (result.type === 'checklist' && result.structured?.items) {
+        result.structured.items.forEach(item => onAdd(item))
+      }
+
+    } catch (error) {
+      console.error('Błąd chaos→structure:', error)
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated.pop()
+        return [...updated, { from: 'bot', text: '❌ Błąd przetwarzania: ' + error.message }]
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className={styles.chatWrapper}>
       <div className={styles.chatMessages}>
@@ -122,15 +272,23 @@ export default function Chat({ onAdd }) {
         ))}
       </div>
       <div className={styles.chatInputBar}>
+        <button
+          onClick={isRecording ? stopRecording : startRecording}
+          disabled={isLoading}
+          className={isRecording ? styles.recordingButton : styles.micButton}
+          title={isRecording ? 'Zatrzymaj nagrywanie' : 'Nagraj głosem'}
+        >
+          {isRecording ? `⏹ ${recordingTime}s` : '🎤'}
+        </button>
         <input
           type="text"
           placeholder="Schwytaj myśl, zanim przeminie..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={isLoading}
+          disabled={isLoading || isRecording}
         />
-        <button onClick={handleSend} disabled={isLoading || !input.trim()} className={styles.sendButton}>
+        <button onClick={handleSend} disabled={isLoading || !input.trim() || isRecording} className={styles.sendButton}>
           {isLoading ? '⏳' : '➤'}
         </button>
         {messages.length > 0 && (
