@@ -35,7 +35,7 @@
 
 .eventCard {
   background: $card-bg-lighter;
-  border: 1px solid rgba(203, 127, 7, 0.3);
+  border: 1px solid $border-color;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   overflow: visible;
@@ -49,8 +49,22 @@
 
   &.isNew {
     border-left: 6px solid $category-events;
-    background: rgba(203, 127, 7, 0.12);
-    box-shadow: 0 0 15px rgba(203, 127, 7, 0.25), 0 2px 8px rgba(0, 0, 0, 0.2);
+    background: $category-events; // Pełne niebieskie tło, nie przezroczyste
+    box-shadow: 0 0 15px $category-events, 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    // Czarne ikony na kolorowym tle
+    .expandIcon svg,
+    .deleteButton svg {
+      stroke: $bg-gradient-start;
+    }
+
+    .deleteButton {
+      color: $bg-gradient-start;
+    }
+
+    .eventTitle {
+      color: $bg-gradient-start; // Czarny tytuł na niebieskim tle
+    }
   }
 }
 
@@ -113,9 +127,9 @@
   width: 100%;
   padding: 0.25rem 0.5rem;
   background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(203, 127, 7, 0.4);
+  border: 1px solid $category-events;
   border-radius: 3px;
-  color: #cb7f07;
+  color: $category-events; // Niebieski kolor
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
@@ -123,7 +137,7 @@
 
   &:focus {
     outline: none;
-    border-color: #cb7f07;
+    border-color: $category-events;
     background: rgba(0, 0, 0, 0.4);
   }
 }
@@ -140,8 +154,8 @@
 .countBadge {
   display: inline-block;
   padding: 0.125rem 0.375rem;
-  background: rgba(203, 127, 7, 0.2);
-  color: #cb7f07;
+  background: rgba(74, 147, 150, 0.2); // Niebieskie tło
+  color: $category-events; // Niebieski kolor
   border-radius: 3px;
   font-size: 0.7rem;
   font-weight: 600;
@@ -196,13 +210,17 @@
 }
 
 .eventBody {
-  border-top: 1px solid rgba(203, 127, 7, 0.2);
+  border-top: 1px solid $border-color;
   padding: 0.875rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   animation: slideDown 0.3s ease-out;
   transform-origin: top;
+  background: $bg-gradient-start; // Czarne tło jak notatki
+  border-radius: 0; // Ostre rogi
+  border-left: 4px solid $category-events; // Niebieski pasek z lewej
+  position: relative;
 }
 
 @keyframes slideDown {
@@ -232,13 +250,13 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  border-left: 3px solid rgba(203, 127, 7, 0.5);
+  background: rgba(74, 147, 150, 0.1); // Niebieskie tło zamiast pomarańczowego
+  border-radius: 0; // Ostre rogi
+  border-left: 3px solid $category-events; // Niebieski pasek
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(74, 147, 150, 0.15);
   }
 }
 
@@ -270,7 +288,7 @@
 
 .eventItemTime {
   font-size: 0.85rem;
-  color: #cb7f07;
+  color: $category-events; // Niebieski kolor zamiast pomarańczowego
   font-weight: 600;
   padding: 0.125rem 0.375rem;
   background: transparent;
@@ -303,31 +321,32 @@
   gap: 0.5rem;
   justify-content: flex-end;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid $border-color;
 }
 
 .editButton {
   padding: 0.375rem 0.75rem;
-  border: 1px solid rgba(203, 127, 7, 0.4);
-  background: rgba(203, 127, 7, 0.15);
-  color: #cb7f07;
-  border-radius: 4px;
+  border: 1px solid $category-events;
+  background: $category-events;
+  color: $bg-gradient-start;
+  border-radius: 0; // Ostre rogi
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(203, 127, 7, 0.25);
+    background: darken($category-events, 10%);
+    border-color: darken($category-events, 10%);
   }
 }
 
 .exportButton {
   padding: 0.5rem;
-  border: 1px solid rgba(203, 127, 7, 0.4);
-  background: rgba(203, 127, 7, 0.1);
-  color: $category-events;
-  border-radius: 4px;
+  border: 1px solid $category-events;
+  background: $category-events;
+  color: $bg-gradient-start;
+  border-radius: 0; // Ostre rogi
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -340,8 +359,8 @@
   }
 
   &:hover {
-    background: rgba(203, 127, 7, 0.2);
-    border-color: rgba(203, 127, 7, 0.6);
+    background: darken($category-events, 10%);
+    border-color: darken($category-events, 10%);
   }
 }
 
@@ -371,7 +390,7 @@
 // Pokaż oryginał
 .originalToggle {
   margin-top: 0.5rem;
-  border-top: 1px solid rgba(203, 127, 7, 0.2);
+  border-top: 1px solid $border-color;
   padding-top: 0.75rem;
 }
 
@@ -393,7 +412,7 @@
   }
 
   &:hover {
-    background: rgba(203, 127, 7, 0.1);
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -420,5 +439,5 @@ details[open] .originalChevron {
   border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  border: 1px dashed rgba(203, 127, 7, 0.2);
+  border: 1px dashed $border-color;
 }

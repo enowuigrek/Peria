@@ -77,7 +77,7 @@
   border: none;
   background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
   color: $text-primary;
-  border-radius: 8px;
+  border-radius: 4px; // Ostre rogi
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;

@@ -180,7 +180,7 @@ export default function Events() {
                   ) : (
                     <div className={styles.titleRow}>
                       <div className={styles.eventTitle}>
-                        {event.title}
+                        📅 {event.title}
                       </div>
                       <button
                         onClick={(e) => {
