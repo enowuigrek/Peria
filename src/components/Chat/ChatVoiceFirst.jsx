@@ -190,32 +190,26 @@ export default function ChatVoiceFirst({ onAdd }) {
       notes.unshift(result) // Dodaj na początek (najnowsze na górze)
       localStorage.setItem('peria_notes', JSON.stringify(notes))
 
-      // Wyświetl rezultat
-      let resultText = `📋 **Wykryto strukturę**\n\n`
+      // Wyświetl tylko potwierdzenie zapisania
+      let resultText = `✅ Notatka zapisana\n\n`
 
       if (detected.tasks && detected.tasks.length > 0) {
-        resultText += `✅ Zadania (${detected.tasks.length}):\n`
-        detected.tasks.forEach((task, i) => {
-          resultText += `${i + 1}. ${task.text}\n`
-        })
-        resultText += '\n'
+        resultText += `Znalazłem ${detected.tasks.length} ${detected.tasks.length === 1 ? 'zadanie' : 'zadania/zadań'}\n`
       }
 
       if (detected.events && detected.events.length > 0) {
-        resultText += `📅 Wydarzenia (${detected.events.length}):\n`
-        detected.events.forEach((event, i) => {
-          resultText += `${i + 1}. ${event.title} - ${event.date} ${event.time || ''}\n`
-        })
-        resultText += '\n'
+        resultText += `Znalazłem ${detected.events.length} ${detected.events.length === 1 ? 'wydarzenie' : 'wydarzenia/wydarzeń'}\n`
       }
 
       if (detected.creative) {
-        resultText += `💡 Pomysł kreatywny:\n${detected.creative}\n`
+        resultText += `Znalazłem pomysł kreatywny\n`
       }
 
       if (!detected.tasks?.length && !detected.events?.length && !detected.creative) {
-        resultText = `📝 Zapisano jako notatka:\n\n${text}`
+        resultText = `✅ Notatka zapisana`
       }
+
+      resultText += `\n📝 Zobacz w zakładce Notatki`
 
       setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
 
@@ -386,14 +380,22 @@ export default function ChatVoiceFirst({ onAdd }) {
             className={styles.textInputToggle}
             title="Wpisz tekstem"
           >
-            ✏️
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
           </button>
         )}
 
         {/* Clear chat (zawsze widoczne, małe) */}
         {messages.length > 0 && !showTextInput && (
           <button onClick={clearChat} className={styles.clearChatButton} title="Wyczyść czat">
-            🗑️
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
           </button>
         )}
       </div>
