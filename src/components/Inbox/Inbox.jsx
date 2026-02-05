@@ -163,7 +163,7 @@ export default function Inbox() {
         checklists: '#5db85f',
         events: '#4a9396'
       }
-      return { borderLeft: `4px solid ${colorMap[unassigned[0]]}` }
+      return { border: `1px solid ${colorMap[unassigned[0]]}` }
     }
 
     // Multiple categories - vertical gradient (top to bottom)
@@ -174,7 +174,7 @@ export default function Inbox() {
     }
     const gradientColors = unassigned.map(cat => colorMap[cat]).join(', ')
     return {
-      borderLeft: '4px solid',
+      border: '1px solid',
       borderImage: `linear-gradient(to bottom, ${gradientColors}) 1`
     }
   }

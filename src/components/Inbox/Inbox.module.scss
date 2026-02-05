@@ -89,7 +89,7 @@
 .noteCard {
   background: $card-bg-lighter;
   border: 1px solid $border-color;
-  border-radius: 4px;
+  border-radius: 0; // Kanciaste rogi
   box-shadow: $box-shadow;
   overflow: visible;
   position: relative;

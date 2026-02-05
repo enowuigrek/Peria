@@ -31,20 +31,18 @@
 
 .noteCard {
   background: $card-bg-lighter;
-  border: 1px solid $border-color;
-  border-radius: 4px;
+  border: 1px solid $category-mynotes; // Cienki border w kolorze kategorii
+  border-radius: 0; // Kanciaste rogi
   box-shadow: $box-shadow;
   overflow: visible;
   position: relative;
   z-index: 1;
-  border-left: 4px solid $category-mynotes;
 
   &.expanded {
     z-index: 10;
   }
 
   &.isNew {
-    border-left: 6px solid $category-mynotes;
     background: $category-mynotes;
 
     // Czarne ikony na jasnym tle

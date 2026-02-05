@@ -22,8 +22,8 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages))
-    // Auto-scroll do dołu po każdej zmianie wiadomości
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // Auto-scroll do dołu po każdej zmianie wiadomości - instant aby nie kolidować z animacją menu
+    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
   }, [messages])
 
   const handleTextSend = async () => {

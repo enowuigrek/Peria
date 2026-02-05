@@ -31,20 +31,18 @@
 
 .checklistCard {
   background: $card-bg-lighter;
-  border: 1px solid $border-color;
-  border-radius: 4px;
+  border: 1px solid $category-checklists; // Cienki border w kolorze kategorii
+  border-radius: 0; // Kanciaste rogi
   box-shadow: $box-shadow;
   overflow: visible;
   position: relative;
   z-index: 1;
-  border-left: 4px solid $category-checklists;
 
   &.expanded {
     z-index: 10;
   }
 
   &.isNew {
-    border-left: 6px solid $category-checklists;
     background: $category-checklists;
   }
 }
