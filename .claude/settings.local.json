@@ -23,7 +23,8 @@
       "Bash(xcodebuild:*)",
       "Bash(npx expo install:*)",
       "Bash(npx expo start:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(ls:*)"
     ]
   }
 }
