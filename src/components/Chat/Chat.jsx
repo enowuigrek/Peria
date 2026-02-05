@@ -1,42 +1,57 @@
-import { useState } from 'react';
-import { askAgent } from '../../agent';
-import styles from './Chat.module.scss';
+import { useState } from 'react'
+import PropTypes from 'prop-types'
+import { askAgent } from '../../agent'
+import styles from './Chat.module.scss'
 
 export default function Chat({ onAdd }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const newMessage = { from: 'user', text: input };
-    const thinkingMessage = { from: 'bot', text: '...' };
-    setMessages((prev) => [...prev, newMessage, thinkingMessage]);
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return
 
-    askAgent(input).then((responseText) => {
-      let tasks = [];
+    const userMessage = input.trim()
+    const newMessage = { from: 'user', text: userMessage }
+    const thinkingMessage = { from: 'bot', text: '...' }
+
+    setMessages((prev) => [...prev, newMessage, thinkingMessage])
+    setInput('')
+    setIsLoading(true)
+
+    try {
+      const responseText = await askAgent(userMessage)
+      let tasks = []
 
       if (typeof responseText === 'string') {
         tasks = responseText
           .split('\n')
           .map((line) => line.trim())
-          .filter((line) => line);
+          .filter((line) => line)
       } else if (Array.isArray(responseText)) {
-        tasks = responseText.map((line) => line.trim()).filter((line) => line);
+        tasks = responseText.map((line) => line.trim()).filter((line) => line)
       } else {
-        console.error('Response from agent is not a valid string or array:', responseText);
+        console.error('Response from agent is not a valid string or array:', responseText)
         setMessages((prev) => {
-          const updated = [...prev];
-          updated.pop(); // remove '...'
-          return [...updated, { from: 'bot', text: '[Błąd AI: Niepoprawny format odpowiedzi]' }];
-        });
-        return;
+          const updated = [...prev]
+          updated.pop()
+          return [...updated, { from: 'bot', text: '[Błąd AI: Niepoprawny format odpowiedzi]' }]
+        })
+        return
       }
 
-      if (tasks.length === 0) return;
+      if (tasks.length === 0) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated.pop()
+          return [...updated, { from: 'bot', text: 'Nie udało się wygenerować zadań.' }]
+        })
+        return
+      }
 
       setMessages((prev) => {
-        const updated = [...prev];
-        updated.pop(); // remove '...'
+        const updated = [...prev]
+        updated.pop()
         return [
           ...updated,
           {
@@ -45,25 +60,32 @@ export default function Chat({ onAdd }) {
               .map((t, i) => `${i + 1}. ${typeof t === 'string' ? t.replace(/^- /, '') : String(t)}`)
               .join('\n'),
           },
-        ];
-      });
+        ]
+      })
 
       tasks.forEach((task) => {
         if (typeof task === 'string') {
-          onAdd(task.replace(/^- /, ''));
-        } else {
-          // In your second approach, we ignore non-string data from the chatbot
-          // You can optionally add a console.error here
-          console.error('Received non-string task. Ignoring:', task);
+          onAdd(task.replace(/^- /, ''))
         }
-      });
-    });
-    setInput('');
-  };
+      })
+    } catch (error) {
+      console.error('Błąd podczas komunikacji z AI:', error)
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated.pop()
+        return [...updated, { from: 'bot', text: '[Błąd AI: Nie udało się uzyskać odpowiedzi]' }]
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSend();
-  };
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
 
   return (
     <div className={styles.chatWrapper}>
@@ -79,7 +101,9 @@ export default function Chat({ onAdd }) {
                 <span className={styles.dot}></span>
                 <span className={styles.dot}></span>
               </span>
-            ) : msg.text}
+            ) : (
+              msg.text
+            )}
           </div>
         ))}
       </div>
@@ -90,9 +114,16 @@ export default function Chat({ onAdd }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={isLoading}
         />
-        <button onClick={handleSend}>Wyślij</button>
+        <button onClick={handleSend} disabled={isLoading || !input.trim()}>
+          {isLoading ? 'Wysyłam...' : 'Wyślij'}
+        </button>
       </div>
     </div>
-  );
+  )
+}
+
+Chat.propTypes = {
+  onAdd: PropTypes.func.isRequired,
 }

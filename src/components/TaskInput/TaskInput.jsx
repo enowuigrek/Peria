@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
+import PropTypes from 'prop-types'
 import styles from './TaskInput.module.scss'
 
-export default function TaskInput({ onAdd }) {
+function TaskInput({ onAdd }) {
     const [value, setValue] = useState('')
 
     const handleSubmit = (e) => {
@@ -25,3 +26,9 @@ export default function TaskInput({ onAdd }) {
         </form>
     )
 }
+
+TaskInput.propTypes = {
+    onAdd: PropTypes.func.isRequired,
+}
+
+export default memo(TaskInput)

@@ -1,6 +1,8 @@
+import { memo } from 'react'
+import PropTypes from 'prop-types'
 import styles from './NavBar.module.scss'
 
-export default function NavBar({ activeView, onSwitch }) {
+function NavBar({ activeView, onSwitch }) {
     return (
         <nav className={styles.navBar}>
             <button
@@ -24,3 +26,10 @@ export default function NavBar({ activeView, onSwitch }) {
         </nav>
     )
 }
+
+NavBar.propTypes = {
+    activeView: PropTypes.oneOf(['tasks', 'chat', 'calendar']).isRequired,
+    onSwitch: PropTypes.func.isRequired,
+}
+
+export default memo(NavBar)

@@ -1,6 +1,8 @@
+import { memo } from 'react'
+import PropTypes from 'prop-types'
 import styles from './TaskItem.module.scss'
 
-export default function TaskItem({
+function TaskItem({
                                      task,
                                      editingId,
                                      setEditingId,
@@ -67,3 +69,20 @@ export default function TaskItem({
         </li>
     )
 }
+
+TaskItem.propTypes = {
+    task: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        text: PropTypes.string.isRequired,
+        done: PropTypes.bool.isRequired,
+    }).isRequired,
+    editingId: PropTypes.string,
+    setEditingId: PropTypes.func.isRequired,
+    editedText: PropTypes.string.isRequired,
+    setEditedText: PropTypes.func.isRequired,
+    onToggle: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+}
+
+export default memo(TaskItem)

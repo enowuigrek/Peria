@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { nanoid } from 'nanoid'
 import './App.scss'
 import TaskInput from './components/TaskInput/TaskInput.jsx'
@@ -12,13 +12,13 @@ function App() {
         const stored = localStorage.getItem('myTasks')
         return stored ? JSON.parse(stored) : []
     })
-    const [activeView, setActiveView] = useState('tasks') // domyślnie widok zadań
+    const [activeView, setActiveView] = useState('tasks')
 
     useEffect(() => {
         localStorage.setItem('myTasks', JSON.stringify(tasks))
     }, [tasks])
 
-    const addTask = (text) => {
+    const addTask = useCallback((text) => {
         setTasks((prev) => [
           ...prev,
           {
@@ -26,24 +26,24 @@ function App() {
             text,
             done: false,
           },
-        ]);
-    }
+        ])
+    }, [])
 
-    const toggleTask = (id) => {
+    const toggleTask = useCallback((id) => {
         setTasks(prev =>
             prev.map(task => task.id === id ? { ...task, done: !task.done } : task)
         )
-    }
+    }, [])
 
-    const removeTask = (id) => {
+    const removeTask = useCallback((id) => {
         setTasks(prev => prev.filter(task => task.id !== id))
-    }
+    }, [])
 
-    const editTask = (id, newText) => {
+    const editTask = useCallback((id, newText) => {
         setTasks(prev =>
             prev.map(task => task.id === id ? { ...task, text: newText } : task)
         )
-    }
+    }, [])
 
     return (
         <div className="app-wrapper">

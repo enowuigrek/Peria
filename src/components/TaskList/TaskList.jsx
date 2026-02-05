@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import styles from './TaskList.module.scss'
-import TaskItem from '../TaskItem/TaskItem' // zakładam, że plik nazywa się TaskItem.jsx
+import TaskItem from '../TaskItem/TaskItem'
 
 export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
     const [editingId, setEditingId] = useState(null)
@@ -67,4 +68,17 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
             )}
         </div>
     )
+}
+
+TaskList.propTypes = {
+    tasks: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            text: PropTypes.string.isRequired,
+            done: PropTypes.bool.isRequired,
+        })
+    ).isRequired,
+    onToggle: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
 }
