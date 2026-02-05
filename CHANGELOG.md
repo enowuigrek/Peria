@@ -1,5 +1,63 @@
 # PERIA - CHANGELOG
 
+## [0.4.0] - 2026-01-11
+
+### 🎨 Major UI/UX Overhaul + Code Refactoring
+**Sharp corners, thin borders, mobile-first, event editing**
+
+#### Added
+- **Event editing** - Full inline editing for individual events (title, date, time, endTime)
+- **Edit icons** - Pencil icon next to export/delete buttons for each event item
+- **Always-visible action buttons** - All action buttons (edit, export, delete) now permanently visible (no hover needed)
+
+#### Changed
+- **Sharp corners** - Changed `border-radius: 4px` → `border-radius: 0` across entire app
+- **Thin colored borders** - Replaced thick left borders (4px/6px) with thin 1px borders in category colors:
+  - MyNotes: 1px solid yellow (#fdd03b)
+  - Checklists: 1px solid green (#5db85f)
+  - Events: 1px solid blue (#4a9396)
+  - Inbox: Dynamic 1px border based on unassigned categories
+- **Removed all hover effects** - Mobile-first approach, hover states unnecessary for touch interfaces
+  - Chat: stopRecordingButton hover removed
+  - Checklists: deleteItemButton hover removed
+  - Events: exportItemButton and deleteItemButton hover removed
+- **Stop button during recording** - Changed X button to red STOP button with white square icon (matching recording button colors)
+- **Fixed menu animation** - Changed scroll behavior from 'smooth' to 'instant' to prevent menu jumping during expansion
+
+#### Fixed
+- Menu jumping during expansion (scrollIntoView conflict with CSS animation)
+- Button visibility on mobile (all action buttons now always visible)
+
+---
+
+## [0.3.3] - 2026-01-11
+
+### 🔧 Major Code Refactoring
+**Color palette unification + shared infrastructure**
+
+#### Added
+- **Shared hooks** - `src/hooks/useLocalStorage.js` (eliminates ~200 lines of duplication)
+- **Icon components** - `src/components/icons/` with 5 reusable SVG components (eliminates 36 duplications)
+  - DeleteIcon, ChevronIcon, EditIcon, MicIcon, CalendarIcon
+- **Shared components** - `src/components/shared/EmptyState.jsx` (eliminates ~80 lines)
+
+#### Changed
+- **Unified color palette** - Reduced from 10+ colors to 4 base colors in `src/styles/variables.scss`:
+  - Blue (#4a9396) - Events, primary
+  - Green (#5db85f) - Checklists, success
+  - Yellow (#fdd03b) - MyNotes, warnings
+  - Red (#dc2626) - Recording, delete, errors
+- **Semantic variables** - Added semantic names for borders, overlays, shadows
+- **Replaced 70+ hardcoded colors** - All colors now use SCSS variables
+- **Removed orange color** - Eliminated orange (#cb7f07), replaced with red (#dc2626)
+
+#### Removed
+- Duplicate color definitions across SCSS files
+- Dead code in ChatVoiceFirst.jsx
+- Inconsistent color usage
+
+---
+
 ## [0.3.2] - 2026-01-10
 
 ### 🎨 UI/UX Refinements

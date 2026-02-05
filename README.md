@@ -115,11 +115,20 @@ npm run preview
 
 ---
 
-## Roadmap
+## Status Projektu
 
-**Status:** FAZA 0 - Prototyp PWA ✅ COMPLETED
+**Wersja:** 0.4.0 (2026-01-11)
+**Status:** ✅ PWA w pełni funkcjonalna, gotowa do użytku
 
-Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju i statusów wszystkich faz.
+**Ostatnie zmiany:**
+- ✅ Kanciaste rogi i cienkie kolorowe bordery (mobile-first design)
+- ✅ Edycja wydarzeń (tytuł, data, czas)
+- ✅ Usunięcie wszystkich hover effects (optymalizacja mobilna)
+- ✅ Refaktoring kolorów (70+ hardcoded → 4 kolory bazowe)
+- ✅ Wspólna infrastruktura (hooks, ikony, komponenty)
+
+Zobacz [CHANGELOG.md](./CHANGELOG.md) dla pełnej historii zmian.
+Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju.
 
 ---
 
