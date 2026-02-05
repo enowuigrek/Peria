@@ -16,7 +16,24 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
         }
     }, [editingId, tasks])
 
-    if (tasks.length === 0) return <p>Na czysto</p>
+    if (tasks.length === 0) {
+        return (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem 2rem',
+                color: 'var(--text-muted, #6b7280)',
+                textAlign: 'center',
+                gap: '1rem'
+            }}>
+                <div style={{ fontSize: '3rem', opacity: 0.3 }}>✓</div>
+                <p style={{ fontSize: '1.1rem', margin: 0 }}>Brak zadań</p>
+                <p style={{ fontSize: '0.9rem', opacity: 0.6, margin: 0 }}>Dodaj nowe zadanie, aby rozpocząć</p>
+            </div>
+        )
+    }
 
     const incompleteTasks = tasks.filter(task => !task.done)
     const completedTasks = tasks.filter(task => task.done)
