@@ -74,9 +74,10 @@
   align-items: center;
   padding: 0.875rem;
   transition: background 0.2s ease;
+  min-height: 70px; // Stała wysokość nagłówka, nawet podczas edycji
 
   &:hover {
-    background: rgba(203, 127, 7, 0.05);
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
