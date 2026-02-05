@@ -14,7 +14,8 @@
       "Bash(git commit:*)",
       "Bash(open:*)",
       "Bash(ls -lh /Users/lukasznowak/Documents/Programowanie/Moje projekty/moj-asystent/public/icon-*.png)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(git push:*)"
     ]
   }
 }

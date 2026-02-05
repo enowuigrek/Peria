@@ -1,567 +1,272 @@
-# PERIA - GDZIE MYŚL SIĘ RODZI
-# MVP → iOS WIDGET → ANDROID WIDGET → PAID
+# PERIA — GDZIE MYŚL SIĘ RODZI
 
-> **Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać.**
+> **Peria zapisuje. Nie mówi. Nie coachuje. Porządkuje.**
 
-## FILOZOFIA PERII
+## FUNDAMENTY (NIEPODLEGAJĄCE DYSKUSJI)
 
-**Peria** to nie tylko nazwa narzędzia — to stan umysłu, który zachodzi między ruchem a refleksją, między ciszą a słowem, między krokiem a życiową ideą.
+### 1. Jedna notatka = jedno źródło prawdy
+- Użytkownik NIE wybiera typu na starcie
+- Każda sesja mówienia = JEDNA NOTATKA
+- Struktura powstaje PO nagraniu, nie przed
+- AI wykrywa zadania/daty/listy automatycznie
 
-Peria jest tam, gdzie myśl zaczyna się już w trakcie spaceru, zanim jeszcze trafia na papier, zanim zostanie zatrzymana w notatniku, zanim znajdzie swoje miejsce na liście zadań. To moment, kiedy ciało jest w ruchu, a umysł — nie w trybie skupionym, lecz w trybie swobodnej percepcji — zaczyna łączyć skojarzenia, które na pierwszy rzut oka nie mają ze sobą nic wspólnego.
+### 2. Voice-first = CORE, nie feature
+- Nagrywanie przy wygaszonym ekranie jest WARUNKIEM sensu
+- Natywne iOS WCZEŚNIE (PWA nie obsługuje background audio)
+- Web/PWA = prototyp logiki, NIE docelowy produkt
 
-**Peria nie narzuca kierunku. Nie każe myśleć. Nie ocenia.**
-Po prostu przechwytuje to, co spontaniczne, zanim przeminie.
+### 3. Eksport zamiast chmury
+- Brak własnej chmury
+- Brak kont i synchronizacji
+- Export 1-click do Apple Notes/Reminders/Calendar
+- Świadoma akcja użytkownika, nie automatyczny sync
 
-### Stan Perypatetyczny
-Filozofowie ze szkoły Arystotelesa nauczali, chodząc. Ruch ciała uwalnia umysł. Peria jest cyfrowym towarzyszem tego stanu — schwytuje iskrę pomysłu w czasie, gdy jesteś w ruchu, a myśl jest najbardziej żywa.
+### 4. Model pojęciowy
+**Chaos → Struktura**
+- System AUTOMATYCZNIE wykrywa intencję
+- Użytkownik może: zaakceptować / cofnąć / zignorować
+- Decyzje strukturalne = system
+- Decyzje kreatywne = użytkownik
+
+### 5. Definicja sukcesu
+Peria działa, jeśli:
+- Wracasz do notatek po spacerze
+- Tekst rapowy żyje w jednej notatce
+- Zadania same "wypadają" z tekstu
+- Czujesz frustrację, gdy appki nie masz pod ręką
 
 ---
 
-## WIZJA PRODUKTU
-**Problem:** Podczas spaceru wpada mi pomysł/zadanie/myśl - chcę to szybko nagrać i mieć uporządkowane.
+## FLOW UŻYCIA
 
-**Rozwiązanie (Tryb Spaceru - Walk Mode):**
-1. Jedno kliknięcie (widget iOS/Android) → nagrywanie
-2. Mówię chaotycznie → AI porządkuje chaos w strukturę
-3. Model rozpoznaje SAM intencję (checklist/notatka/event) lub pyta jeśli nie wie
-4. Po spacerze: uporządkowana notatka/lista/event w aplikacji
-5. Jeden klick: eksport do Apple Reminders/Notes/Calendar (iOS) lub Google Keep/Tasks/Calendar (Android)
+### Jak to działa:
+1. **Użytkownik mówi** (chaotycznie, w ruchu)
+2. **Powstaje notatka** (tekst źródłowy)
+3. **AI w tle:**
+   - wykrywa listy zadań
+   - wykrywa daty i godziny
+   - porządkuje chaos w strukturę
+4. **System AUTOMATYCZNIE:**
+   - tworzy checklisty (jeśli są zadania)
+   - tworzy propozycje wydarzeń (jeśli są daty)
+5. **Użytkownik może:**
+   - zaakceptować
+   - cofnąć
+   - zignorować
 
-**Unfair Advantages (przewagi nie do podrobienia):**
-- **Dedykowany Tryb Spaceru**: Interfejs obsługiwany kciukiem bez patrzenia, duże pole dotykowe, haptics
-- **Inteligentne Wyzwalacze**: AI wie co zrobić - "Kup mleko" → checklist, "A co jeśli bohater umiera?" → notatka
-- **Filozofia Peryferii**: Agregacja myśli z tygodnia → mail "Oto co krążyło wokół Twojej głowy"
-- **Chaos → Struktura**: Nie surowa transkrypcja, ale uporządkowane myśli
+### Przykład użycia:
+```
+Użytkownik mówi:
+"Jutro muszę kupić mleko i chleb, potem spotkanie o 15,
+a wieczorem siłownia. Aha i pomysł na rapowy tekst -
+może zacznę od frazy o bezsennnych nocach..."
 
-**Kluczowe cechy:**
-- Chaos → Struktura (AI rozumie i porządkuje)
-- Auto-rozpoznanie typu (checklist/note/calendar)
-- Wewnętrzna baza + łatwy eksport do natywnych aplikacji
-- Widget na ekranie głównym (najszybszy dostęp)
-- Tryb Spaceru (Walk Mode) - jeden kciuk, bez patrzenia
+System tworzy JEDNĄ NOTATKĘ:
+┌─────────────────────────────────────────┐
+│ Notatka: "Jutro - zakupy i plan dnia"   │
+│ ────────────────────────────────────── │
+│ [Pełny tekst transkrypcji]             │
+│                                         │
+│ AI wykryło:                             │
+│ ✓ 2 zadania → Checklist                │
+│ ✓ 2 wydarzenia → Calendar               │
+│ ✓ 1 pomysł kreatywny → Note pozostaje  │
+└─────────────────────────────────────────┘
+```
 
 ## ZASADY PROJEKTU
-- Robię to najpierw dla siebie
-- Każdy punkt musi dać się przetestować
-- Nie dodaję funkcji spoza checklisty
+- Natywne iOS WCZEŚNIE (PWA = tylko prototyp)
 - Najpierw działa, potem wygląda
+- Nie coachujemy, porządkujemy
+- Znikamy z drogi użytkownika
 
 ---
 
-## 1. ✅ UX – MINIMALNY DESIGN (ZAKOŃCZONE!)
-**Cel:** Zaprojektować przepływ przed kodowaniem
+## ROADMAP
 
-- [x] Mockup głównego ekranu (UX-DESIGN.md)
-- [x] Stan: **idle** - główny przycisk "Nagraj" (duży, centralny)
-- [x] Stan: **recording** - pulsujący przycisk, timer nagrywania
-- [x] Stan: **processing** - spinner + "Przetwarzam..." + możliwość anulowania
-- [x] Stan: **result** - 3 warianty (checklist, note, calendar_event)
-- [x] Stan: **ask_user** - pytanie o typ gdy confidence <0.7
-- [x] Przejścia między stanami (animacje, timing)
-- [x] Mobile-first: wszystko musi działać jednym kciukiem
+## FAZA 0: PROTOTYP LOGIKI (PWA) ← AKTUALNIE TUTAJ
+**Cel:** Przetestować "jedna notatka = źródło prawdy" + AI auto-detekcja
+
+### 0.1 Architektura "Jedna Notatka"
+- [ ] Zmienić model danych z `tasks[]` na `notes[]`
+- [ ] Struktura: `{ id, sourceText, detectedTasks[], detectedEvents[], createdAt }`
+- [ ] Notatka może zawierać: tekst + zadania + daty
+- [ ] Wszystko w localStorage
+
+### 0.2 AI: Chaos → Struktura (Auto-detekcja)
+- [ ] Zmienić prompt: z "wypisz zadania" → "wykryj strukturę w chaosie"
+- [ ] JSON response: `{ sourceText, tasks[], events[], note }`
+- [ ] System SAM proponuje checklisty/eventy
+- [ ] Użytkownik może zaakceptować/odrzucić
+
+### 0.3 UI Flow
+- [ ] Chat → jedna długa notatka (multi-line input)
+- [ ] Po wysłaniu: AI pokazuje wykryte elementy
+- [ ] Przyciski: "Zaakceptuj zadania" / "Zaakceptuj eventy" / "Zostaw jako notatka"
+- [ ] Wszystko wraca do jednej notatki
 
 **Kryteria akceptacji:**
-- ✅ Mogę pokazać mockup komuś i wyjaśnić flow w 30 sekund
-- ✅ Każdy stan jest jasny wizualnie
-- ✅ 3 typy contentu uwzględnione
-- ✅ Export flow zaprojektowany
+- Mogę napisać chaotyczny tekst → system wykryje zadania/daty
+- Wszystko zapisane w jednej notatce
+- Widzę źródłowy tekst + wykryte elementy
 
 ---
 
-## 2. PWA – iOS READY (NAJPIERW - BO CHCESZ TESTOWAĆ NA SPACERACH!)
-**Cel:** Aplikacja działa jak natywna na iPhone, możesz testować tekstowo
+## FAZA 1: NATYWNE iOS (BACKGROUND AUDIO)
+**Cel:** Nagrywanie przy wygaszonym ekranie
 
-- [ ] Stwórz `manifest.json` (nazwa, ikona, kolor, display: "standalone")
-- [ ] Dodaj Service Worker (cache static assets)
-- [ ] Ikona 512x512 + 192x192 (wygeneruj lub użyj placeholdera)
-- [ ] Splash screen (opcjonalnie)
-- [ ] Deploy na Vercel/Netlify z HTTPS (wymagane dla PWA!)
-- [ ] Testuj "Add to Home Screen" na iOS
-- [ ] Sprawdź czy chat działa offline (cached)
+⚠️ **KLUCZOWA DECYZJA:** PWA NIE OBSŁUGUJE background audio. Natywna aplikacja iOS jest WARUNKIEM sensu projektu.
 
-**manifest.json:**
-```json
-{
-  "name": "VoiceThoughts",
-  "short_name": "VoiceThoughts",
-  "display": "standalone",
-  "background_color": "#0f0c29",
-  "theme_color": "#667eea",
-  "start_url": "/",
-  "scope": "/",
-  "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
-```
+### 1.1 Setup React Native / Swift
+- [ ] Wybór tech stack: React Native + Expo vs. Swift native
+- [ ] Podstawowy projekt + build na iPhone
+- [ ] Testy nagrywania audio w tle (background mode)
+- [ ] Nagrywanie przez słuchawki
+
+### 1.2 Core Voice Flow
+- [ ] Przycisk nagrywania (działa przy wygaszonym ekranie)
+- [ ] Zapis audio → wysłanie do Whisper API
+- [ ] Transkrypcja → zapisanie jako notatka
+
+### 1.3 "Jedna notatka" w native
+- [ ] Port modelu danych z PWA
+- [ ] LocalStorage → Core Data / SQLite
+- [ ] AI auto-detekcja zadań/dat
 
 **Kryteria akceptacji:**
-- Mogę dodać do ekranu głównego iPhone'a
-- Otwiera się fullscreen bez paska Safari
-- Offline: pokazuje cached stronę
-- **Mogę używać na spacerze (tekstowo przez chat)** ✨
+- Mogę nagrywać przy wygaszonym ekranie
+- Nagranie przez słuchawki działa
+- Audio → transkrypcja → notatka (full flow)
 
 ---
 
-## 3. TESTOWANIE NA SPACERACH (TEKSTOWA WERSJA)
-**Cel:** Walidacja use case przed dodaniem audio
+## FAZA 2: EKSPORT DO APPLE APPS
+**Cel:** 1-click export z notatki do natywnych aplikacji
 
-- [ ] Używaj aplikacji na spacerze przez tydzień (tekstowo)
-- [ ] Wpisuj pomysły przez chat podczas spaceru
-- [ ] Sprawdź czy chat → AI → structured output działa
-- [ ] Oceń: czy brakuje Ci mikrofonu czy tekst wystarczy?
-- [ ] Zbierz feedback: co działa, co nie
+### 2.1 Apple Reminders
+- [ ] Z wykrytych zadań → Apple Reminders (URL scheme / Share API)
+- [ ] Format: lista zadań z tytułem notatki
+- [ ] Oznaczenie jako "wyeksportowane"
+
+### 2.2 Apple Notes
+- [ ] Pełny tekst notatki → Apple Notes (Share sheet + markdown)
+- [ ] Zachowanie formatowania (akapity, listy)
+
+### 2.3 Apple Calendar
+- [ ] Z wykrytych dat/godzin → Apple Calendar
+- [ ] Format: event z tytułem, datą, czasem, notatką
 
 **Kryteria akceptacji:**
-- Używałeś aplikacji na spacerze minimum 5 razy
-- Wiesz czy tekstowy input jest wystarczający czy NAPRAWDĘ potrzebujesz audio
-- Masz listę problemów do naprawy przed dodaniem audio
-
-⚠️ **WAŻNE:** Jeśli tekstowy input wystarczy, audio może nie być konieczne w MVP!
+- Export działa w <5 sekund (1 klik)
+- Po eksporcie: item oznaczony jako "exported"
+- Wszystkie 3 ścieżki działają
 
 ---
 
-## 4. WEB MVP – AUDIO INPUT (JEŚLI POTRZEBNE PO TESTACH)
-**Cel:** Nagrywanie głosu w przeglądarce
+## FAZA 3: POLISH & WALIDACJA
+**Cel:** Aplikacja gotowa do daily use
 
-- [ ] Dodać przycisk nagrywania (MediaRecorder API)
-- [ ] Obsłużyć start nagrywania (zmiana stanu UI)
-- [ ] Obsłużyć stop nagrywania (automatyczny po 60s lub manualny)
-- [ ] Zapisać audio jako blob (webm/opus lub wav)
-- [ ] Wizualny feedback: pulsujący przycisk + timer
-- [ ] Obsłużyć brak zgody na mikrofon (modal z instrukcją)
-- [ ] Obsłużyć brak urządzenia audio (error message)
-- [ ] Limit długości nagrania: max 60 sekund
+### 3.1 UI/UX Polish
+- [ ] Minimalistyczny interfejs (jedna notatka = jeden ekran)
+- [ ] Haptic feedback przy nagrywaniu
+- [ ] Animacje przejść (recording → processing → result)
+- [ ] Dark mode (profesjonalna paleta kolorów)
+
+### 3.2 Testowanie terenowe
+- [ ] Używać codziennie przez 2 tygodnie
+- [ ] Nagrywać podczas spacerów (hands-free)
+- [ ] Sprawdzić czy wracasz do notatek
+- [ ] Zebrać 3 osoby do testów beta (feedback)
+
+### 3.3 Error Handling
+- [ ] Brak internetu → retry
+- [ ] Whisper timeout → fallback
+- [ ] LLM błąd → pokaż raw transkrypcję
+- [ ] Puste nagranie → "Nie wykryto mowy"
 
 **Kryteria akceptacji:**
-- Mogę nagrać 10 sekund audio i zobaczyć blob w console.log
-- Działa w Chrome Desktop i Safari iOS
+- Czujesz frustrację, gdy appki nie masz
+- Polecasz ją znajomemu
 
 ---
 
-## 5. TRANSKRYPCJA (WHISPER API) - po implementacji audio
-**Cel:** Zamiana audio → tekst
-
-- [ ] Wysyłać blob do OpenAI Whisper API
-- [ ] Ustawić język: polski (`language: "pl"`)
-- [ ] Odebrać tekst transkrypcji
-- [ ] Logować surową transkrypcję (dev console + UI)
-- [ ] Pokazać użytkownikowi tekst transkrypcji przed przetworzeniem
-- [ ] Obsłużyć błędy API (timeout, 429, 500)
-- [ ] Loading state podczas transkrypcji (spinner)
-
-**Kryteria akceptacji:**
-- Nagranie "Kup mleko i chleb" → tekst "Kup mleko i chleb"
-- Błąd API wyświetla się jako toast/alert
-
----
-
-## 6. WERYFIKACJA END-TO-END (AUDIO)
-**Cel:** Sprawdzić czy audio flow działa
-
-- [ ] Nagraj → Transkrybuj → Wyświetl tekst (jedna pełna ścieżka)
-- [ ] Testuj na telefonie (Safari iOS)
-- [ ] Sprawdź w różnych warunkach: cicho, hałas, długie zdanie
-- [ ] Zapisz przykładowe nagrania i transkrypcje do testów
-
-**Kryteria akceptacji:**
-- Mogę użyć aplikacji na telefonie podczas spaceru z audio
-- 8/10 nagrań transkrybuje się poprawnie
-
----
-
-## 7. ROZPOZNANIE INTENCJI (LLM) - CHAOS → STRUKTURA
-**Cel:** Zamienić chaotyczną wypowiedź w uporządkowaną strukturę
-
-- [ ] Wysłać transkrypcję do GPT-4o lub GPT-4o-mini
-- [ ] **Prompt: "Chaos to Structure"** - model porządkuje chaotyczną wypowiedź
-- [ ] Model zwraca **WYŁĄCZNIE** JSON (bez markdown, bez wyjaśnień)
-- [ ] Typy: `checklist`, `note`, `calendar_event`, `ask_user` (gdy nie wie)
-- [ ] Model SAM decyduje o typie na podstawie kontekstu
-- [ ] Jeśli model nie wie → `type: "ask_user"` + opcje do wyboru
-- [ ] Walidować JSON po stronie aplikacji (try/catch + JSON.parse)
-- [ ] Fallback: jeśli JSON invalid → zawsze zwróć `{type: "note", content: text}`
-
-**Przykładowy prompt:**
-```
-Użytkownik nagrał chaotyczną myśl: "{transcription}"
-
-Twoim zadaniem jest:
-1. Zrozumieć intencję użytkownika
-2. Uporządkować chaotyczną wypowiedź w czytelną strukturę
-3. Określić TYP: checklist (zadania), note (notatka), calendar_event (wydarzenie), ask_user (pytanie)
-
-Zwróć TYLKO JSON (bez markdown):
-{
-  "type": "checklist" | "note" | "calendar_event" | "ask_user",
-  "confidence": 0.0-1.0,
-  "title": "Wygenerowany tytuł",
-  "content": string[] | string | object,
-  "metadata": {
-    "date": "YYYY-MM-DD" (tylko dla calendar_event),
-    "time": "HH:MM" (opcjonalnie),
-    "priority": "low" | "medium" | "high" (opcjonalnie)
-  },
-  "ask_options": ["checklist", "note", "calendar_event"] (tylko gdy type="ask_user")
-}
-
-Przykłady:
-- "Jutro spotkanie 10, lunch 13, siłownia 18" → checklist z 3 punktami + metadata.date
-- "Pomysł na startup: app do nagrywania myśli, chaos to struktura, AI porządkuje" → note (uporządkowana)
-- "Przypomnij mi jutro o 15 że muszę zadzwonić do lekarza" → calendar_event z date + time
-- "Kupić mleko i chleb" → checklist z 2 punktami
-- Niejasna wypowiedź → type="ask_user" + ask_options
-```
-
-**Kluczowe:**
-- Model PORZĄDKUJE chaos w czytelną strukturę (nie copy-paste!)
-- Auto-generuje tytuł na podstawie treści
-- Confidence score (0.0-1.0) - jeśli <0.7 → pytaj użytkownika
-- Fallback: zawsze można zapisać jako note
-
-**Kryteria akceptacji:**
-- "Jutro: spotkanie 10, lunch 13, siłownia 18" → checklist z 3 punktami + tytuł "Jutro"
-- Chaotyczna wypowiedź → uporządkowana notatka z akapitami
-- "Przypomnij mi..." → calendar_event z datą i czasem
-- Niejasna intencja → pytanie użytkownika z opcjami
-
----
-
-## 8. STORAGE – PODSTAWOWY (UNIWERSALNY)
-**Cel:** Zapisywać dane lokalnie (checklisty, notatki, eventy)
-
-- [ ] localStorage dla wszystkich typów (klucz: `items`)
-- [ ] Każdy item ma: `id`, `title`, `type`, `content`, `createdAt`, `metadata`, `exported`
-- [ ] Typy: `checklist`, `note`, `calendar_event`
-- [ ] Zapisz datę/czas utworzenia (ISO string)
-- [ ] Flagę `exported: true/false` (czy wyeksportowano do natywnej aplikacji)
-- [ ] Dane przetrwają reload strony
-- [ ] Lista wszystkich itemów z filtrowaniem po typie
-
-**Struktura danych:**
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "type": "checklist",
-      "title": "Zakupy",
-      "content": [
-        { "id": "uuid", "text": "Mleko", "done": false },
-        { "id": "uuid", "text": "Chleb", "done": true }
-      ],
-      "metadata": {
-        "date": "2025-01-08",
-        "priority": "medium"
-      },
-      "createdAt": "2025-01-07T10:30:00Z",
-      "exported": false
-    },
-    {
-      "id": "uuid",
-      "type": "note",
-      "title": "Pomysł na startup",
-      "content": "Aplikacja do nagrywania myśli...\n\nKluczowe cechy:\n- Widget\n- AI porządkuje chaos",
-      "metadata": {},
-      "createdAt": "2025-01-07T11:15:00Z",
-      "exported": true
-    },
-    {
-      "id": "uuid",
-      "type": "calendar_event",
-      "title": "Spotkanie z lekarzem",
-      "content": "Zadzwonić w sprawie wyników",
-      "metadata": {
-        "date": "2025-01-09",
-        "time": "15:00"
-      },
-      "createdAt": "2025-01-07T12:00:00Z",
-      "exported": false
-    }
-  ]
-}
-```
-
-**Kryteria akceptacji:**
-- Refresh strony → dane wciąż są
-- Mogę zobaczyć listę wszystkich itemów (checklisty, notatki, eventy)
-- Filtrowanie po typie działa
-- Flaga `exported` pokazuje czy item został wyeksportowany
-
----
-
-## 9. CHECKLISTY – GENEROWANIE (READ ONLY)
-**Cel:** Pokazać wygenerowaną listę zadań
-
-- [ ] Parsuj JSON z LLM → UI elements
-- [ ] Wyświetl listę zadań (bez edycji!)
-- [ ] Checkbox do oznaczania jako done
-- [ ] Wizualne przekreślenie wykonanych zadań
-- [ ] Przycisk "Nagraj kolejną"
-
-**Kryteria akceptacji:**
-- Nagranie generuje listę zadań
-- Mogę zaznaczyć zadania jako wykonane
-- Nie mogę jeszcze edytować tekstu
-
----
-
-## 10. CHECKLISTY – CRUD
-**Cel:** Pełna edycja checklisty
-
-- [ ] Toggle done (już jest z punktu 7)
-- [ ] Usuń zadanie (swipe? przycisk X?)
-- [ ] Edytuj zadanie (tap na tekst → input)
-- [ ] Dodaj zadanie ręcznie (+ przycisk)
-- [ ] Usuń całą checklistę
-- [ ] Zmień tytuł checklisty
-
-**Kryteria akceptacji:**
-- Mogę w pełni zarządzać checklistą bez nagrywania
-- Zmiany zapisują się do localStorage
-
----
-
-## 11. ERROR HANDLING
-**Cel:** Obsłużyć wszystkie błędy gracefully
-
-- [ ] Brak internetu → "Brak połączenia. Spróbuj ponownie" + przycisk retry
-- [ ] Whisper timeout → "Transkrypcja nie powiodła się" + retry
-- [ ] LLM błąd → Pokaż raw transkrypcję jako fallback
-- [ ] Audio permission denied → Modal z instrukcją (iOS: Settings → Safari → Microphone)
-- [ ] Puste nagranie → "Nie wykryto mowy. Spróbuj ponownie"
-- [ ] Quota exceeded (API) → "Limit przekroczony. Spróbuj za godzinę"
-
-**Kryteria akceptacji:**
-- Żaden error nie blokuje aplikacji na stałe
-- Każdy error ma akcję (retry, close, instrukcja)
-
----
-
-## 12. NOTATKI (OPCJONALNE NA MVP)
-**Cel:** Zapisywanie notatek i podsumowań
-
-- [ ] Zapisz pełną transkrypcję jako notatkę
-- [ ] Wygeneruj krótkie podsumowanie (max 5 punktów) - LLM
-- [ ] Automatycznie generuj tytuł notatki - LLM
-- [ ] Wyświetl notatki w osobnej sekcji
-
-**Kryteria akceptacji:**
-- Mogę nagrać luźne myśli i zapisać jako notatkę
-- ⚠️ To można pominąć w MVP jeśli checklisty wystarczą
-
----
-
-## 13. DODATKOWE OPTYMALIZACJE PWA (opcjonalne)
-**Cel:** Aplikacja działa jak natywna
-
-- [ ] Stwórz `manifest.json` (nazwa, ikona, kolor, display: "standalone")
-- [ ] Dodaj Service Worker (cache static assets)
-- [ ] Ikona 512x512 + 192x192
-- [ ] Splash screen (opcjonalnie)
-- [ ] Testuj "Add to Home Screen" na iOS
-- [ ] Mikrofon działa w Safari (wymaga HTTPS!)
-
-**manifest.json:**
-```json
-{
-  "name": "VoiceTasks",
-  "short_name": "VoiceTasks",
-  "display": "standalone",
-  "background_color": "#0f0c29",
-  "theme_color": "#667eea",
-  "icons": [...]
-}
-```
-
-**Kryteria akceptacji:**
-- Mogę dodać do ekranu głównego
-- Otwiera się fullscreen bez paska Safari
-- Offline: pokazuje cached stronę (nawet jeśli funkcje nie działają)
-
----
-
-## 14. EKSPORT – iOS & ANDROID (KLUCZOWE!)
-**Cel:** Jeden klick → dane w natywnej aplikacji
-
-### iOS Export
-- [ ] **Apple Reminders**: URL scheme `x-apple-reminderkit://` lub Web Share API
-- [ ] **Apple Notes**: Share sheet z markdown
-- [ ] **Apple Calendar**: URL scheme `calshow:` z parametrami
-- [ ] Fallback: Copy to clipboard jako markdown + instrukcja
-- [ ] Oznacz item jako `exported: true` po eksporcie
-- [ ] Przycisk "Eksportuj" widoczny przy każdym itemie
-
-### Android Export
-- [ ] **Google Tasks**: Web Intents lub Share API
-- [ ] **Google Keep**: Share intent z tekstem
-- [ ] **Google Calendar**: Intent z event data
-- [ ] Fallback: Copy to clipboard jako tekst + instrukcja
-
-### Format eksportu
-**Checklist → Reminders/Tasks:**
-```
-- [ ] Mleko
-- [ ] Chleb
-- [ ] Masło
-```
-
-**Note → Notes/Keep:**
-```markdown
-# Pomysł na startup
-
-Aplikacja do nagrywania myśli...
-
-Kluczowe cechy:
-- Widget
-- AI porządkuje chaos
-```
-
-**Calendar Event → Calendar:**
-```
-Tytuł: Spotkanie z lekarzem
-Data: 2025-01-09
-Czas: 15:00
-Notatki: Zadzwonić w sprawie wyników
-```
-
-**Research:**
-- iOS URL schemes: https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app
-- Web Share API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API
-- Android Intents: https://developer.android.com/training/sharing/send
-
-**Kryteria akceptacji:**
-- Mogę wyeksportować checklistę do Reminders w <5 sekund (1 klick!)
-- Mogę wyeksportować notatkę do Notes/Keep w <5 sekund
-- Mogę wyeksportować event do Calendar w <5 sekund
-- Po eksporcie item oznaczony jako `exported: true`
-- Działa na iOS Safari i Android Chrome
-
----
-
-## 15. WALIDACJA (FINALNA)
-**Cel:** Sprawdzić czy appka rozwiązuje problem
-
-- [ ] Używam aplikacji codziennie przez tydzień
-- [ ] Nagrywam podczas spaceru (test hands-free)
-- [ ] Wracam po 3 dniach i sprawdzam checklisty
-- [ ] Pokazuję 3 osobom i pytam o feedback
-- [ ] Sprawdzam: czy brakuje mi jej gdy jej nie mam?
-
-**Kryteria akceptacji:**
-- Używam jej częściej niż Notes/Reminders
-- Polecam ją znajomemu
-
----
-
-## 16. MONETYZACJA (PO WALIDACJI)
-**Cel:** Zarabiać na aplikacji
-
-- [ ] **FREE tier:**
-  - Max 10 nagrań/miesiąc
-  - Brak eksportu
-  - Brak historii (tylko ostatnie 5 checklistów)
-
-- [ ] **PRO tier ($2.99/msc):**
-  - Nielimitowane nagrania
-  - Eksport do Reminders/Notes
-  - Pełna historia
-  - Backup do chmury (opcjonalnie)
-
-**Implementacja:**
-- Stripe Checkout (web)
-- RevenueCat (iOS w przyszłości)
-
----
-
-## 17. WIDGET – iOS & ANDROID (PO MVP)
-**Cel:** Jedno kliknięcie z ekranu głównego → nagrywanie
-
-### iOS Widget (React Native / Swift)
-- [ ] Home Screen Widget (iOS 14+)
-- [ ] Single button: "Nagraj myśl"
-- [ ] Tap → otwiera aplikację w stanie RECORDING
-- [ ] Widget pokazuje liczbę nie-wyeksportowanych itemów
-
-### Android Widget (React Native / Kotlin)
-- [ ] Home Screen Widget
-- [ ] Single button: "Nagraj myśl"
-- [ ] Tap → otwiera aplikację w stanie RECORDING
-- [ ] Widget pokazuje liczbę nie-wyeksportowanych itemów
-
-**Research:**
-- React Native Widgets: https://github.com/salihgueler/react-native-widgets
-- iOS Widgets (SwiftUI): https://developer.apple.com/documentation/widgetkit
-- Android Widgets: https://developer.android.com/guide/topics/appwidgets
-
-**Kryteria akceptacji:**
-- Mogę nagrać myśl z ekranu głównego w <3 sekundy (unlock → tap widget → nagrywanie)
-- Widget działa na iOS i Android
-
----
-
-## 18. KOLEJNE KROKI (PO WIDGETACH)
-**Cel:** Skalowanie
-
-- [ ] React Native / Expo (natywne aplikacje iOS/Android)
-- [ ] TestFlight beta (iOS)
-- [ ] App Store release
-- [ ] Google Play release
-- [ ] Integracje: Notion, Obsidian, Evernote
-- [ ] Udostępnianie itemów (share link)
-- [ ] Współpraca (shared lists/notes)
-- [ ] Voice commands: "Siri, nagraj myśl" / "OK Google, nagraj myśl"
+## PRZYSZŁOŚĆ (PO WALIDACJI)
+
+### Widget iOS/Android
+- Home Screen Widget: 1 tap → nagrywanie
+- Pokazuje liczbę nie-wyeksportowanych notatek
+
+### Monetyzacja
+**FREE tier:**
+- 10 notatek/miesiąc
+- Brak eksportu
+
+**PRO ($2.99/msc):**
+- Nielimitowane notatki
+- Eksport do natywnych aplikacji
+- Pełna historia
+
+### Skalowanie
+- TestFlight beta → App Store
+- Voice commands: "Siri, nagraj myśl"
+- Integracje: Notion, Obsidian
 
 ---
 
 ## AKTUALNY STATUS
 
-### ✅ Zakończone:
+### ✅ Zrobione:
 - Podstawowa aplikacja TODO z dark theme
 - System czatu z AI (text-based)
-- LocalStorage dla zadań i historii czatu
-- Responsive design (mobile-first)
-- Gradientowy UI z animacjami
-- **UX Design document** (UX-DESIGN.md) - 5 stanów, przejścia, animacje, error handling
+- LocalStorage dla zadań
+- PWA ready (manifest + service worker)
+- Export do Apple Reminders/Notes
 
-### 🎯 Następne kroki (ZMIENIONA KOLEJNOŚĆ!):
-1. ✅ **UX Design** - zakończone (UX-DESIGN.md)
-2. **#2: PWA – iOS READY** ← ZACZYNAMY TUTAJ!
-   - Manifest + Service Worker + deploy HTTPS
-   - Żebyś mógł testować na spacerach (tekstowo)
-3. **#3: TESTOWANIE NA SPACERACH** (tekstowa wersja)
-   - Walidacja czy tekst wystarczy czy NAPRAWDĘ potrzebujesz audio
-4. **#4-6: AUDIO** (jeśli potrzebne po testach)
+### 🎯 CO TERAZ? (FAZA 0)
 
-**Dlaczego ta kolejność?**
-- ✅ Możesz używać aplikacji JUŻ TERAZ na spacerach (tekstowo)
-- ✅ Walidacja use case przed inwestowaniem czasu w audio
-- ✅ Może się okazać, że tekst wystarczy (mniej kosztów API Whisper)
+**NAJPIERW:** Refactor modelu danych
+- Zmiana z `tasks[]` → `notes[]`
+- Jedna notatka = źródło prawdy
+- AI wykrywa strukturę PO zapisaniu
+
+**POTEM:** Natywne iOS (Faza 1)
+- React Native / Swift
+- Background audio (warunek sensu!)
+- Whisper API transkrypcja
 
 ---
 
-## KLUCZOWE RÓŻNICE OD TYPOWEJ TODO APP
+## KLUCZOWA RÓŻNICA
 
-**Standardowa TODO app:**
-- Ręczne wpisywanie zadań
-- Jedna kategoria (tasks)
-- Brak eksportu
+**Typowa TODO app:**
+```
+Użytkownik → wybiera typ → wpisuje tekst → zapisuje
+```
 
-**Nasza aplikacja (Chaos-to-Structure):**
-- ✅ **Nagrywanie głosowe** zamiast pisania
-- ✅ **AI porządkuje chaos** w strukturę
-- ✅ **3 typy**: checklist, note, calendar_event
-- ✅ **Auto-rozpoznanie** typu na podstawie kontekstu
-- ✅ **Confidence score** - jeśli model nie wie, pyta
-- ✅ **Eksport 1-click** do natywnych aplikacji (Reminders/Notes/Calendar)
-- ✅ **Widget** na ekranie głównym (przyszłość)
-- ✅ **Use case**: Spacer → pomysł → nagranie → uporządkowane → w domu gotowe
+**Peria:**
+```
+Użytkownik → mówi chaos → AI wykrywa strukturę → propozycje akcji
+                ↓
+        JEDNA NOTATKA (źródło prawdy)
+                ↓
+        wykryte: zadania / daty / pomysły
+```
+
+**Przykład:**
+```
+Input:
+"Jutro kupić mleko, potem spotkanie o 15,
+a wieczorem pomysł na rapowy tekst o bezsenności"
+
+System tworzy:
+┌─────────────────────────────────┐
+│ NOTATKA #42                     │
+│ ─────────────────────────────── │
+│ [pełny tekst]                   │
+│                                 │
+│ AI wykryło:                     │
+│ • 1 zadanie → Checklist?        │
+│ • 1 event → Calendar?           │
+│ • 1 pomysł → zostaje w notatce  │
+└─────────────────────────────────┘
+```

@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import './App.scss'
 import TaskInput from './components/TaskInput/TaskInput.jsx'
 import TaskList from './components/TaskList/TaskList.jsx'
-import Chat from './components/Chat/Chat.jsx'
+import ChatVoiceFirst from './components/Chat/ChatVoiceFirst.jsx'
 import Calendar from './components/Calendar/Calendar.jsx'
 import NavBar from './components/NavBar/NavBar.jsx'
 
@@ -66,7 +66,7 @@ function App() {
                             onEdit={editTask}
                         />
                     )}
-                    {activeView === 'chat' && <Chat onAdd={addTask} />}
+                    {activeView === 'chat' && <ChatVoiceFirst onAdd={addTask} />}
                     {activeView === 'calendar' && <Calendar />}
                 </div>
 
