@@ -159,13 +159,37 @@
   gap: 0.5rem;
 }
 
-.itemCount {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: $text-secondary;
-  background: $overlay-dark;
-  padding: 0.125rem 0.375rem;
+// Kolorowe badge'y dla kategorii (obok daty)
+.categoryBadgeMyNotes {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $bg-black;
+  background: $category-mynotes;
+  padding: 0.15rem 0.4rem;
   border-radius: 3px;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.categoryBadgeChecklists {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $text-white;
+  background: $category-checklists;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.categoryBadgeEvents {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $text-white;
+  background: $category-events;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
   flex-shrink: 0;
 }
 
@@ -634,16 +658,31 @@ details[open] .originalChevron {
 
   .noteCard {
     background: transparent;
-    border: 1px solid $bg-black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 
-    // Czarny tekst i ikony dla widoczności
-    .noteTitle,
-    .noteDate,
-    .editTitleIcon,
+    // Czarny tekst i ikony dla MAKSYMALNEJ widoczności
+    .noteTitle {
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+
+    .noteDate {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      opacity: 0.85 !important;
+    }
+
+    .editTitleIcon {
+      color: #000000 !important;
+      opacity: 0.7 !important;
+      font-weight: 700 !important;
+    }
+
     .expandIcon svg,
     .deleteButton svg {
-      color: $bg-black !important;
-      stroke: $bg-black !important;
+      stroke: #000000 !important;
+      stroke-width: 2.5 !important;
+      opacity: 0.8 !important;
     }
   }
 }
@@ -653,16 +692,31 @@ details[open] .originalChevron {
 
   .noteCard {
     background: transparent;
-    border: 1px solid $bg-black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 
-    // Czarny tekst i ikony dla widoczności
-    .noteTitle,
-    .noteDate,
-    .editTitleIcon,
+    // Czarny tekst i ikony dla MAKSYMALNEJ widoczności
+    .noteTitle {
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+
+    .noteDate {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      opacity: 0.85 !important;
+    }
+
+    .editTitleIcon {
+      color: #000000 !important;
+      opacity: 0.7 !important;
+      font-weight: 700 !important;
+    }
+
     .expandIcon svg,
     .deleteButton svg {
-      color: $bg-black !important;
-      stroke: $bg-black !important;
+      stroke: #000000 !important;
+      stroke-width: 2.5 !important;
+      opacity: 0.8 !important;
     }
   }
 }
@@ -672,16 +726,31 @@ details[open] .originalChevron {
 
   .noteCard {
     background: transparent;
-    border: 1px solid $bg-black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 
-    // Czarny tekst i ikony dla widoczności
-    .noteTitle,
-    .noteDate,
-    .editTitleIcon,
+    // Czarny tekst i ikony dla MAKSYMALNEJ widoczności
+    .noteTitle {
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+
+    .noteDate {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      opacity: 0.85 !important;
+    }
+
+    .editTitleIcon {
+      color: #000000 !important;
+      opacity: 0.7 !important;
+      font-weight: 700 !important;
+    }
+
     .expandIcon svg,
     .deleteButton svg {
-      color: $bg-black !important;
-      stroke: $bg-black !important;
+      stroke: #000000 !important;
+      stroke-width: 2.5 !important;
+      opacity: 0.8 !important;
     }
   }
 }
@@ -692,16 +761,31 @@ details[open] .originalChevron {
 
   .noteCard {
     background: transparent;
-    border: 1px solid $bg-black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 
-    // Czarny tekst i ikony dla widoczności
-    .noteTitle,
-    .noteDate,
-    .editTitleIcon,
+    // Czarny tekst i ikony dla MAKSYMALNEJ widoczności
+    .noteTitle {
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+
+    .noteDate {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      opacity: 0.85 !important;
+    }
+
+    .editTitleIcon {
+      color: #000000 !important;
+      opacity: 0.7 !important;
+      font-weight: 700 !important;
+    }
+
     .expandIcon svg,
     .deleteButton svg {
-      color: $bg-black !important;
-      stroke: $bg-black !important;
+      stroke: #000000 !important;
+      stroke-width: 2.5 !important;
+      opacity: 0.8 !important;
     }
   }
 }

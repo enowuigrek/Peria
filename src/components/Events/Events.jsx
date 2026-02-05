@@ -205,10 +205,6 @@ export default function Events() {
                     <div className={styles.titleRow}>
                       <div className={styles.eventTitle}>
                         {event.title}
-                        {/* Dodaj licznik wydarzeń */}
-                        {eventItems.length > 0 && (
-                          <span className={styles.itemCount}>{eventItems.length}</span>
-                        )}
                       </div>
                     </div>
                   )}
@@ -219,6 +215,10 @@ export default function Events() {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
+                    {/* Licznik wydarzeń */}
+                    {eventItems.length > 0 && (
+                      <span className={styles.eventCountBadge}>{eventItems.length}</span>
+                    )}
                   </div>
                 </div>
                 <div className={styles.eventHeaderRight}>

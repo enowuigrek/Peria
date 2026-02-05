@@ -305,14 +305,6 @@ export default function Inbox() {
                     <div className={styles.titleRow}>
                       <div className={styles.noteTitle}>
                         {note.title || 'Notatka'}
-                        {/* Dodaj licznik checklisty */}
-                        {note.detected?.checklist?.length > 0 && (
-                          <span className={styles.itemCount}>{note.detected.checklist.length}</span>
-                        )}
-                        {/* Dodaj licznik wydarzeń */}
-                        {note.detected?.events?.length > 0 && (
-                          <span className={styles.itemCount}>{note.detected.events.length}</span>
-                        )}
                       </div>
                       <button
                         onClick={(e) => {
@@ -333,6 +325,16 @@ export default function Inbox() {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
+                    {/* Liczniki obok daty */}
+                    {note.detected?.note && (
+                      <span className={styles.categoryBadgeMyNotes}>1</span>
+                    )}
+                    {note.detected?.checklist?.length > 0 && (
+                      <span className={styles.categoryBadgeChecklists}>{note.detected.checklist.length}</span>
+                    )}
+                    {note.detected?.events?.length > 0 && (
+                      <span className={styles.categoryBadgeEvents}>{note.detected.events.length}</span>
+                    )}
                   </div>
                 </div>
                 <div className={styles.noteHeaderRight}>
