@@ -32,14 +32,10 @@ body {
 .app-wrapper {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
     min-height: 100vh;
+    min-height: 100dvh;
     width: 100%;
     padding: 0;
-
-    @media (min-width: 768px) {
-        align-items: center; // Centrowanie tylko na desktop
-    }
 }
 
 .app-container {
@@ -54,6 +50,7 @@ body {
     box-shadow: $box-shadow;
     overflow: hidden;
     position: relative;
+    padding-bottom: env(safe-area-inset-bottom);
 
     @media (min-width: 768px) {
         height: 85vh;
@@ -91,10 +88,5 @@ body {
     padding: 0;
     background: transparent; // Navbar ma swoje tło
     flex-shrink: 0;
-    position: sticky;
-    bottom: 0;
     z-index: 100;
-
-    // Safe area dla iPhone z notchem
-    padding-bottom: env(safe-area-inset-bottom);
 }

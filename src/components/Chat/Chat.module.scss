@@ -76,6 +76,7 @@
   background: $card-bg-lighter;
   border-top: 1px solid $border-color;
   align-items: center;
+  justify-content: flex-end; // Przyciski po prawej stronie
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
@@ -84,9 +85,10 @@
 // Wrapper dla inputa z przyciskiem wewnątrz
 .inputWrapper {
   position: relative;
-  flex: 1;
+  flex: 1; // Zajmuje całą dostępną przestrzeń po lewej
   display: flex;
   align-items: center;
+  margin-right: auto; // Wypycha przyciski w prawo
 
   input {
     flex: 1;
