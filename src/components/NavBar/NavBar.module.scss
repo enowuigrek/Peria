@@ -1,0 +1,24 @@
+@import '../../styles/variables';
+
+.navBar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.navBar button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.navBar button:hover {
+    transform: scale(1.2);
+}
+
+.active {
+    color: #1976d2;
+    font-weight: bold;
+}
