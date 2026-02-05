@@ -360,7 +360,7 @@ export default function ChatVoiceFirst({ onAdd }) {
             </button>
           </>
         ) : (
-          // Domyślny widok: przycisk pisania po lewej, nagrywania po prawej
+          // Domyślny widok: przycisk pisania PO LEWEJ, nagrywania PO PRAWEJ
           <>
             <button
               onClick={() => setShowTextInput(true)}
