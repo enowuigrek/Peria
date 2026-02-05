@@ -1,5 +1,21 @@
-# VOICE-FIRST TODO / NOTES APP
-# MVP → iOS → ANDROID → PAID
+# VOICE-FIRST CHAOS-TO-STRUCTURE APP
+# MVP → iOS WIDGET → ANDROID WIDGET → PAID
+
+## WIZJA PRODUKTU
+**Problem:** Podczas spaceru wpada mi pomysł/zadanie/myśl - chcę to szybko nagrać i mieć uporządkowane.
+
+**Rozwiązanie:**
+1. Jedno kliknięcie (widget iOS/Android) → nagrywanie
+2. Mówię chaotycznie → AI porządkuje i rozpoznaje intencję (checklist/notatka/event)
+3. Model decyduje SAM lub pyta jeśli nie wie
+4. Po spacerze: uporządkowana notatka/lista/event w aplikacji
+5. Jeden klick: eksport do Apple Reminders/Notes/Calendar (iOS) lub Google Keep/Tasks/Calendar (Android)
+
+**Kluczowe cechy:**
+- Chaos → Struktura (AI rozumie i porządkuje)
+- Auto-rozpoznanie typu (checklist/note/calendar)
+- Wewnętrzna baza + łatwy eksport do natywnych aplikacji
+- Widget na ekranie głównym (najszybszy dostęp)
 
 ## ZASADY PROJEKTU
 - Robię to najpierw dla siebie
@@ -75,60 +91,113 @@
 
 ---
 
-## 5. ROZPOZNANIE INTENCJI (LLM)
-**Cel:** Określić co użytkownik chce zrobić
+## 5. ROZPOZNANIE INTENCJI (LLM) - CHAOS → STRUKTURA
+**Cel:** Zamienić chaotyczną wypowiedź w uporządkowaną strukturę
 
-- [ ] Wysłać transkrypcję do GPT-4o-mini lub GPT-3.5-turbo
-- [ ] Prompt: "Użytkownik powiedział: {text}. Zwróć JSON: {type: 'checklist'|'note'|'summary', content: string|array}"
+- [ ] Wysłać transkrypcję do GPT-4o lub GPT-4o-mini
+- [ ] **Prompt: "Chaos to Structure"** - model porządkuje chaotyczną wypowiedź
 - [ ] Model zwraca **WYŁĄCZNIE** JSON (bez markdown, bez wyjaśnień)
+- [ ] Typy: `checklist`, `note`, `calendar_event`, `ask_user` (gdy nie wie)
+- [ ] Model SAM decyduje o typie na podstawie kontekstu
+- [ ] Jeśli model nie wie → `type: "ask_user"` + opcje do wyboru
 - [ ] Walidować JSON po stronie aplikacji (try/catch + JSON.parse)
-- [ ] Fallback: jeśli JSON invalid → zawsze zwróć `{type: "checklist", content: [text]}`
-- [ ] Typy: `checklist` (lista zadań), `note` (notatka), `summary` (podsumowanie)
+- [ ] Fallback: jeśli JSON invalid → zawsze zwróć `{type: "note", content: text}`
 
 **Przykładowy prompt:**
 ```
-Użytkownik nagrał: "{transcription}"
+Użytkownik nagrał chaotyczną myśl: "{transcription}"
+
+Twoim zadaniem jest:
+1. Zrozumieć intencję użytkownika
+2. Uporządkować chaotyczną wypowiedź w czytelną strukturę
+3. Określić TYP: checklist (zadania), note (notatka), calendar_event (wydarzenie), ask_user (pytanie)
 
 Zwróć TYLKO JSON (bez markdown):
 {
-  "type": "checklist" | "note" | "summary",
-  "content": string[] | string,
-  "title": string (opcjonalnie)
+  "type": "checklist" | "note" | "calendar_event" | "ask_user",
+  "confidence": 0.0-1.0,
+  "title": "Wygenerowany tytuł",
+  "content": string[] | string | object,
+  "metadata": {
+    "date": "YYYY-MM-DD" (tylko dla calendar_event),
+    "time": "HH:MM" (opcjonalnie),
+    "priority": "low" | "medium" | "high" (opcjonalnie)
+  },
+  "ask_options": ["checklist", "note", "calendar_event"] (tylko gdy type="ask_user")
 }
 
-Jeśli to lista zadań → checklist + array
-Jeśli to luźne myśli → note + string
-Jeśli to podsumowanie → summary + string
+Przykłady:
+- "Jutro spotkanie 10, lunch 13, siłownia 18" → checklist z 3 punktami + metadata.date
+- "Pomysł na startup: app do nagrywania myśli, chaos to struktura, AI porządkuje" → note (uporządkowana)
+- "Przypomnij mi jutro o 15 że muszę zadzwonić do lekarza" → calendar_event z date + time
+- "Kupić mleko i chleb" → checklist z 2 punktami
+- Niejasna wypowiedź → type="ask_user" + ask_options
 ```
 
+**Kluczowe:**
+- Model PORZĄDKUJE chaos w czytelną strukturę (nie copy-paste!)
+- Auto-generuje tytuł na podstawie treści
+- Confidence score (0.0-1.0) - jeśli <0.7 → pytaj użytkownika
+- Fallback: zawsze można zapisać jako note
+
 **Kryteria akceptacji:**
-- "Jutro: spotkanie 10, lunch 13, siłownia 18" → checklist z 3 punktami
-- "Pomysł na startup: app do..." → note
+- "Jutro: spotkanie 10, lunch 13, siłownia 18" → checklist z 3 punktami + tytuł "Jutro"
+- Chaotyczna wypowiedź → uporządkowana notatka z akapitami
+- "Przypomnij mi..." → calendar_event z datą i czasem
+- Niejasna intencja → pytanie użytkownika z opcjami
 
 ---
 
-## 6. STORAGE – PODSTAWOWY
-**Cel:** Zapisywać dane lokalnie
+## 6. STORAGE – PODSTAWOWY (UNIWERSALNY)
+**Cel:** Zapisywać dane lokalnie (checklisty, notatki, eventy)
 
-- [ ] localStorage dla checklistów (klucz: `checklists`)
-- [ ] Każdy checklist ma: `id`, `title`, `items[]`, `createdAt`, `type`
+- [ ] localStorage dla wszystkich typów (klucz: `items`)
+- [ ] Każdy item ma: `id`, `title`, `type`, `content`, `createdAt`, `metadata`, `exported`
+- [ ] Typy: `checklist`, `note`, `calendar_event`
 - [ ] Zapisz datę/czas utworzenia (ISO string)
+- [ ] Flagę `exported: true/false` (czy wyeksportowano do natywnej aplikacji)
 - [ ] Dane przetrwają reload strony
-- [ ] Lista wszystkich checklistów (sidebar? drawer? druga strona?)
+- [ ] Lista wszystkich itemów z filtrowaniem po typie
 
 **Struktura danych:**
 ```json
 {
-  "checklists": [
+  "items": [
     {
       "id": "uuid",
-      "title": "Zakupy",
       "type": "checklist",
-      "items": [
+      "title": "Zakupy",
+      "content": [
         { "id": "uuid", "text": "Mleko", "done": false },
         { "id": "uuid", "text": "Chleb", "done": true }
       ],
-      "createdAt": "2025-01-07T10:30:00Z"
+      "metadata": {
+        "date": "2025-01-08",
+        "priority": "medium"
+      },
+      "createdAt": "2025-01-07T10:30:00Z",
+      "exported": false
+    },
+    {
+      "id": "uuid",
+      "type": "note",
+      "title": "Pomysł na startup",
+      "content": "Aplikacja do nagrywania myśli...\n\nKluczowe cechy:\n- Widget\n- AI porządkuje chaos",
+      "metadata": {},
+      "createdAt": "2025-01-07T11:15:00Z",
+      "exported": true
+    },
+    {
+      "id": "uuid",
+      "type": "calendar_event",
+      "title": "Spotkanie z lekarzem",
+      "content": "Zadzwonić w sprawie wyników",
+      "metadata": {
+        "date": "2025-01-09",
+        "time": "15:00"
+      },
+      "createdAt": "2025-01-07T12:00:00Z",
+      "exported": false
     }
   ]
 }
@@ -136,7 +205,9 @@ Jeśli to podsumowanie → summary + string
 
 **Kryteria akceptacji:**
 - Refresh strony → dane wciąż są
-- Mogę zobaczyć listę wszystkich checklistów
+- Mogę zobaczyć listę wszystkich itemów (checklisty, notatki, eventy)
+- Filtrowanie po typie działa
+- Flaga `exported` pokazuje czy item został wyeksportowany
 
 ---
 
@@ -231,22 +302,61 @@ Jeśli to podsumowanie → summary + string
 
 ---
 
-## 12. EKSPORT – iOS
-**Cel:** Export do Apple Reminders / Notes
+## 12. EKSPORT – iOS & ANDROID (KLUCZOWE!)
+**Cel:** Jeden klick → dane w natywnej aplikacji
 
-- [ ] Przycisk "Eksportuj do Reminders"
-- [ ] Generuj URL scheme: `x-apple-reminderkit://` (research needed)
-- [ ] Alternatywa: Copy to clipboard + instrukcja dla użytkownika
-- [ ] Eksport do Notes: share sheet / copy markdown
-- [ ] Eksport jednym kliknięciem
+### iOS Export
+- [ ] **Apple Reminders**: URL scheme `x-apple-reminderkit://` lub Web Share API
+- [ ] **Apple Notes**: Share sheet z markdown
+- [ ] **Apple Calendar**: URL scheme `calshow:` z parametrami
+- [ ] Fallback: Copy to clipboard jako markdown + instrukcja
+- [ ] Oznacz item jako `exported: true` po eksporcie
+- [ ] Przycisk "Eksportuj" widoczny przy każdym itemie
+
+### Android Export
+- [ ] **Google Tasks**: Web Intents lub Share API
+- [ ] **Google Keep**: Share intent z tekstem
+- [ ] **Google Calendar**: Intent z event data
+- [ ] Fallback: Copy to clipboard jako tekst + instrukcja
+
+### Format eksportu
+**Checklist → Reminders/Tasks:**
+```
+- [ ] Mleko
+- [ ] Chleb
+- [ ] Masło
+```
+
+**Note → Notes/Keep:**
+```markdown
+# Pomysł na startup
+
+Aplikacja do nagrywania myśli...
+
+Kluczowe cechy:
+- Widget
+- AI porządkuje chaos
+```
+
+**Calendar Event → Calendar:**
+```
+Tytuł: Spotkanie z lekarzem
+Data: 2025-01-09
+Czas: 15:00
+Notatki: Zadzwonić w sprawie wyników
+```
 
 **Research:**
-- iOS URL schemes mogą nie działać z PWA
-- Fallback: skopiuj listę jako markdown → użytkownik paste do Reminders/Notes
+- iOS URL schemes: https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app
+- Web Share API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API
+- Android Intents: https://developer.android.com/training/sharing/send
 
 **Kryteria akceptacji:**
-- Mogę wyeksportować checklistę w <10 sekund
-- Działa na iOS Safari
+- Mogę wyeksportować checklistę do Reminders w <5 sekund (1 klick!)
+- Mogę wyeksportować notatkę do Notes/Keep w <5 sekund
+- Mogę wyeksportować event do Calendar w <5 sekund
+- Po eksporcie item oznaczony jako `exported: true`
+- Działa na iOS Safari i Android Chrome
 
 ---
 
@@ -285,27 +395,75 @@ Jeśli to podsumowanie → summary + string
 
 ---
 
-## 15. KOLEJNE KROKI (PO MVP)
+## 15. WIDGET – iOS & ANDROID (PO MVP)
+**Cel:** Jedno kliknięcie z ekranu głównego → nagrywanie
+
+### iOS Widget (React Native / Swift)
+- [ ] Home Screen Widget (iOS 14+)
+- [ ] Single button: "Nagraj myśl"
+- [ ] Tap → otwiera aplikację w stanie RECORDING
+- [ ] Widget pokazuje liczbę nie-wyeksportowanych itemów
+
+### Android Widget (React Native / Kotlin)
+- [ ] Home Screen Widget
+- [ ] Single button: "Nagraj myśl"
+- [ ] Tap → otwiera aplikację w stanie RECORDING
+- [ ] Widget pokazuje liczbę nie-wyeksportowanych itemów
+
+**Research:**
+- React Native Widgets: https://github.com/salihgueler/react-native-widgets
+- iOS Widgets (SwiftUI): https://developer.apple.com/documentation/widgetkit
+- Android Widgets: https://developer.android.com/guide/topics/appwidgets
+
+**Kryteria akceptacji:**
+- Mogę nagrać myśl z ekranu głównego w <3 sekundy (unlock → tap widget → nagrywanie)
+- Widget działa na iOS i Android
+
+---
+
+## 16. KOLEJNE KROKI (PO WIDGETACH)
 **Cel:** Skalowanie
 
-- [ ] React Native / Expo (iOS natywnie)
-- [ ] TestFlight beta
+- [ ] React Native / Expo (natywne aplikacje iOS/Android)
+- [ ] TestFlight beta (iOS)
 - [ ] App Store release
-- [ ] Android (Google Play)
-- [ ] Integracje: Google Tasks, Google Keep, Notion
-- [ ] Udostępnianie checklistów (share link)
-- [ ] Współpraca (shared checklists)
+- [ ] Google Play release
+- [ ] Integracje: Notion, Obsidian, Evernote
+- [ ] Udostępnianie itemów (share link)
+- [ ] Współpraca (shared lists/notes)
+- [ ] Voice commands: "Siri, nagraj myśl" / "OK Google, nagraj myśl"
 
 ---
 
 ## AKTUALNY STATUS
 
-### ✅ Zakończone (przed voice-first pivot):
+### ✅ Zakończone:
 - Podstawowa aplikacja TODO z dark theme
 - System czatu z AI (text-based)
 - LocalStorage dla zadań i historii czatu
 - Responsive design (mobile-first)
 - Gradientowy UI z animacjami
+- **UX Design document** (UX-DESIGN.md) - 5 stanów, przejścia, animacje, error handling
 
 ### 🎯 Następne kroki:
-Rozpoczynamy implementację punktu **#1: WEB MVP – AUDIO INPUT**
+1. **Zaktualizować UX-DESIGN.md** zgodnie z nową wizją (chaos→struktura, auto-rozpoznanie typu, eksport)
+2. Rozpocząć implementację punktu **#2: WEB MVP – AUDIO INPUT**
+
+---
+
+## KLUCZOWE RÓŻNICE OD TYPOWEJ TODO APP
+
+**Standardowa TODO app:**
+- Ręczne wpisywanie zadań
+- Jedna kategoria (tasks)
+- Brak eksportu
+
+**Nasza aplikacja (Chaos-to-Structure):**
+- ✅ **Nagrywanie głosowe** zamiast pisania
+- ✅ **AI porządkuje chaos** w strukturę
+- ✅ **3 typy**: checklist, note, calendar_event
+- ✅ **Auto-rozpoznanie** typu na podstawie kontekstu
+- ✅ **Confidence score** - jeśli model nie wie, pyta
+- ✅ **Eksport 1-click** do natywnych aplikacji (Reminders/Notes/Calendar)
+- ✅ **Widget** na ekranie głównym (przyszłość)
+- ✅ **Use case**: Spacer → pomysł → nagranie → uporządkowane → w domu gotowe
