@@ -1,25 +1,23 @@
-.taskItem {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
-}
+/***** TaskList.module.scss *****/
 
-.incompleteList {
+.incompleteList,
+.completedList {
   list-style-type: none;
   padding: 0;
   margin: 0;
+}
+
+.incompleteList {
   border-bottom: 1px solid #ddd;
 }
 
+.completedList {
+  border-top: 1px solid #ddd;
+  margin-top: 1rem;
+}
+
 .incompleteList li {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
   background-color: #f9f9f9;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
 }
 
@@ -27,67 +25,21 @@
   background-color: #e2e2e2;
 }
 
-.completedList {
-  list-style-type: none;
-  padding: 0;
-  border-top: 1px solid #ddd;
-  margin-top: 1rem;
-}
-
 .completedList li {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
   background-color: #d3d3d3;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .completedList li:hover {
   background-color: #c1c1c1;
 }
 
-.completedList li .editButton,
-.completedList li .deleteButton {
-  text-decoration: none; /* Usunięcie skreślenia */
-}
-
-.taskLabel {
+.incompleteList li,
+.completedList li {
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  padding: 10px;
   display: flex;
   align-items: center;
-  flex: 1;
-}
-
-.taskText {
-  margin-left: 0.5rem;
-  flex: 1;
-  font-size: 1rem;
-}
-
-.done {
-  text-decoration: line-through;
-  color: #999;
-}
-
-.editInput {
-  margin-left: 0.5rem;
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0.25rem;
-}
-
-.editButton,
-.deleteButton {
-  margin-left: 0.5rem;
-  background: none;
-  border: none;
-  color: #555;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
-.deleteButton {
-  color: #c00;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
