@@ -1,24 +1,26 @@
-// Dark Theme Colors
-$bg-gradient-start: #0f0c29;
-$bg-gradient-mid: #302b63;
-$bg-gradient-end: #24243e;
+// Peria Color Palette
+// Dark, professional, peripatetic
+$bg-gradient-start: #00202e;  // Ciemny granat (deep navy)
+$bg-gradient-mid: #003545;    // Pośredni granatowy
+$bg-gradient-end: #00202e;    // Powrót do ciemnego
 
-$card-bg: rgba(30, 30, 46, 0.95);
-$card-bg-lighter: rgba(45, 45, 65, 0.95);
+$card-bg: rgba(0, 32, 46, 0.95);         // #00202e z alpha
+$card-bg-lighter: rgba(74, 147, 150, 0.1); // Delikatny morski overlay
 
-$primary-gradient-start: #667eea;
-$primary-gradient-end: #764ba2;
+$primary-gradient-start: #4a9396;  // Morski cyan (primary action)
+$primary-gradient-end: #357073;    // Ciemniejszy cyan
 
-$accent-gradient-start: #f093fb;
-$accent-gradient-end: #f5576c;
+$accent-gradient-start: #fdd03b;   // Żółty highlight
+$accent-gradient-end: #cb7f07;     // Pomarańczowy
 
-$success-color: #4ade80;
-$danger-color: #f87171;
-$warning-color: #fbbf24;
+$success-color: #4a9396;  // Morski cyan (zamiast zielonego)
+$danger-color: #cb7f07;   // Pomarańczowy (warning/delete)
+$warning-color: #fdd03b;  // Żółty (attention)
 
-$text-primary: #e5e7eb;
-$text-secondary: #9ca3af;
-$text-muted: #6b7280;
+$text-primary: #e5e7eb;   // Jasny szary (główny tekst)
+$text-secondary: #9ca3af; // Średni szary
+$text-muted: #6b7280;     // Przyciemniony szary
+$text-dark: #291907;      // Bardzo ciemny brąz (dla jasnych tła)
 
 $border-color: rgba(255, 255, 255, 0.1);
 $hover-bg: rgba(255, 255, 255, 0.05);
