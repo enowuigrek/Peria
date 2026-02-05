@@ -81,7 +81,10 @@ export default function Events() {
 
     if (Array.isArray(event.content)) {
       event.content.forEach(item => {
-        exportText += `${item.title}\n${item.date} ${item.time || ''}\n\n`
+        const timeRange = item.time
+          ? (item.endTime ? `${item.time} - ${item.endTime}` : item.time)
+          : ''
+        exportText += `${item.title}\n${item.date} ${timeRange}\n\n`
       })
     } else {
       exportText += event.content
@@ -237,7 +240,9 @@ export default function Events() {
                           <div className={styles.eventItemDateTime}>
                             <span className={styles.eventItemDate}>{item.date}</span>
                             {item.time && (
-                              <span className={styles.eventItemTime}>{item.time}</span>
+                              <span className={styles.eventItemTime}>
+                                {item.time}{item.endTime && ` - ${item.endTime}`}
+                              </span>
                             )}
                           </div>
                         </div>

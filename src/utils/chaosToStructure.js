@@ -66,6 +66,7 @@ RESPONSE FORMAT (zawsze JSON):
 
     // Dla "calendar_event":
     "datetime": "2026-01-08T10:00",
+    "endTime": "2026-01-08T11:00", // opcjonalne, jeśli wspomniany czas końca
     "description": "Opis wydarzenia"
   }
 }
@@ -112,14 +113,15 @@ Elementy do rozwinięcia:
   }
 }
 
-Input: "Jutro spotkanie z Tomkiem o 15, mamy gadać o nowym projekcie"
+Input: "Jutro spotkanie z Tomkiem o 15, mamy gadać o nowym projekcie od 15 do 16"
 Output: {
   "type": "calendar_event",
   "confidence": 0.88,
   "title": "Spotkanie z Tomkiem - nowy projekt",
-  "content": "Spotkanie jutro o 15:00 z Tomkiem w sprawie nowego projektu",
+  "content": "Spotkanie jutro od 15:00 do 16:00 z Tomkiem w sprawie nowego projektu",
   "structured": {
     "datetime": "2026-01-08T15:00",
+    "endTime": "2026-01-08T16:00",
     "description": "Omówienie nowego projektu z Tomkiem"
   }
 }

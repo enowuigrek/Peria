@@ -329,7 +329,7 @@ export default function Inbox() {
                         {note.detected.events.map((event, idx) => (
                           <li key={idx}>
                             <strong>{event.title}</strong><br />
-                            {event.date} {event.time && `• ${event.time}`}
+                            {event.date} {event.time && `• ${event.time}`}{event.endTime && ` - ${event.endTime}`}
                           </li>
                         ))}
                       </ul>

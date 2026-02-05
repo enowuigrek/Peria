@@ -63,11 +63,12 @@ Twoim zadaniem jest:
       Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
 
    c) WYDARZENIA (events) - daty, godziny, spotkania
-      Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00"
+      Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00", "trening od 16 do 17"
       OBLICZ konkretną datę:
       - "jutro" → ${currentDate} + 1 dzień
       - "w przyszłą środę" → oblicz najbliższą środę po dzisiejszym dniu
       - "za tydzień" → ${currentDate} + 7 dni
+      Jeśli użytkownik wspomina przedział czasowy (np. "od 16 do 17"), dodaj endTime
 
 ZASADY:
 - NIE zmieniaj treści użytkownika, tylko kategoryzuj
@@ -80,7 +81,7 @@ Zwróć TYLKO JSON (bez markdown):
   "title": "Krótki tytuł notatki",
   "note": "tekst notatki" lub null,
   "checklist": [{ "text": "..." }],
-  "events": [{ "title": "...", "date": "YYYY-MM-DD", "time": "HH:MM" lub null }]
+  "events": [{ "title": "...", "date": "YYYY-MM-DD", "time": "HH:MM" lub null, "endTime": "HH:MM" lub null }]
 }
 `;
 
