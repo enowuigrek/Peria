@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Events.module.scss'
+import { generateICS, downloadOrShareICS } from '../../utils/icsGenerator'
 
 export default function Events() {
   const [events, setEvents] = useState(() => {
@@ -108,69 +109,45 @@ export default function Events() {
   }
 
   const exportSingleEvent = async (item) => {
-    const timeRange = item.time
-      ? (item.endTime ? `${item.time} - ${item.endTime}` : item.time)
-      : ''
-    const exportText = `${item.title}\n${item.date} ${timeRange}\n`
+    // Generate .ics file for single event
+    const icsContent = generateICS(item)
+    const filename = `${item.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: item.title,
-          text: exportText
-        })
-        alert('✅ Wyeksportowano wydarzenie')
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Share error:', error)
-          fallbackCopyToClipboard(exportText)
-        }
+    try {
+      const result = await downloadOrShareICS(icsContent, filename)
+      if (result.success && !result.cancelled) {
+        alert('✅ Wydarzenie dodane do kalendarza!')
       }
-    } else {
-      fallbackCopyToClipboard(exportText)
+    } catch (error) {
+      console.error('Export error:', error)
+      alert('❌ Błąd eksportu wydarzenia')
     }
   }
 
   const exportToCalendar = async (event) => {
-    let exportText = `${event.title}\n\n`
+    // Generate .ics file with all events in this group
+    const eventItems = Array.isArray(event.content) ? event.content : []
 
-    if (Array.isArray(event.content)) {
-      event.content.forEach(item => {
-        const timeRange = item.time
-          ? (item.endTime ? `${item.time} - ${item.endTime}` : item.time)
-          : ''
-        exportText += `${item.title}\n${item.date} ${timeRange}\n\n`
-      })
-    } else {
-      exportText += event.content
+    if (eventItems.length === 0) {
+      alert('❌ Brak wydarzeń do eksportu')
+      return
     }
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: event.title,
-          text: exportText
-        })
-        alert('✅ Wyeksportowano wydarzenia')
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Share error:', error)
-          fallbackCopyToClipboard(exportText)
-        }
+    const icsContent = generateICS(eventItems)
+    const filename = `${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_wydarzenia`
+
+    try {
+      const result = await downloadOrShareICS(icsContent, filename)
+      if (result.success && !result.cancelled) {
+        const count = eventItems.length
+        alert(`✅ Dodano ${count} ${count === 1 ? 'wydarzenie' : 'wydarzenia'} do kalendarza!`)
       }
-    } else {
-      fallbackCopyToClipboard(exportText)
+    } catch (error) {
+      console.error('Export error:', error)
+      alert('❌ Błąd eksportu wydarzeń')
     }
   }
 
-  const fallbackCopyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('✅ Skopiowano do schowka!')
-    }).catch((error) => {
-      console.error('Clipboard error:', error)
-      alert('❌ Błąd kopiowania.')
-    })
-  }
 
   // Sort events by date
   const sortedEvents = [...events].sort((a, b) => {
