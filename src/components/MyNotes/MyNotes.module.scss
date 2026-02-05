@@ -71,6 +71,7 @@
   align-items: center;
   padding: 0.875rem;
   transition: background 0.2s ease;
+  min-height: 70px; // Stała wysokość nagłówka, nawet podczas edycji
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);
@@ -265,15 +266,21 @@
 }
 
 .editButton {
-  padding: 0.375rem 0.75rem;
+  padding: 0.5rem;
   border: 1px solid $category-mynotes;
   background: $category-mynotes;
   color: $bg-gradient-start;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  border-radius: 0; // Ostre rogi
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 
   &:hover {
     background: darken($category-mynotes, 10%);
@@ -287,7 +294,7 @@
   border: 1px solid $category-mynotes;
   background: $category-mynotes;
   color: $bg-gradient-start;
-  border-radius: 4px;
+  border-radius: 0; // Ostre rogi
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;

@@ -180,18 +180,8 @@ export default function Events() {
                   ) : (
                     <div className={styles.titleRow}>
                       <div className={styles.eventTitle}>
-                        📅 {event.title}
+                        {event.title}
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          startEditTitle(event)
-                        }}
-                        className={styles.editTitleIcon}
-                        title="Edytuj tytuł"
-                      >
-                        ✎
-                      </button>
                     </div>
                   )}
                   <div className={styles.eventDate}>
@@ -201,11 +191,6 @@ export default function Events() {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
-                    {eventItems.length > 0 && (
-                      <span className={styles.countBadge}>
-                        {eventItems.length} {eventItems.length === 1 ? 'wydarzenie' : 'wydarzenia'}
-                      </span>
-                    )}
                   </div>
                 </div>
                 <div className={styles.eventHeaderRight}>
@@ -236,7 +221,7 @@ export default function Events() {
                     {eventItems.map((item, idx) => (
                       <div key={idx} className={styles.eventItem}>
                         <div className={styles.eventItemContent}>
-                          <div className={styles.eventItemTitle}>{item.title}</div>
+                          <div className={styles.eventItemTitle}>📅 {item.title}</div>
                           <div className={styles.eventItemDateTime}>
                             <span className={styles.eventItemDate}>{item.date}</span>
                             {item.time && (
