@@ -459,9 +459,8 @@
     font-size: 0.9rem;
     color: $text-primary;
     padding: 0.5rem 0.75rem;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    // Usunięto border-left - nie jest potrzebny
+    background: $bg-gradient-start; // Czarne tło
+    border-radius: 0; // Ostre rogi
     line-height: 1.4;
 
     strong {
