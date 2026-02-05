@@ -52,7 +52,7 @@ body {
     position: relative;
     // Safe area insets dla iPhone z notchem/Dynamic Island
     padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    // padding-bottom jest w .footer, nie tutaj!
 
     @media (min-width: 768px) {
         height: 85vh;
@@ -88,6 +88,7 @@ body {
 
 .footer {
     padding: 0;
+    padding-bottom: env(safe-area-inset-bottom); // Safe area dla home indicator
     background: rgba(0, 0, 0, 0.85); // To samo tło co navbar
     flex-shrink: 0;
     z-index: 100;
