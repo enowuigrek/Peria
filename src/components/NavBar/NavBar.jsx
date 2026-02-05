@@ -1,4 +1,4 @@
-import styles from './NavBar.module.scss' // jeśli chcesz mieć osobne style, w razie czego możesz ten plik stworzyć i wrzucić tam style
+import styles from './NavBar.module.scss'
 
 export default function NavBar({ activeView, onSwitch }) {
     return (

@@ -24,37 +24,45 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
         <div>
             {incompleteTasks.length > 0 && (
                 <ul className={styles.incompleteList}>
-                    {incompleteTasks.map(task => (
-                        <TaskItem
-                            key={task.id}          // klucz
-                            task={task}           // przekazujemy całe zadanie
-                            editingId={editingId}
-                            setEditingId={setEditingId}
-                            editedText={editedText}
-                            setEditedText={setEditedText}
-                            onToggle={onToggle}
-                            onRemove={onRemove}
-                            onEdit={onEdit}
-                        />
-                    ))}
+                    {incompleteTasks.map((task) => {
+                        if (!task || typeof task !== 'object' || !('id' in task && 'text' in task && 'done' in task)) return null;
+                        const validTask = task;
+                        return (
+                            <TaskItem
+                                key={String(validTask.id)}
+                                task={validTask}
+                                editingId={editingId}
+                                setEditingId={setEditingId}
+                                editedText={editedText}
+                                setEditedText={setEditedText}
+                                onToggle={onToggle}
+                                onRemove={onRemove}
+                                onEdit={onEdit}
+                            />
+                        )
+                    })}
                 </ul>
             )}
 
             {completedTasks.length > 0 && (
                 <ul className={styles.completedList}>
-                    {completedTasks.map(task => (
-                        <TaskItem
-                            key={task.id}
-                            task={task}
-                            editingId={editingId}
-                            setEditingId={setEditingId}
-                            editedText={editedText}
-                            setEditedText={setEditedText}
-                            onToggle={onToggle}
-                            onRemove={onRemove}
-                            onEdit={onEdit}
-                        />
-                    ))}
+                    {completedTasks.map((task) => {
+                        if (!task || typeof task !== 'object' || !('id' in task && 'text' in task && 'done' in task)) return null;
+                        const validTask = task;
+                        return (
+                            <TaskItem
+                                key={String(validTask.id)}
+                                task={validTask}
+                                editingId={editingId}
+                                setEditingId={setEditingId}
+                                editedText={editedText}
+                                setEditedText={setEditedText}
+                                onToggle={onToggle}
+                                onRemove={onRemove}
+                                onEdit={onEdit}
+                            />
+                        )
+                    })}
                 </ul>
             )}
         </div>

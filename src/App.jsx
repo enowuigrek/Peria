@@ -18,7 +18,14 @@ function App() {
     }, [tasks])
 
     const addTask = (text) => {
-        setTasks(prev => [...prev, { id: Date.now(), text, done: false }])
+        setTasks((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            text,
+            done: false,
+          },
+        ]);
     }
 
     const toggleTask = (id) => {

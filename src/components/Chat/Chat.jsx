@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { askAgent } from '../../agent';
 import styles from './Chat.module.scss';
 
 export default function Chat({ onAdd }) {
@@ -11,15 +12,52 @@ export default function Chat({ onAdd }) {
     const thinkingMessage = { from: 'bot', text: '...' };
     setMessages((prev) => [...prev, newMessage, thinkingMessage]);
 
-    setTimeout(() => {
-      const response = { from: 'bot', text: `dodaje: ${input}` };
+    askAgent(input).then((responseText) => {
+      let tasks = [];
+
+      if (typeof responseText === 'string') {
+        tasks = responseText
+          .split('\n')
+          .map((line) => line.trim())
+          .filter((line) => line);
+      } else if (Array.isArray(responseText)) {
+        tasks = responseText.map((line) => line.trim()).filter((line) => line);
+      } else {
+        console.error('Response from agent is not a valid string or array:', responseText);
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated.pop(); // remove '...'
+          return [...updated, { from: 'bot', text: '[Błąd AI: Niepoprawny format odpowiedzi]' }];
+        });
+        return;
+      }
+
+      if (tasks.length === 0) return;
+
       setMessages((prev) => {
         const updated = [...prev];
         updated.pop(); // remove '...'
-        return [...updated, response];
+        return [
+          ...updated,
+          {
+            from: 'bot',
+            text: tasks
+              .map((t, i) => `${i + 1}. ${typeof t === 'string' ? t.replace(/^- /, '') : String(t)}`)
+              .join('\n'),
+          },
+        ];
       });
-      onAdd(input);
-    }, 1000);
+
+      tasks.forEach((task) => {
+        if (typeof task === 'string') {
+          onAdd(task.replace(/^- /, ''));
+        } else {
+          // In your second approach, we ignore non-string data from the chatbot
+          // You can optionally add a console.error here
+          console.error('Received non-string task. Ignoring:', task);
+        }
+      });
+    });
     setInput('');
   };
 
