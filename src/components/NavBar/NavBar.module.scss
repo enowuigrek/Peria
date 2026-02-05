@@ -179,6 +179,11 @@
 .navButton.flashing {
     animation: flashButton 0.5s ease-in-out 2;
 
+    // Ikona zmienia kolor podczas flashingu
+    svg {
+        animation: iconFlash 0.5s ease-in-out 2;
+    }
+
     // MyNotes - teal flash
     &[data-section="mynotes"] {
         animation: flashButtonTeal 0.5s ease-in-out 2;
@@ -211,6 +216,15 @@
     }
 }
 
+@keyframes iconFlash {
+    0%, 100% {
+        stroke: currentColor;
+    }
+    50% {
+        stroke: rgba(10, 25, 35, 0.95); // Ciemny kolor tła navbar
+    }
+}
+
 @keyframes flashButtonTeal {
     0%, 100% {
         background: rgba(74, 147, 150, 0.15);
@@ -219,14 +233,10 @@
         box-shadow: 0 0 0 rgba(74, 147, 150, 0.5);
     }
     50% {
-        background: $category-mynotes; // Pełny kolor tła
+        background: $category-mynotes;
         border-color: $category-mynotes;
         transform: scale(1.15);
         box-shadow: 0 0 25px rgba(74, 147, 150, 0.8);
-
-        svg {
-            stroke: rgba(10, 25, 35, 0.95); // Ikona w kolorze tła navbar
-        }
     }
 }
 
@@ -238,14 +248,10 @@
         box-shadow: 0 0 0 rgba(253, 208, 59, 0.5);
     }
     50% {
-        background: $category-checklists; // Pełny kolor tła
+        background: $category-checklists;
         border-color: $category-checklists;
         transform: scale(1.15);
         box-shadow: 0 0 25px rgba(253, 208, 59, 0.8);
-
-        svg {
-            stroke: rgba(10, 25, 35, 0.95); // Ikona w kolorze tła navbar
-        }
     }
 }
 
@@ -257,13 +263,9 @@
         box-shadow: 0 0 0 rgba(203, 127, 7, 0.5);
     }
     50% {
-        background: $category-events; // Pełny kolor tła
+        background: $category-events;
         border-color: $category-events;
         transform: scale(1.15);
         box-shadow: 0 0 25px rgba(203, 127, 7, 0.8);
-
-        svg {
-            stroke: rgba(10, 25, 35, 0.95); // Ikona w kolorze tła navbar
-        }
     }
 }
