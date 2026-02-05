@@ -2,7 +2,7 @@
 
 ## Overview
 
-**AI Daily Assistant** is a project developed to practice and enhance AI agent capabilities. This application assists users in managing their daily tasks efficiently, serving as a practical exercise in integrating AI functionalities into everyday tools.
+**AI Daily Assistant** is a project developed to practice and enhance AI agent capabilities. The project includes a clean and responsive user interface, fully styled using modular SCSS for better maintainability and customization. It serves as both a useful tool and a playground for testing ideas related to task planning, habit tracking, and future AI agent integration.
 
 ## Features
 
