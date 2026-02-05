@@ -57,10 +57,11 @@
 
 .title {
   font-size: 4rem;
-  font-weight: 700;
+  font-weight: 400;
+  font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
   color: $text-primary;
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.05em;
   background: linear-gradient(135deg, $category-mynotes 0%, $category-checklists 50%, $category-events 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

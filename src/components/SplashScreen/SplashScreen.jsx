@@ -19,7 +19,10 @@ export default function SplashScreen({ onComplete }) {
     <div className={`${styles.splash} ${!isVisible ? styles.fadeOut : ''}`}>
       <div className={styles.content}>
         <h1 className={styles.title}>Peria</h1>
-        <p className={styles.subtitle}>Gdy myśl pojawia się wtedy, gdy jej nie szukasz</p>
+        <p className={styles.subtitle}>
+          Gdy myśl pojawia się wtedy,<br />
+          gdy jej nie szukasz
+        </p>
       </div>
       <div className={styles.gradient1}></div>
       <div className={styles.gradient2}></div>
