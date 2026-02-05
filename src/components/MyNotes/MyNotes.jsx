@@ -9,6 +9,8 @@ export default function MyNotes() {
   const [expandedNotes, setExpandedNotes] = useState(new Set())
   const [editingId, setEditingId] = useState(null)
   const [editContent, setEditContent] = useState('')
+  const [editingTitleId, setEditingTitleId] = useState(null)
+  const [editTitleText, setEditTitleText] = useState('')
 
   useEffect(() => {
     localStorage.setItem('peria_mynotes', JSON.stringify(notes))
@@ -48,6 +50,25 @@ export default function MyNotes() {
   const cancelEdit = () => {
     setEditingId(null)
     setEditContent('')
+  }
+
+  const startEditTitle = (note, e) => {
+    e.stopPropagation()
+    setEditingTitleId(note.id)
+    setEditTitleText(note.title)
+  }
+
+  const saveTitle = (id) => {
+    setNotes(prev => prev.map(n =>
+      n.id === id ? { ...n, title: editTitleText } : n
+    ))
+    setEditingTitleId(null)
+    setEditTitleText('')
+  }
+
+  const cancelEditTitle = () => {
+    setEditingTitleId(null)
+    setEditTitleText('')
   }
 
   const exportToAppleNotes = async (note) => {
@@ -96,16 +117,38 @@ export default function MyNotes() {
         {notes.map((note) => {
           const isExpanded = expandedNotes.has(note.id)
           const isEditing = editingId === note.id
+          const isEditingTitle = editingTitleId === note.id
 
           return (
-            <div key={note.id} className={styles.noteCard}>
+            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''}`}>
               <div
                 className={styles.noteHeader}
-                onClick={() => !isEditing && toggleExpand(note.id)}
-                style={{ cursor: isEditing ? 'default' : 'pointer' }}
+                onClick={() => !isEditing && !isEditingTitle && toggleExpand(note.id)}
+                style={{ cursor: (isEditing || isEditingTitle) ? 'default' : 'pointer' }}
               >
                 <div className={styles.noteHeaderLeft}>
-                  <div className={styles.noteTitle}>{note.title}</div>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      className={styles.titleInput}
+                      value={editTitleText}
+                      onChange={(e) => setEditTitleText(e.target.value)}
+                      onBlur={() => saveTitle(note.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveTitle(note.id)
+                        if (e.key === 'Escape') cancelEditTitle()
+                      }}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <div
+                      className={styles.noteTitle}
+                      onClick={(e) => startEditTitle(note, e)}
+                    >
+                      {note.title}
+                    </div>
+                  )}
                   <div className={styles.noteDate}>
                     {new Date(note.createdAt).toLocaleDateString('pl-PL', {
                       day: 'numeric',

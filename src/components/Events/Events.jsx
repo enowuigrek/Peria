@@ -7,6 +7,8 @@ export default function Events() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedEvents, setExpandedEvents] = useState(new Set())
+  const [editingTitleId, setEditingTitleId] = useState(null)
+  const [editTitleText, setEditTitleText] = useState('')
 
   useEffect(() => {
     localStorage.setItem('peria_events', JSON.stringify(events))
@@ -22,6 +24,25 @@ export default function Events() {
       }
       return newSet
     })
+  }
+
+  const startEditTitle = (event, e) => {
+    e.stopPropagation()
+    setEditingTitleId(event.id)
+    setEditTitleText(event.title)
+  }
+
+  const saveTitle = (id) => {
+    setEvents(prev => prev.map(e =>
+      e.id === id ? { ...e, title: editTitleText } : e
+    ))
+    setEditingTitleId(null)
+    setEditTitleText('')
+  }
+
+  const cancelEditTitle = () => {
+    setEditingTitleId(null)
+    setEditTitleText('')
   }
 
   const deleteEvent = (eventId) => {
@@ -118,16 +139,38 @@ export default function Events() {
         {sortedEvents.map((event) => {
           const isExpanded = expandedEvents.has(event.id)
           const eventItems = Array.isArray(event.content) ? event.content : []
+          const isEditingTitle = editingTitleId === event.id
 
           return (
-            <div key={event.id} className={styles.eventCard}>
+            <div key={event.id} className={`${styles.eventCard} ${isExpanded ? styles.expanded : ''}`}>
               <div
                 className={styles.eventHeader}
-                onClick={() => toggleExpand(event.id)}
-                style={{ cursor: 'pointer' }}
+                onClick={() => !isEditingTitle && toggleExpand(event.id)}
+                style={{ cursor: isEditingTitle ? 'default' : 'pointer' }}
               >
                 <div className={styles.eventHeaderLeft}>
-                  <div className={styles.eventTitle}>{event.title}</div>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      className={styles.titleInput}
+                      value={editTitleText}
+                      onChange={(e) => setEditTitleText(e.target.value)}
+                      onBlur={() => saveTitle(event.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveTitle(event.id)
+                        if (e.key === 'Escape') cancelEditTitle()
+                      }}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <div
+                      className={styles.eventTitle}
+                      onClick={(e) => startEditTitle(event, e)}
+                    >
+                      {event.title}
+                    </div>
+                  )}
                   <div className={styles.eventDate}>
                     {new Date(event.createdAt).toLocaleDateString('pl-PL', {
                       day: 'numeric',

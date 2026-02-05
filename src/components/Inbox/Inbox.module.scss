@@ -38,7 +38,43 @@
   border: 1px solid $border-color;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+
+  &.expanded {
+    z-index: 10;
+  }
+
+  // Status: new (unread)
+  &.statusNew {
+    border-left: 4px solid $primary-gradient-start;
+    background: rgba(74, 147, 150, 0.15);
+  }
+
+  // Status: read but not categorized
+  &.statusRead {
+    border-left: 4px solid rgba(255, 255, 255, 0.3);
+  }
+
+  // Status: categorized (partial or full)
+  &.statusCategorizedMynotes {
+    border-left: 4px solid $category-mynotes;
+  }
+
+  &.statusCategorizedChecklists {
+    border-left: 4px solid $category-checklists;
+  }
+
+  &.statusCategorizedEvents {
+    border-left: 4px solid $category-events;
+  }
+
+  // Multiple categories
+  &.statusCategorizedMultiple {
+    border-left: 4px solid;
+    border-image: linear-gradient(to bottom, $category-mynotes, $category-checklists, $category-events) 1;
+  }
 }
 
 .noteHeader {
@@ -66,6 +102,30 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: text;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.titleInput {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid $border-color;
+  border-radius: 3px;
+  color: $text-primary;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .noteDate {

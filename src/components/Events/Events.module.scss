@@ -35,10 +35,17 @@
 
 .eventCard {
   background: $card-bg-lighter;
-  border: none;
+  border: 1px solid rgba(203, 127, 7, 0.3);
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  border-left: 4px solid $category-events;
+
+  &.expanded {
+    z-index: 10;
+  }
 }
 
 .eventHeader {
@@ -66,6 +73,30 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: text;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.titleInput {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(203, 127, 7, 0.4);
+  border-radius: 3px;
+  color: #cb7f07;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+
+  &:focus {
+    outline: none;
+    border-color: #cb7f07;
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .eventDate {

@@ -38,7 +38,14 @@
   border: 1px solid rgba(74, 147, 150, 0.3);
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  border-left: 4px solid $category-mynotes;
+
+  &.expanded {
+    z-index: 10;
+  }
 }
 
 .noteHeader {
@@ -66,6 +73,30 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: text;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.titleInput {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(74, 147, 150, 0.4);
+  border-radius: 3px;
+  color: #4a9396;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+
+  &:focus {
+    outline: none;
+    border-color: #4a9396;
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .noteDate {

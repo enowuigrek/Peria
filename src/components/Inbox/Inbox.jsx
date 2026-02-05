@@ -7,12 +7,21 @@ export default function Inbox() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedNotes, setExpandedNotes] = useState(new Set())
+  const [editingTitleId, setEditingTitleId] = useState(null)
+  const [editTitleText, setEditTitleText] = useState('')
 
   useEffect(() => {
     localStorage.setItem('peria_inbox', JSON.stringify(notes))
   }, [notes])
 
   const toggleExpand = (id) => {
+    // Mark as read when expanded for the first time
+    setNotes(prev => prev.map(n =>
+      n.id === id && !n.read
+        ? { ...n, read: true }
+        : n
+    ))
+
     setExpandedNotes(prev => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -22,6 +31,25 @@ export default function Inbox() {
       }
       return newSet
     })
+  }
+
+  const startEditTitle = (note, e) => {
+    e.stopPropagation()
+    setEditingTitleId(note.id)
+    setEditTitleText(note.title || 'Notatka')
+  }
+
+  const saveTitle = (id) => {
+    setNotes(prev => prev.map(n =>
+      n.id === id ? { ...n, title: editTitleText } : n
+    ))
+    setEditingTitleId(null)
+    setEditTitleText('')
+  }
+
+  const cancelEditTitle = () => {
+    setEditingTitleId(null)
+    setEditTitleText('')
   }
 
   const deleteNote = (id) => {
@@ -75,17 +103,54 @@ export default function Inbox() {
         {notes.map((note) => {
           const isExpanded = expandedNotes.has(note.id)
           const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
+          const isEditingTitle = editingTitleId === note.id
+
+          // Determine status class
+          let statusClass = ''
+          if (!note.read) {
+            statusClass = styles.statusNew
+          } else if (note.exported) {
+            const exportedCategories = Object.keys(note.exported).filter(k => note.exported[k])
+            if (exportedCategories.length === 1) {
+              statusClass = styles[`statusCategorized${exportedCategories[0].charAt(0).toUpperCase() + exportedCategories[0].slice(1)}`]
+            } else if (exportedCategories.length > 1) {
+              statusClass = styles.statusCategorizedMultiple
+            }
+          } else if (note.read) {
+            statusClass = styles.statusRead
+          }
 
           return (
-            <div key={note.id} className={styles.noteCard}>
+            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${statusClass}`}>
               {/* Collapsed header - always visible */}
               <div
                 className={styles.noteHeader}
-                onClick={() => hasContent && toggleExpand(note.id)}
-                style={{ cursor: hasContent ? 'pointer' : 'default' }}
+                onClick={() => !isEditingTitle && hasContent && toggleExpand(note.id)}
+                style={{ cursor: isEditingTitle ? 'default' : (hasContent ? 'pointer' : 'default') }}
               >
                 <div className={styles.noteHeaderLeft}>
-                  <div className={styles.noteTitle}>{note.title || 'Notatka'}</div>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      className={styles.titleInput}
+                      value={editTitleText}
+                      onChange={(e) => setEditTitleText(e.target.value)}
+                      onBlur={() => saveTitle(note.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveTitle(note.id)
+                        if (e.key === 'Escape') cancelEditTitle()
+                      }}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <div
+                      className={styles.noteTitle}
+                      onClick={(e) => startEditTitle(note, e)}
+                    >
+                      {note.title || 'Notatka'}
+                    </div>
+                  )}
                   <div className={styles.noteDate}>
                     {new Date(note.createdAt).toLocaleDateString('pl-PL', {
                       day: 'numeric',

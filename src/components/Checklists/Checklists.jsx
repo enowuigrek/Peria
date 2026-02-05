@@ -9,6 +9,8 @@ export default function Checklists() {
   const [expandedChecklists, setExpandedChecklists] = useState(new Set())
   const [editingItemId, setEditingItemId] = useState(null)
   const [editText, setEditText] = useState('')
+  const [editingTitleId, setEditingTitleId] = useState(null)
+  const [editTitleText, setEditTitleText] = useState('')
 
   useEffect(() => {
     localStorage.setItem('peria_checklists', JSON.stringify(checklists))
@@ -70,6 +72,25 @@ export default function Checklists() {
   const cancelEdit = () => {
     setEditingItemId(null)
     setEditText('')
+  }
+
+  const startEditTitle = (checklist, e) => {
+    e.stopPropagation()
+    setEditingTitleId(checklist.id)
+    setEditTitleText(checklist.title)
+  }
+
+  const saveTitle = (id) => {
+    setChecklists(prev => prev.map(c =>
+      c.id === id ? { ...c, title: editTitleText } : c
+    ))
+    setEditingTitleId(null)
+    setEditTitleText('')
+  }
+
+  const cancelEditTitle = () => {
+    setEditingTitleId(null)
+    setEditTitleText('')
   }
 
   const deleteItem = (checklistId, itemIndex) => {
@@ -138,16 +159,38 @@ export default function Checklists() {
           const items = Array.isArray(checklist.content) ? checklist.content : []
           const completedCount = items.filter(item => item.completed).length
           const totalCount = items.length
+          const isEditingTitle = editingTitleId === checklist.id
 
           return (
-            <div key={checklist.id} className={styles.checklistCard}>
+            <div key={checklist.id} className={`${styles.checklistCard} ${isExpanded ? styles.expanded : ''}`}>
               <div
                 className={styles.checklistHeader}
-                onClick={() => toggleExpand(checklist.id)}
-                style={{ cursor: 'pointer' }}
+                onClick={() => !isEditingTitle && toggleExpand(checklist.id)}
+                style={{ cursor: isEditingTitle ? 'default' : 'pointer' }}
               >
                 <div className={styles.checklistHeaderLeft}>
-                  <div className={styles.checklistTitle}>{checklist.title}</div>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      className={styles.titleInput}
+                      value={editTitleText}
+                      onChange={(e) => setEditTitleText(e.target.value)}
+                      onBlur={() => saveTitle(checklist.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveTitle(checklist.id)
+                        if (e.key === 'Escape') cancelEditTitle()
+                      }}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <div
+                      className={styles.checklistTitle}
+                      onClick={(e) => startEditTitle(checklist, e)}
+                    >
+                      {checklist.title}
+                    </div>
+                  )}
                   <div className={styles.checklistDate}>
                     {new Date(checklist.createdAt).toLocaleDateString('pl-PL', {
                       day: 'numeric',
