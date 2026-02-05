@@ -98,6 +98,11 @@ export default function Inbox() {
   const getCategoryStyle = (note) => {
     if (!note.detected) return { className: '', style: {} }
 
+    // Nie koloruj jeśli cokolwiek zostało już wyeksportowane
+    if (note.exported && Object.keys(note.exported).some(k => note.exported[k])) {
+      return { className: '', style: {} }
+    }
+
     const hasNote = note.detected.note
     const hasChecklist = note.detected.checklist?.length > 0
     const hasEvents = note.detected.events?.length > 0

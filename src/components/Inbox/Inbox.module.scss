@@ -374,10 +374,11 @@
   }
 
   &.sectionEvents {
-    border: none;
-    background: transparent; // Przezroczyste tło kontenera
+    border: none !important;
+    background: transparent !important; // Przezroczyste tło kontenera
     border-radius: 0; // Ostre rogi
-    padding: 0; // Bez paddingu, żeby nie było granatowego tła
+    padding: 0 !important; // Bez paddingu, żeby nie było granatowego tła
+    box-shadow: none !important; // Usuń cień jeśli jest
 
     .sectionTitle {
       color: $text-primary; // Biały tekst
