@@ -1,5 +1,36 @@
 # PERIA - CHANGELOG
 
+## [0.3.2] - 2026-01-10
+
+### 🎨 UI/UX Refinements
+**Mobile-first optimization + Color scheme update + Inbox improvements**
+
+#### Changed
+- **Removed all hover states** - Mobile-first approach, unnecessary for touch interfaces
+- **Category colors updated**:
+  - MyNotes: teal → yellow (#fdd03b) - sticky notes style with black text
+  - Checklists: yellow → green (#5db85f)
+  - Events: orange → teal (#4a9396)
+- **Inbox section styling**:
+  - Replaced colored section backgrounds with horizontal separators
+  - Events in Inbox now display with black background (#000000) and blue left border (matching Events section)
+  - Removed yellow styling from checklist section
+  - All sections separated by simple `border-top` lines (like "Pokaż oryginał")
+- **Removed glow effects** - Eliminated box-shadow glow from new items (cleaner look)
+
+#### Added
+- Support for multi-day events (endDate field)
+- Calendar emoji 📅 in event titles
+- AI prompt updated to handle multi-day events (creates single event with date + endDate)
+
+#### Fixed
+- Events background color in Inbox (was navy/gray, now pure black)
+- Section separators consistency across Inbox
+- Export button coloring (darker by default, lighter only on :active)
+- Yellow tinting on note cards after export (removed)
+
+---
+
 ## [0.3.1] - 2026-01-09
 
 ### 📝 Documentation & Brand Update

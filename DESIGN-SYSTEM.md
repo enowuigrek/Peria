@@ -33,9 +33,9 @@ $accent-gradient-end: #cb7f07;     // Pomarańczowy
 **NAJWAŻNIEJSZE - używane w całej aplikacji**
 
 ```scss
-$category-mynotes: #4a9396;      // Teal/Turkus - Notatki
-$category-checklists: #fdd03b;   // Yellow/Żółty - Checklisty
-$category-events: #cb7f07;       // Orange/Pomarańczowy - Wydarzenia
+$category-mynotes: #fdd03b;      // Yellow/Żółty - Notatki (sticky notes)
+$category-checklists: #5db85f;   // Green/Zielony - Checklisty
+$category-events: #4a9396;       // Teal/Turkus - Wydarzenia
 ```
 
 ### Kolory Stanu (Status)
@@ -57,9 +57,9 @@ $text-dark: #291907;       // Bardzo ciemny brąz (dla jasnych tła)
 
 ```scss
 // Active states (per category)
-MyNotes active:    rgba(74, 147, 150, 0.15) bg + rgba(74, 147, 150, 0.5) border
-Checklists active: rgba(253, 208, 59, 0.1) bg + rgba(253, 208, 59, 0.5) border
-Events active:     rgba(203, 127, 7, 0.15) bg + rgba(203, 127, 7, 0.5) border
+MyNotes active:    rgba(253, 208, 59, 0.1) bg + rgba(253, 208, 59, 0.5) border (yellow)
+Checklists active: rgba(93, 184, 95, 0.15) bg + rgba(93, 184, 95, 0.5) border (green)
+Events active:     rgba(74, 147, 150, 0.15) bg + rgba(74, 147, 150, 0.5) border (teal)
 Inbox active:      rgba(100, 150, 170, 0.15) bg + rgba(100, 150, 170, 0.4) border
 Record active:     rgba(150, 180, 150, 0.15) bg + rgba(150, 180, 150, 0.4) border
 
@@ -328,21 +328,21 @@ $button-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 ### Kiedy używać którego koloru?
 
-**Teal (#4a9396):**
-- MyNotes section
-- Primary actions (positive)
-- User messages (chat)
-
 **Yellow (#fdd03b):**
-- Checklists section
-- Warning/attention
+- MyNotes section (sticky notes style)
 - Highlight important info
 - Microphone button
+- Warning/attention
 
-**Orange (#cb7f07):**
+**Green (#5db85f):**
+- Checklists section
+- Success states
+- Completed items
+
+**Teal (#4a9396):**
 - Events section
-- Delete/danger actions
-- Secondary accent
+- Primary actions (positive)
+- User messages (chat)
 
 ### Border Styles
 
@@ -389,6 +389,18 @@ Jeśli wprowadzasz zmiany wizualne, upewnij się że:
 
 ## 🔄 Historia Zmian
 
+**2026-01-10:**
+- ✅ Usunięto hover states z całego projektu (mobile-first)
+- ✅ Zmieniono kolory kategorii:
+  - MyNotes: teal → yellow (#fdd03b) - styl sticky notes
+  - Checklists: yellow → green (#5db85f)
+  - Events: orange → teal (#4a9396)
+- ✅ Wydarzenia w Inbox mają czarne tło z niebieskim paskiem (jak w Events)
+- ✅ Usunięto kolorowe tła z sekcji Inbox (zastąpiono separatorami)
+- ✅ Usunięto rozbłyski (box-shadow glow) z nowych itemów
+- ✅ Dodano wsparcie dla wielodniowych wydarzeń (endDate)
+- ✅ Dodano emotikony 📅 do wydarzeń
+
 **2026-01-09:**
 - ✅ Usunięto duże przyciski "Edytuj tytuł" (replaced with small ✎ icon)
 - ✅ Border radius zmieniony z 12px → 4px (sharp corners)
@@ -396,7 +408,7 @@ Jeśli wprowadzasz zmiany wizualne, upewnij się że:
 - ✅ Dodano małe ikony ✎ do edycji tytułu
 - ✅ Ujednolicono kolory navigation
 - ✅ Dodano category-specific colors dla bottom nav
-- 
+
 **Poprzednie:**
-- Implementacja category colors (#4a9396, #fdd03b, #cb7f07)
+- Implementacja category colors
 - Dark theme implementation

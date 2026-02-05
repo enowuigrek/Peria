@@ -46,7 +46,6 @@
   &.isNew {
     border-left: 6px solid $category-mynotes;
     background: $category-mynotes;
-    box-shadow: 0 0 15px $category-mynotes, 0 2px 8px rgba(0, 0, 0, 0.2);
 
     // Czarne ikony na jasnym tle
     .expandIcon svg,

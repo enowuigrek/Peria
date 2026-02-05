@@ -337,15 +337,19 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 0.75rem;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0;
+  border: none;
+  border-top: 1px solid $border-color;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
 
   &.sectionMynotes {
     border: none;
     background: $category-mynotes; // Żółte tło sticky notes
     border-radius: 0; // Ostre rogi
     position: relative;
+    padding: 0.75rem;
+    margin-top: 0;
 
     // Gradient na prawym dolnym rogu jak karteczka
     &::after {
@@ -369,16 +373,16 @@
   }
 
   &.sectionChecklists {
-    border-color: rgba(253, 208, 59, 0.3);
-    background: rgba(253, 208, 59, 0.05);
+    border: none;
+    border-top: 1px solid $border-color;
+    background: transparent;
   }
 
   &.sectionEvents {
-    border: none !important;
-    background: transparent !important; // Przezroczyste tło kontenera
-    border-radius: 0; // Ostre rogi
-    padding: 0 !important; // Bez paddingu, żeby nie było granatowego tła
-    box-shadow: none !important; // Usuń cień jeśli jest
+    border: none;
+    border-top: 1px solid $border-color;
+    background: transparent;
+    padding: 0;
 
     .sectionTitle {
       color: $text-primary; // Biały tekst

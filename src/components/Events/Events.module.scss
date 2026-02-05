@@ -45,8 +45,7 @@
 
   &.isNew {
     border-left: 6px solid $category-events;
-    background: $category-events; // Pełne niebieskie tło, nie przezroczyste
-    box-shadow: 0 0 15px $category-events, 0 2px 8px rgba(0, 0, 0, 0.2);
+    background: $category-events;
 
     // Czarne ikony na kolorowym tle
     .expandIcon svg,
