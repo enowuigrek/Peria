@@ -1,77 +1,133 @@
-# AI Daily Assistant
+# Peria - Gdzie myśl się rodzi
 
-## Overview
+> **Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać.**
 
-**AI Daily Assistant** is a project developed to practice and enhance AI agent capabilities. The project includes a clean and responsive user interface, fully styled using modular SCSS for better maintainability and customization. It serves as both a useful tool and a playground for testing ideas related to task planning, habit tracking, and future AI agent integration.
+## Czym jest Peria?
 
-## Features
+**Peria** to nie tylko nazwa narzędzia — to stan umysłu, który zachodzi między ruchem a refleksją, między ciszą a słowem, między krokiem a życiową ideą.
 
-- **Task Management**: Add, edit, toggle completion status, and remove daily tasks.
-- **Persistent Storage**: Tasks are saved in local storage to ensure data is retained between sessions.
-- **User-Friendly Interface**: Simple and intuitive design for seamless task management.
+Peria jest tam, gdzie myśl zaczyna się już w trakcie spaceru, zanim jeszcze trafia na papier, zanim zostanie zatrzymana w notatniku, zanim znajdzie swoje miejsce na liście zadań.
 
-## Installation
+**Peria nie narzuca kierunku. Nie każe myśleć. Nie ocenia.**
+Po prostu przechwytuje to, co spontaniczne, zanim przeminie.
 
-To run the project locally:
+### Stan Perypatetyczny
 
-1. **Clone the Repository**:
+Filozofowie ze szkoły Arystotelesa nauczali, chodząc. Ruch ciała uwalnia umysł.
 
-   ```bash
-   git clone https://github.com/enowuigrek/AI-Daily-Assistant.git
-   ```
-
-2. **Navigate to the Project Directory**:
-
-   ```bash
-   cd ai-daily-assistant
-   ```
-
-3. **Install Dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-4. **Start the Development Server**:
-
-   ```bash
-   npm run dev
-   ```
-
-   The application will be running at `http://localhost:3000`.
-
-## Usage
-
-- **Add a Task**: Use the input field to enter a new task and press 'Enter' to add it to the list.
-- **Edit a Task**: Click on the edit icon (✏️) next to a task to modify its text. Press 'Enter' or click outside the input field to save changes.
-- **Toggle Task Completion**: Click the checkbox next to a task to mark it as complete or incomplete.
-- **Remove a Task**: Click on the trash icon (🗑️) to delete a task from the list.
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
-
-1. **Fork the Repository**.
-2. **Create a New Branch**:
-
-   ```bash
-   git checkout -b feature/YourFeatureName
-   ```
-
-3. **Commit Your Changes**:
-
-   ```bash
-   git commit -m 'Add some feature'
-   ```
-
-4. **Push to the Branch**:
-
-   ```bash
-   git push origin feature/YourFeatureName
-   ```
-
-5. **Open a Pull Request**.
+Peria jest cyfrowym towarzyszem tego stanu — schwytuje iskrę pomysłu w czasie, gdy jesteś w ruchu, a myśl jest najbardziej żywa.
 
 ---
 
-*This project is developed as part of an AI agents practice exercise.*
+## Use Case
+
+**Spacer → Pomysł → Nagranie → AI porządkuje → Po spacerze gotowa notatka/lista/event**
+
+1. Wyciągasz telefon podczas spaceru
+2. Jedno kliknięcie → mówisz chaotycznie
+3. AI porządkuje chaos w strukturę
+4. Po spacerze masz uporządkowane myśli w aplikacji
+5. Jeden klick: eksport do Reminders/Notes/Calendar
+
+---
+
+## Unfair Advantages
+
+**Dedykowany Tryb Spaceru (Walk Mode)**
+- Interfejs obsługiwany kciukiem bez patrzenia
+- Duże pole dotykowe, haptics
+- Giganci (Apple/Google) projektują pod biurko, nie pod spacer
+
+**Inteligentne Wyzwalacze (Action Triggers)**
+- "Kup mleko" → automatycznie checklist
+- "A co jeśli bohater umiera w rozdziale trzecim?" → notatka w folderze Inspiracje
+- "Spotkajmy się we wtorek o 10" → propozycja wpisu do kalendarza
+
+**Filozofia Peryferii**
+- Agregacja myśli z tygodnia
+- Mail: "Oto co krążyło wokół Twojej głowy w tym tygodniu"
+- Budowanie relacji z użytkownikiem
+
+**Chaos → Struktura**
+- Nie surowa transkrypcja
+- AI **porządkuje** chaotyczne myśli w czytelną strukturę
+- Auto-generowane tytuły, akapity, formatowanie
+
+---
+
+## Tech Stack
+
+- **Frontend**: React 19, Vite, SCSS
+- **PWA**: Service Worker, manifest.json, offline support
+- **AI**: OpenAI GPT-4o (chaos→structure), Whisper (transkrypcja)
+- **Storage**: localStorage → cloud sync (przyszłość)
+- **Deploy**: Vercel (HTTPS wymagane dla PWA)
+
+---
+
+## Development
+
+### Installation
+
+```bash
+npm install
+```
+
+### Run Development Server
+
+```bash
+npm run dev
+```
+
+The application will be running at `http://localhost:5173`.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+---
+
+## Roadmap
+
+Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju.
+
+### Aktualna faza: #2 PWA - iOS Ready
+
+Cel: Aplikacja działa jak natywna na iPhone, możesz testować tekstowo na spacerach.
+
+---
+
+## Filozofia
+
+**Peria to:**
+- miejsce, w którym pomysł nabiera formy, zanim zostanie wypowiedziany
+- narzędzie, które pozwala zatrzymać ulotne idee bez przerywania stanu kreatywnego
+- towarzysz spacerów, podróży i chwil, w których jesteśmy w ruchu — i w myśli
+
+**Peria traktuje myśl jak światło:**
+nie przywiązujesz jej do sztywnej struktury,
+po prostu pozwalasz jej zaistnieć.
+
+---
+
+## Cytaty
+
+_"Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać."_
+
+_"Peria nie tworzy pomysłów. Peria je łapie."_
+
+_"Peria to cisza między krokami — i treść, która z niej wypływa."_
+
+---
+
+## License
+
+Private project - All rights reserved

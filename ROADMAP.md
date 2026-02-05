@@ -1,21 +1,44 @@
-# VOICE-FIRST CHAOS-TO-STRUCTURE APP
+# PERIA - GDZIE MYŚL SIĘ RODZI
 # MVP → iOS WIDGET → ANDROID WIDGET → PAID
+
+> **Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać.**
+
+## FILOZOFIA PERII
+
+**Peria** to nie tylko nazwa narzędzia — to stan umysłu, który zachodzi między ruchem a refleksją, między ciszą a słowem, między krokiem a życiową ideą.
+
+Peria jest tam, gdzie myśl zaczyna się już w trakcie spaceru, zanim jeszcze trafia na papier, zanim zostanie zatrzymana w notatniku, zanim znajdzie swoje miejsce na liście zadań. To moment, kiedy ciało jest w ruchu, a umysł — nie w trybie skupionym, lecz w trybie swobodnej percepcji — zaczyna łączyć skojarzenia, które na pierwszy rzut oka nie mają ze sobą nic wspólnego.
+
+**Peria nie narzuca kierunku. Nie każe myśleć. Nie ocenia.**
+Po prostu przechwytuje to, co spontaniczne, zanim przeminie.
+
+### Stan Perypatetyczny
+Filozofowie ze szkoły Arystotelesa nauczali, chodząc. Ruch ciała uwalnia umysł. Peria jest cyfrowym towarzyszem tego stanu — schwytuje iskrę pomysłu w czasie, gdy jesteś w ruchu, a myśl jest najbardziej żywa.
+
+---
 
 ## WIZJA PRODUKTU
 **Problem:** Podczas spaceru wpada mi pomysł/zadanie/myśl - chcę to szybko nagrać i mieć uporządkowane.
 
-**Rozwiązanie:**
+**Rozwiązanie (Tryb Spaceru - Walk Mode):**
 1. Jedno kliknięcie (widget iOS/Android) → nagrywanie
-2. Mówię chaotycznie → AI porządkuje i rozpoznaje intencję (checklist/notatka/event)
-3. Model decyduje SAM lub pyta jeśli nie wie
+2. Mówię chaotycznie → AI porządkuje chaos w strukturę
+3. Model rozpoznaje SAM intencję (checklist/notatka/event) lub pyta jeśli nie wie
 4. Po spacerze: uporządkowana notatka/lista/event w aplikacji
 5. Jeden klick: eksport do Apple Reminders/Notes/Calendar (iOS) lub Google Keep/Tasks/Calendar (Android)
+
+**Unfair Advantages (przewagi nie do podrobienia):**
+- **Dedykowany Tryb Spaceru**: Interfejs obsługiwany kciukiem bez patrzenia, duże pole dotykowe, haptics
+- **Inteligentne Wyzwalacze**: AI wie co zrobić - "Kup mleko" → checklist, "A co jeśli bohater umiera?" → notatka
+- **Filozofia Peryferii**: Agregacja myśli z tygodnia → mail "Oto co krążyło wokół Twojej głowy"
+- **Chaos → Struktura**: Nie surowa transkrypcja, ale uporządkowane myśli
 
 **Kluczowe cechy:**
 - Chaos → Struktura (AI rozumie i porządkuje)
 - Auto-rozpoznanie typu (checklist/note/calendar)
 - Wewnętrzna baza + łatwy eksport do natywnych aplikacji
 - Widget na ekranie głównym (najszybszy dostęp)
+- Tryb Spaceru (Walk Mode) - jeden kciuk, bez patrzenia
 
 ## ZASADY PROJEKTU
 - Robię to najpierw dla siebie

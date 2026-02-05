@@ -11,7 +11,10 @@
       "Bash(npx eslint:*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(open:*)",
+      "Bash(ls -lh /Users/lukasznowak/Documents/Programowanie/Moje projekty/moj-asystent/public/icon-*.png)",
+      "Bash(test:*)"
     ]
   }
 }

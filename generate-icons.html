@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+</head>
+<body>
+    <h2>Generate Icons (open in browser, right-click canvases → Save As)</h2>
+    <div>
+        <h3>192x192</h3>
+        <canvas id="icon192" width="192" height="192"></canvas>
+    </div>
+    <div>
+        <h3>512x512</h3>
+        <canvas id="icon512" width="512" height="512"></canvas>
+    </div>
+
+    <script>
+        function drawIcon(canvas) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+
+            // Rounded rectangle
+            const radius = size * 0.225; // iOS corner radius
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Circle overlay (outer)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size * 0.27, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Circle (inner, white)
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size * 0.16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Plus sign (chaos → structure symbol)
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = size * 0.03;
+            ctx.lineCap = 'round';
+
+            // Vertical line
+            ctx.beginPath();
+            ctx.moveTo(size / 2, size / 2 - size * 0.08);
+            ctx.lineTo(size / 2, size / 2 + size * 0.08);
+            ctx.stroke();
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(size / 2 - size * 0.08, size / 2);
+            ctx.lineTo(size / 2 + size * 0.08, size / 2);
+            ctx.stroke();
+        }
+
+        drawIcon(document.getElementById('icon192'));
+        drawIcon(document.getElementById('icon512'));
+
+        // Auto-download
+        setTimeout(() => {
+            const canvas192 = document.getElementById('icon192');
+            const canvas512 = document.getElementById('icon512');
+
+            canvas192.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'icon-192.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            setTimeout(() => {
+                canvas512.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'icon-512.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            }, 1000);
+        }, 500);
+    </script>
+</body>
+</html>

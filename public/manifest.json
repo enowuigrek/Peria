@@ -1,0 +1,40 @@
+{
+  "name": "Peria - Gdzie myśl się rodzi",
+  "short_name": "Peria",
+  "description": "Pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać. Spacer → pomysł → AI porządkuje chaos.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0c29",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Nagraj myśl",
+      "short_name": "Nagraj",
+      "description": "Schwytaj pomysł zanim przeminie",
+      "url": "/?view=chat",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
