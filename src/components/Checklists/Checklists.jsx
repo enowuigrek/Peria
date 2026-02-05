@@ -407,6 +407,21 @@ export default function Checklists() {
                       </svg>
                     </button>
                   </div>
+
+                  {/* Oryginalna wiadomość (ukryta pod przyciskiem) */}
+                  {checklist.sourceText && (
+                    <details className={styles.originalToggle}>
+                      <summary className={styles.originalSummary}>
+                        <span>Pokaż oryginał</span>
+                        <svg className={styles.originalChevron} viewBox="0 0 24 24">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </summary>
+                      <div className={styles.originalText}>
+                        {checklist.sourceText}
+                      </div>
+                    </details>
+                  )}
                 </div>
               )}
             </div>

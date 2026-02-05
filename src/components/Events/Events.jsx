@@ -265,6 +265,21 @@ export default function Events() {
                       </svg>
                     </button>
                   </div>
+
+                  {/* Oryginalna wiadomość (ukryta pod przyciskiem) */}
+                  {event.sourceText && (
+                    <details className={styles.originalToggle}>
+                      <summary className={styles.originalSummary}>
+                        <span>Pokaż oryginał</span>
+                        <svg className={styles.originalChevron} viewBox="0 0 24 24">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </summary>
+                      <div className={styles.originalText}>
+                        {event.sourceText}
+                      </div>
+                    </details>
+                  )}
                 </div>
               )}
             </div>
