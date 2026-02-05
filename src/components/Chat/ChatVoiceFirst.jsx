@@ -50,7 +50,26 @@ export default function ChatVoiceFirst({ onAdd }) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mediaRecorder = new MediaRecorder(stream)
+
+      // Sprawdź dostępne formaty i wybierz najbezpieczniejszy dla Whisper API
+      let mimeType = 'audio/webm;codecs=opus'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        // Fallback do innych formatów
+        const types = [
+          'audio/webm',
+          'audio/mp4',
+          'audio/mpeg',
+          'audio/wav'
+        ]
+        mimeType = types.find(type => MediaRecorder.isTypeSupported(type)) || ''
+      }
+
+      console.log('🎙️ Using MIME type:', mimeType)
+
+      const mediaRecorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream)
+
       mediaRecorderRef.current = mediaRecorder
       audioChunksRef.current = []
 
@@ -61,7 +80,15 @@ export default function ChatVoiceFirst({ onAdd }) {
       }
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        // Użyj typu z MediaRecorder
+        const recordedType = mediaRecorder.mimeType || 'audio/webm'
+        const audioBlob = new Blob(audioChunksRef.current, { type: recordedType })
+
+        console.log('📦 Audio blob:', {
+          size: audioBlob.size,
+          type: audioBlob.type
+        })
+
         stream.getTracks().forEach(track => track.stop())
         await processAudioBlob(audioBlob)
       }
@@ -107,9 +134,29 @@ export default function ChatVoiceFirst({ onAdd }) {
         throw new Error('Brak klucza API OpenAI. Ustaw VITE_OPENAI_API_KEY w pliku .env')
       }
 
+      // Określ rozszerzenie pliku na podstawie MIME type
+      const mimeToExt = {
+        'audio/webm': 'webm',
+        'audio/webm;codecs=opus': 'webm',
+        'audio/mp4': 'm4a',
+        'audio/mpeg': 'mp3',
+        'audio/wav': 'wav',
+        'audio/ogg': 'ogg'
+      }
+
+      const audioType = audioBlob.type.toLowerCase()
+      const ext = mimeToExt[audioType] || 'webm'
+      const filename = `recording.${ext}`
+
+      console.log('📤 Sending to Whisper:', {
+        filename,
+        type: audioBlob.type,
+        size: audioBlob.size
+      })
+
       // Wysyłanie do Whisper API
       const formData = new FormData()
-      formData.append('file', audioBlob, 'recording.webm')
+      formData.append('file', audioBlob, filename)
       formData.append('model', 'whisper-1')
       formData.append('language', 'pl')
 
