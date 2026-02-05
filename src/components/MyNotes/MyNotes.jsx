@@ -57,25 +57,19 @@ export default function MyNotes() {
   const startEdit = (note) => {
     setEditingId(note.id)
     setEditContent(note.content)
-    setEditingTitleId(note.id)
-    setEditTitleText(note.title)
   }
 
   const saveEdit = (id) => {
     setNotes(prev => prev.map(n =>
-      n.id === id ? { ...n, content: editContent, title: editTitleText } : n
+      n.id === id ? { ...n, content: editContent } : n
     ))
     setEditingId(null)
     setEditContent('')
-    setEditingTitleId(null)
-    setEditTitleText('')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditContent('')
-    setEditingTitleId(null)
-    setEditTitleText('')
   }
 
   const exportToAppleNotes = async (note) => {

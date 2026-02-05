@@ -83,7 +83,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  opacity: 0.7;
+  // Usunięto opacity - przydzielone mają normalne kolory
 }
 
 .noteCard {
@@ -154,6 +154,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: calc(100% - 30px); // Rezerwuje miejsce dla ikonki
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.itemCount {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $text-secondary;
+  background: $overlay-dark;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 
 .editTitleIcon {
@@ -609,5 +622,86 @@ details[open] .originalChevron {
   to {
     opacity: 0;
     transform: translate(0, calc(100vh - 80px)) scale(0);
+  }
+}
+
+// ========================================
+// CATEGORY BACKGROUND COLORS (for NEW notes)
+// ========================================
+
+.categoryMyNotes {
+  background: $category-mynotes !important;
+
+  .noteCard {
+    background: transparent;
+    border: 1px solid $bg-black;
+
+    // Czarny tekst i ikony dla widoczności
+    .noteTitle,
+    .noteDate,
+    .editTitleIcon,
+    .expandIcon svg,
+    .deleteButton svg {
+      color: $bg-black !important;
+      stroke: $bg-black !important;
+    }
+  }
+}
+
+.categoryChecklists {
+  background: $category-checklists !important;
+
+  .noteCard {
+    background: transparent;
+    border: 1px solid $bg-black;
+
+    // Czarny tekst i ikony dla widoczności
+    .noteTitle,
+    .noteDate,
+    .editTitleIcon,
+    .expandIcon svg,
+    .deleteButton svg {
+      color: $bg-black !important;
+      stroke: $bg-black !important;
+    }
+  }
+}
+
+.categoryEvents {
+  background: $category-events !important;
+
+  .noteCard {
+    background: transparent;
+    border: 1px solid $bg-black;
+
+    // Czarny tekst i ikony dla widoczności
+    .noteTitle,
+    .noteDate,
+    .editTitleIcon,
+    .expandIcon svg,
+    .deleteButton svg {
+      color: $bg-black !important;
+      stroke: $bg-black !important;
+    }
+  }
+}
+
+.categoryMulti {
+  // Gradient top to bottom dla multi-category
+  background: linear-gradient(to bottom, var(--gradient-colors)) !important;
+
+  .noteCard {
+    background: transparent;
+    border: 1px solid $bg-black;
+
+    // Czarny tekst i ikony dla widoczności
+    .noteTitle,
+    .noteDate,
+    .editTitleIcon,
+    .expandIcon svg,
+    .deleteButton svg {
+      color: $bg-black !important;
+      stroke: $bg-black !important;
+    }
   }
 }

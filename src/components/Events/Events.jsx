@@ -76,6 +76,30 @@ export default function Events() {
     }
   }
 
+  const exportSingleEvent = async (item) => {
+    const timeRange = item.time
+      ? (item.endTime ? `${item.time} - ${item.endTime}` : item.time)
+      : ''
+    const exportText = `${item.title}\n${item.date} ${timeRange}\n`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: item.title,
+          text: exportText
+        })
+        alert('✅ Wyeksportowano wydarzenie')
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error)
+          fallbackCopyToClipboard(exportText)
+        }
+      }
+    } else {
+      fallbackCopyToClipboard(exportText)
+    }
+  }
+
   const exportToCalendar = async (event) => {
     let exportText = `${event.title}\n\n`
 
@@ -181,6 +205,10 @@ export default function Events() {
                     <div className={styles.titleRow}>
                       <div className={styles.eventTitle}>
                         {event.title}
+                        {/* Dodaj licznik wydarzeń */}
+                        {eventItems.length > 0 && (
+                          <span className={styles.itemCount}>{eventItems.length}</span>
+                        )}
                       </div>
                     </div>
                   )}
@@ -240,13 +268,26 @@ export default function Events() {
                             )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => deleteEventItem(event.id, idx)}
-                          className={styles.deleteItemButton}
-                          title="Usuń"
-                        >
-                          ✕
-                        </button>
+                        <div className={styles.eventItemActions}>
+                          <button
+                            onClick={() => exportSingleEvent(item)}
+                            className={styles.exportItemButton}
+                            title="Eksportuj"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => deleteEventItem(event.id, idx)}
+                            className={styles.deleteItemButton}
+                            title="Usuń"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

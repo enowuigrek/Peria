@@ -94,7 +94,7 @@ export default function Inbox() {
     }
   }
 
-  // Get category styling for NEW notes
+  // Get category styling for NEW notes (background color)
   const getCategoryStyle = (note) => {
     if (!note.detected) return { className: '', style: {} }
 
@@ -122,7 +122,7 @@ export default function Inbox() {
       return { className: categoryMap[categories[0]], style: {} }
     }
 
-    // Multi-category gradient
+    // Multi-category gradient (top to bottom)
     if (categories.length > 1) {
       const colorMap = {
         mynotes: '#fdd03b',
@@ -137,6 +137,46 @@ export default function Inbox() {
     }
 
     return { className: '', style: {} }
+  }
+
+  // Get UNASSIGNED categories for border (ODWRÓCONA LOGIKA)
+  const getUnassignedCategories = (note) => {
+    if (!note.detected) return []
+
+    const categories = []
+    if (note.detected.note && !note.exported?.mynotes) categories.push('mynotes')
+    if (note.detected.checklist?.length > 0 && !note.exported?.checklists) categories.push('checklists')
+    if (note.detected.events?.length > 0 && !note.exported?.events) categories.push('events')
+
+    return categories
+  }
+
+  // Get border style for unassigned categories
+  const getBorderStyle = (note) => {
+    const unassigned = getUnassignedCategories(note)
+
+    if (unassigned.length === 0) return {}
+
+    if (unassigned.length === 1) {
+      const colorMap = {
+        mynotes: '#fdd03b',
+        checklists: '#5db85f',
+        events: '#4a9396'
+      }
+      return { borderLeft: `4px solid ${colorMap[unassigned[0]]}` }
+    }
+
+    // Multiple categories - vertical gradient (top to bottom)
+    const colorMap = {
+      mynotes: '#fdd03b',
+      checklists: '#5db85f',
+      events: '#4a9396'
+    }
+    const gradientColors = unassigned.map(cat => colorMap[cat]).join(', ')
+    return {
+      borderLeft: '4px solid',
+      borderImage: `linear-gradient(to bottom, ${gradientColors}) 1`
+    }
   }
 
   // Check if note is fully categorized (all detected content has been exported)
@@ -155,6 +195,23 @@ export default function Inbox() {
   }
 
   const addToSection = (note, section, content, event) => {
+    // Check if already exported - if yes, TOGGLE (remove)
+    if (note.exported?.[section]) {
+      // TOGGLE: Remove from section
+      const storageKey = `peria_${section}`
+      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]')
+      const filtered = existing.filter(item => item.sourceNoteId !== note.id)
+      localStorage.setItem(storageKey, JSON.stringify(filtered))
+
+      // Mark as not exported
+      setNotes(prev => prev.map(n =>
+        n.id === note.id
+          ? { ...n, exported: { ...n.exported, [section]: false } }
+          : n
+      ))
+      return
+    }
+
     // Trigger color flight animation
     if (event) {
       const buttonRect = event.target.getBoundingClientRect()
@@ -215,24 +272,14 @@ export default function Inbox() {
           const isExpanded = expandedNotes.has(note.id)
           const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
           const isEditingTitle = editingTitleId === note.id
-
-          // Determine status class
-          let statusClass = ''
-          if (!note.read) {
-            statusClass = styles.statusNew
-          } else if (note.exported) {
-            const exportedCategories = Object.keys(note.exported).filter(k => note.exported[k])
-            if (exportedCategories.length === 1) {
-              statusClass = styles[`statusCategorized${exportedCategories[0].charAt(0).toUpperCase() + exportedCategories[0].slice(1)}`]
-            } else if (exportedCategories.length > 1) {
-              statusClass = styles.statusCategorizedMultiple
-            }
-          } else if (note.read) {
-            statusClass = styles.statusRead
-          }
+          const borderStyle = getBorderStyle(note)
 
           return (
-            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${statusClass}`}>
+            <div
+              key={note.id}
+              className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''}`}
+              style={borderStyle}
+            >
               {/* Collapsed header - always visible */}
               <div
                 className={styles.noteHeader}
@@ -258,6 +305,14 @@ export default function Inbox() {
                     <div className={styles.titleRow}>
                       <div className={styles.noteTitle}>
                         {note.title || 'Notatka'}
+                        {/* Dodaj licznik checklisty */}
+                        {note.detected?.checklist?.length > 0 && (
+                          <span className={styles.itemCount}>{note.detected.checklist.length}</span>
+                        )}
+                        {/* Dodaj licznik wydarzeń */}
+                        {note.detected?.events?.length > 0 && (
+                          <span className={styles.itemCount}>{note.detected.events.length}</span>
+                        )}
                       </div>
                       <button
                         onClick={(e) => {
@@ -315,8 +370,7 @@ export default function Inbox() {
                         <button
                           onClick={(e) => addToSection(note, 'mynotes', note.detected.note, e)}
                           className={styles.exportButtonMyNotes}
-                          disabled={note.exported?.mynotes}
-                          title={note.exported?.mynotes ? 'Dodano do Notatek' : 'Dodaj do Notatek'}
+                          title={note.exported?.mynotes ? 'Cofnij przydzielenie' : 'Dodaj do Notatek'}
                         >
                           {note.exported?.mynotes ? (
                             <span>✓</span>
@@ -350,8 +404,7 @@ export default function Inbox() {
                             e
                           )}
                           className={styles.exportButtonChecklists}
-                          disabled={note.exported?.checklists}
-                          title={note.exported?.checklists ? 'Dodano do Checklist' : 'Dodaj do Checklist'}
+                          title={note.exported?.checklists ? 'Cofnij przydzielenie' : 'Dodaj do Checklist'}
                         >
                           {note.exported?.checklists ? (
                             <span>✓</span>
@@ -375,7 +428,7 @@ export default function Inbox() {
                   {note.detected?.events?.length > 0 && (
                     <div className={`${styles.section} ${styles.sectionEvents}`}>
                       <div className={styles.sectionHeader}>
-                        <span className={styles.sectionTitle}>Wydarzenia ({note.detected.events.length})</span>
+                        <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
                         <button
                           onClick={(e) => addToSection(
                             note,
@@ -384,8 +437,7 @@ export default function Inbox() {
                             e
                           )}
                           className={styles.exportButtonEvents}
-                          disabled={note.exported?.events}
-                          title={note.exported?.events ? 'Dodano do Wydarzeń' : 'Dodaj do Wydarzeń'}
+                          title={note.exported?.events ? 'Cofnij przydzielenie' : 'Dodaj do Wydarzeń'}
                         >
                           {note.exported?.events ? (
                             <span>✓</span>
@@ -457,7 +509,7 @@ export default function Inbox() {
         {/* PENDING Notes - read but not fully exported */}
         {pendingNotes.map((note) => renderNote(note))}
 
-        {/* COMPLETED Notes - fully exported (expandable section) */}
+        {/* COMPLETED Notes - fully exported (expandable section) - NA KOŃCU */}
         {completedNotes.length > 0 && (
           <div className={styles.completedSection}>
             <div
