@@ -1,12 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient background -->
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00202e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#003545;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00202e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a9396;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#5db85f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdd03b;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="115" fill="url(#grad)"/>
-  <circle cx="256" cy="256" r="140" fill="white" opacity="0.2"/>
-  <circle cx="256" cy="256" r="80" fill="white"/>
-  <path d="M 256 216 L 256 296 M 216 256 L 296 256" stroke="#667eea" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bgGradient)" rx="128"/>
+
+  <!-- Simplified P letter with peripatetic walk path -->
+  <g transform="translate(256, 256)">
+    <!-- P letter shape -->
+    <path d="
+      M -80,-150
+      L -80,150
+      M -80,-150
+      L 20,-150
+      C 80,-150 110,-120 110,-60
+      C 110,0 80,30 20,30
+      L -80,30
+    "
+    fill="none"
+    stroke="url(#colorGradient)"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+
+    <!-- Walking dots representing peripatetic thinking -->
+    <circle cx="-100" cy="120" r="12" fill="#4a9396" opacity="0.8"/>
+    <circle cx="-60" cy="140" r="12" fill="#5db85f" opacity="0.8"/>
+    <circle cx="-20" cy="120" r="12" fill="#fdd03b" opacity="0.8"/>
+  </g>
 </svg>
