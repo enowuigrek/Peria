@@ -42,35 +42,45 @@ export async function askAgent(message) {
 
 // NOWA FUNKCJA: Chaos → Struktura (jedna notatka = źródło prawdy)
 export async function detectStructure(sourceText) {
-  const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  const dayOfWeek = now.toLocaleDateString('pl-PL', { weekday: 'long' }); // np. "środa"
 
   const prompt = `
 Użytkownik nagrał chaotyczną myśl:
 "${sourceText}"
 
-Twoim zadaniem jest wykryć i sklasyfikować:
+Dzisiaj jest: ${currentDate} (${dayOfWeek})
 
-1. ZADANIA (tasks) - konkretne akcje do zrobienia
-   Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
+Twoim zadaniem jest:
+1. Wymyślić krótki, sensowny TYTUŁ dla tej notatki (2-6 słów)
+2. Wykryć i sklasyfikować zawartość:
 
-2. WYDARZENIA (events) - daty, godziny, spotkania, przypomnienia
-   Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00"
-   ZAWSZE oblicz konkretną datę (jeśli "jutro" → policz dzisiejszą datę + 1)
+   a) NOTATKA (note) - uporządkowana treść notatki, pomysły, teksty, myśli
+      Przykłady: "pomysł na startup X", "zwrotka rapowa o Y", "refleksja o Z"
 
-3. POMYSŁY KREATYWNE (creative) - wszystko inne: notatki, pomysły, teksty, myśli
-   Przykłady: "pomysł na startup", "zwrotka o samotności", "refleksja o życiu"
+   b) CHECKLISTA (checklist) - konkretne akcje do zrobienia
+      Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
+
+   c) WYDARZENIA (events) - daty, godziny, spotkania
+      Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00"
+      OBLICZ konkretną datę:
+      - "jutro" → ${currentDate} + 1 dzień
+      - "w przyszłą środę" → oblicz najbliższą środę po dzisiejszym dniu
+      - "za tydzień" → ${currentDate} + 7 dni
 
 ZASADY:
-- NIE zmieniaj treści, tylko kategoryzuj
-- Date/time w formacie ISO: YYYY-MM-DD, HH:MM
-- Jeśli "jutro" → policz datę (dzisiaj: ${currentDate})
-- Jeśli nie ma elementów → zwróć [] lub null
+- NIE zmieniaj treści użytkownika, tylko kategoryzuj
+- Date/time w formacie: "YYYY-MM-DD" i "HH:MM"
+- Jeśli brak elementów danego typu → zwróć [] lub null
+- Tytuł ma być krótki i opisowy
 
-Zwróć TYLKO JSON (bez markdown, bez wyjaśnień):
+Zwróć TYLKO JSON (bez markdown):
 {
-  "tasks": [{ "text": "..." }],
-  "events": [{ "title": "...", "date": "YYYY-MM-DD", "time": "HH:MM" }],
-  "creative": "..." lub null
+  "title": "Krótki tytuł notatki",
+  "note": "tekst notatki" lub null,
+  "checklist": [{ "text": "..." }],
+  "events": [{ "title": "...", "date": "YYYY-MM-DD", "time": "HH:MM" lub null }]
 }
 `;
 
@@ -104,11 +114,12 @@ Zwróć TYLKO JSON (bez markdown, bez wyjaśnień):
   } catch (error) {
     console.error('❌ AI detection error:', error);
 
-    // Fallback: wszystko jako creative
+    // Fallback: wszystko jako notatka
     return {
-      tasks: [],
-      events: [],
-      creative: sourceText
+      title: "Notatka",
+      note: sourceText,
+      checklist: [],
+      events: []
     };
   }
 }

@@ -6,10 +6,23 @@ export default function Notes() {
     const stored = localStorage.getItem('peria_notes')
     return stored ? JSON.parse(stored) : []
   })
+  const [expandedNotes, setExpandedNotes] = useState(new Set())
 
   useEffect(() => {
     localStorage.setItem('peria_notes', JSON.stringify(notes))
   }, [notes])
+
+  const toggleExpand = (id) => {
+    setExpandedNotes(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
 
   const deleteNote = (id) => {
     if (window.confirm('Usunąć tę notatkę?')) {
@@ -17,27 +30,9 @@ export default function Notes() {
     }
   }
 
-  const exportToApp = async (note, appType) => {
-    let exportText = ''
-    let title = 'Peria - Notatka'
-
-    if (appType === 'reminders' && note.detected?.tasks?.length > 0) {
-      title = 'Peria - Zadania'
-      exportText = note.detected.tasks.map(task => `• ${task.text}`).join('\n')
-    } else if (appType === 'notes') {
-      exportText = note.sourceText
-      if (note.detected?.tasks?.length > 0) {
-        exportText += '\n\n--- Zadania ---\n'
-        exportText += note.detected.tasks.map(t => `• ${t.text}`).join('\n')
-      }
-      if (note.detected?.events?.length > 0) {
-        exportText += '\n\n--- Wydarzenia ---\n'
-        exportText += note.detected.events.map(e => `• ${e.title} - ${e.date} ${e.time || ''}`).join('\n')
-      }
-    } else if (appType === 'calendar' && note.detected?.events?.length > 0) {
-      title = 'Peria - Wydarzenia'
-      exportText = note.detected.events.map(e => `${e.title}\n${e.date} ${e.time || ''}`).join('\n\n')
-    }
+  const exportToApp = async (note, appType, content) => {
+    let exportText = content || ''
+    let title = note.title || 'Peria - Notatka'
 
     // Web Share API
     if (navigator.share) {
@@ -86,82 +81,136 @@ export default function Notes() {
   return (
     <div className={styles.notesWrapper}>
       <div className={styles.notesList}>
-        {notes.map((note) => (
-          <div key={note.id} className={styles.noteCard}>
-            {/* Header */}
-            <div className={styles.noteHeader}>
-              <span className={styles.noteDate}>
-                {new Date(note.createdAt).toLocaleDateString('pl-PL', {
-                  day: 'numeric',
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
-              <button
-                onClick={() => deleteNote(note.id)}
-                className={styles.deleteButton}
-                title="Usuń"
+        {notes.map((note) => {
+          const isExpanded = expandedNotes.has(note.id)
+          const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
+
+          return (
+            <div key={note.id} className={styles.noteCard}>
+              {/* Collapsed header - always visible */}
+              <div
+                className={styles.noteHeader}
+                onClick={() => hasContent && toggleExpand(note.id)}
+                style={{ cursor: hasContent ? 'pointer' : 'default' }}
               >
-                ✕
-              </button>
-            </div>
-
-            {/* Source text */}
-            <div className={styles.sourceText}>
-              {note.sourceText}
-            </div>
-
-            {/* Detected structure */}
-            {note.detected && (
-              <div className={styles.detectedSection}>
-                {note.detected.tasks?.length > 0 && (
-                  <div className={styles.detectedItem}>
-                    <span className={styles.detectedLabel}>✅ {note.detected.tasks.length} zadań</span>
-                    <button
-                      onClick={() => exportToApp(note, 'reminders')}
-                      className={styles.exportButton}
-                      disabled={note.exported?.reminders}
-                    >
-                      {note.exported?.reminders ? '✓' : '→ Reminders'}
-                    </button>
+                <div className={styles.noteHeaderLeft}>
+                  <div className={styles.noteTitle}>{note.title || 'Notatka'}</div>
+                  <div className={styles.noteDate}>
+                    {new Date(note.createdAt).toLocaleDateString('pl-PL', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </div>
-                )}
-
-                {note.detected.events?.length > 0 && (
-                  <div className={styles.detectedItem}>
-                    <span className={styles.detectedLabel}>📅 {note.detected.events.length} wydarzeń</span>
-                    <button
-                      onClick={() => exportToApp(note, 'calendar')}
-                      className={styles.exportButton}
-                      disabled={note.exported?.calendar}
-                    >
-                      {note.exported?.calendar ? '✓' : '→ Calendar'}
-                    </button>
-                  </div>
-                )}
-
-                {note.detected.creative && (
-                  <div className={styles.detectedItem}>
-                    <span className={styles.detectedLabel}>💡 Pomysł</span>
-                  </div>
-                )}
-
-                {/* Zawsze można wyeksportować pełną notatkę */}
-                <div className={styles.detectedItem}>
-                  <span className={styles.detectedLabel}>📝 Pełna notatka</span>
+                </div>
+                <div className={styles.noteHeaderRight}>
+                  {hasContent && (
+                    <span className={styles.expandIcon}>{isExpanded ? '▼' : '▶'}</span>
+                  )}
                   <button
-                    onClick={() => exportToApp(note, 'notes')}
-                    className={styles.exportButton}
-                    disabled={note.exported?.notes}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteNote(note.id)
+                    }}
+                    className={styles.deleteButton}
+                    title="Usuń"
                   >
-                    {note.exported?.notes ? '✓' : '→ Notes'}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Expanded content */}
+              {isExpanded && (
+                <div className={styles.noteBody}>
+                  {/* Notatka (uporządkowana treść) */}
+                  {note.detected?.note && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>📝 Notatka</span>
+                        <button
+                          onClick={() => exportToApp(note, 'notes', `${note.title}\n\n${note.detected.note}`)}
+                          className={styles.exportButton}
+                          disabled={note.exported?.notes}
+                        >
+                          {note.exported?.notes ? '✓ Dodano' : '→ Notatki'}
+                        </button>
+                      </div>
+                      <div className={styles.sectionContent}>
+                        {note.detected.note}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Checklista */}
+                  {note.detected?.checklist?.length > 0 && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>✅ Checklista ({note.detected.checklist.length})</span>
+                        <button
+                          onClick={() => exportToApp(
+                            note,
+                            'reminders',
+                            note.detected.checklist.map(item => `• ${item.text}`).join('\n')
+                          )}
+                          className={styles.exportButton}
+                          disabled={note.exported?.reminders}
+                        >
+                          {note.exported?.reminders ? '✓ Dodano' : '→ Przypomnienia'}
+                        </button>
+                      </div>
+                      <ul className={styles.checklist}>
+                        {note.detected.checklist.map((item, idx) => (
+                          <li key={idx}>{item.text}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Wydarzenia */}
+                  {note.detected?.events?.length > 0 && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
+                        <button
+                          onClick={() => exportToApp(
+                            note,
+                            'calendar',
+                            note.detected.events.map(e => `${e.title}\n${e.date} ${e.time || ''}`).join('\n\n')
+                          )}
+                          className={styles.exportButton}
+                          disabled={note.exported?.calendar}
+                        >
+                          {note.exported?.calendar ? '✓ Dodano' : '→ Kalendarz'}
+                        </button>
+                      </div>
+                      <ul className={styles.eventList}>
+                        {note.detected.events.map((event, idx) => (
+                          <li key={idx}>
+                            <strong>{event.title}</strong><br />
+                            {event.date} {event.time && `• ${event.time}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Oryginalna wiadomość (ukryta pod przyciskiem) */}
+                  <details className={styles.originalToggle}>
+                    <summary className={styles.originalSummary}>Pokaż oryginał</summary>
+                    <div className={styles.originalText}>
+                      {note.sourceText}
+                    </div>
+                  </details>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

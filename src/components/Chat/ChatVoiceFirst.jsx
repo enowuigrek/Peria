@@ -12,8 +12,7 @@ export default function ChatVoiceFirst({ onAdd }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
-  const [lastResult, setLastResult] = useState(null)
-  const [showTextInput, setShowTextInput] = useState(false) // Kontrola widoczności text inputa
+  const [showTextInput, setShowTextInput] = useState(false)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const recordingIntervalRef = useRef(null)
@@ -171,52 +170,44 @@ export default function ChatVoiceFirst({ onAdd }) {
       // Usuń "thinking" message
       setMessages((prev) => prev.slice(0, -1))
 
-      // Zapisz rezultat
+      // Zapisz rezultat z nową strukturą
       const result = {
         id: Date.now().toString(),
+        title: detected.title || "Notatka",
         sourceText: text,
-        detected: detected,
+        detected: {
+          note: detected.note || null,
+          checklist: detected.checklist || [],
+          events: detected.events || []
+        },
         createdAt: new Date().toISOString(),
         exported: {
-          reminders: false,
           notes: false,
+          reminders: false,
           calendar: false
         }
       }
-      setLastResult(result)
 
-      // Zapisz do localStorage jako notatka
+      // Zapisz do localStorage
       const notes = JSON.parse(localStorage.getItem('peria_notes') || '[]')
-      notes.unshift(result) // Dodaj na początek (najnowsze na górze)
+      notes.unshift(result)
       localStorage.setItem('peria_notes', JSON.stringify(notes))
 
-      // Wyświetl tylko potwierdzenie zapisania
-      let resultText = `✅ Notatka zapisana\n\n`
+      // Wyświetl potwierdzenie
+      let resultText = `✅ "${detected.title || 'Notatka'}" zapisana\n\n`
 
-      if (detected.tasks && detected.tasks.length > 0) {
-        resultText += `Znalazłem ${detected.tasks.length} ${detected.tasks.length === 1 ? 'zadanie' : 'zadania/zadań'}\n`
-      }
+      const parts = []
+      if (detected.note) parts.push('Notatka')
+      if (detected.checklist?.length > 0) parts.push(`Checklista (${detected.checklist.length})`)
+      if (detected.events?.length > 0) parts.push(`Wydarzenia (${detected.events.length})`)
 
-      if (detected.events && detected.events.length > 0) {
-        resultText += `Znalazłem ${detected.events.length} ${detected.events.length === 1 ? 'wydarzenie' : 'wydarzenia/wydarzeń'}\n`
-      }
-
-      if (detected.creative) {
-        resultText += `Znalazłem pomysł kreatywny\n`
-      }
-
-      if (!detected.tasks?.length && !detected.events?.length && !detected.creative) {
-        resultText = `✅ Notatka zapisana`
+      if (parts.length > 0) {
+        resultText += `Zawiera: ${parts.join(', ')}\n`
       }
 
       resultText += `\n📝 Zobacz w zakładce Notatki`
 
       setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
-
-      // Dodaj zadania do listy (jeśli są)
-      if (detected.tasks && detected.tasks.length > 0) {
-        detected.tasks.forEach(task => onAdd(task.text))
-      }
 
     } catch (error) {
       console.error('Błąd wykrywania struktury:', error)
@@ -230,57 +221,6 @@ export default function ChatVoiceFirst({ onAdd }) {
     }
   }
 
-  const exportToApp = async (appType) => {
-    if (!lastResult) return
-
-    let exportText = ''
-    let title = 'Peria - Notatka'
-
-    if (appType === 'reminders' && lastResult.detected?.tasks?.length > 0) {
-      title = 'Peria - Zadania'
-      exportText = lastResult.detected.tasks.map(task => `• ${task.text}`).join('\n')
-    } else if (appType === 'notes') {
-      exportText = lastResult.sourceText
-      if (lastResult.detected?.tasks?.length > 0) {
-        exportText += '\n\n--- Zadania ---\n'
-        exportText += lastResult.detected.tasks.map(t => `• ${t.text}`).join('\n')
-      }
-      if (lastResult.detected?.events?.length > 0) {
-        exportText += '\n\n--- Wydarzenia ---\n'
-        exportText += lastResult.detected.events.map(e => `• ${e.title} - ${e.date} ${e.time || ''}`).join('\n')
-      }
-    } else if (appType === 'calendar' && lastResult.detected?.events?.length > 0) {
-      // TODO: Generate .ics file
-      title = 'Peria - Wydarzenia'
-      exportText = lastResult.detected.events.map(e => `${e.title}\n${e.date} ${e.time || ''}`).join('\n\n')
-    }
-
-    // Spróbuj Web Share API (działa na iOS)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          text: exportText
-        })
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Share error:', error)
-          fallbackCopyToClipboard(exportText)
-        }
-      }
-    } else {
-      fallbackCopyToClipboard(exportText)
-    }
-  }
-
-  const fallbackCopyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('✅ Skopiowano do schowka!')
-    }).catch((error) => {
-      console.error('Clipboard error:', error)
-      alert('❌ Błąd kopiowania. Spróbuj ponownie.')
-    })
-  }
 
   return (
     <div className={styles.chatWrapper}>
@@ -302,25 +242,6 @@ export default function ChatVoiceFirst({ onAdd }) {
           </div>
         ))}
       </div>
-
-      {/* Export bar */}
-      {lastResult && lastResult.detected && (
-        <div className={styles.exportBar}>
-          {lastResult.detected.tasks?.length > 0 && (
-            <button onClick={() => exportToApp('reminders')} className={styles.exportButton}>
-              📤 Do Reminders
-            </button>
-          )}
-          <button onClick={() => exportToApp('notes')} className={styles.exportButton}>
-            📤 Do Notes
-          </button>
-          {lastResult.detected.events?.length > 0 && (
-            <button onClick={() => exportToApp('calendar')} className={styles.exportButton}>
-              📤 Do Kalendarza
-            </button>
-          )}
-        </div>
-      )}
 
       {/* Input bar - VOICE FIRST */}
       <div className={styles.chatInputBar}>
