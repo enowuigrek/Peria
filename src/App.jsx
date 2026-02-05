@@ -58,7 +58,7 @@ function App() {
                             onEdit={editTask}
                         />
                     )}
-                    {activeView === 'chat' && <Chat />}
+                    {activeView === 'chat' && <Chat onAdd={addTask} />}
                     {activeView === 'calendar' && <Calendar />}
                 </div>
 
