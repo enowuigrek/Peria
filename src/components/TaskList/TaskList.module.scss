@@ -1,43 +1,49 @@
+@use '../../styles/variables' as *;
+
 .incompleteList,
 .completedList {
   list-style-type: none;
-  padding: 0;
+  padding: 1rem;
   margin: 0;
 }
 
 .incompleteList {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid $border-color;
 }
 
 .completedList {
-  border-top: 1px solid #ddd;
-  margin-top: 1rem;
+  border-top: 1px solid $border-color;
+  opacity: 0.7;
 }
 
 .incompleteList li {
-  background-color: #f9f9f9;
-  transition: background-color 0.3s ease;
+  background: $card-bg-lighter;
+  border: 1px solid $border-color;
+  transition: all 0.3s ease;
 }
 
 .incompleteList li:hover {
-  background-color: #e2e2e2;
+  background: rgba(45, 45, 65, 1);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .completedList li {
-  background-color: #d3d3d3;
-  transition: background-color 0.3s ease;
+  background: rgba(45, 45, 65, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
 }
 
 .completedList li:hover {
-  background-color: #c1c1c1;
+  background: rgba(45, 45, 65, 0.7);
 }
 
 .incompleteList li,
 .completedList li {
-  border-radius: 5px;
-  margin-bottom: 1rem;
-  padding: 10px;
+  border-radius: $radius-small;
+  margin-bottom: 0.75rem;
+  padding: 0.875rem;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }

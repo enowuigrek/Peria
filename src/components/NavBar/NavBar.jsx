@@ -8,20 +8,23 @@ function NavBar({ activeView, onSwitch }) {
             <button
                 className={activeView === 'tasks' ? styles.active : ''}
                 onClick={() => onSwitch('tasks')}
+                aria-label="Zadania"
             >
-                📝
+                ☰
             </button>
             <button
                 className={activeView === 'chat' ? styles.active : ''}
                 onClick={() => onSwitch('chat')}
+                aria-label="Czat"
             >
-                💬
+                ◐
             </button>
             <button
                 className={activeView === 'calendar' ? styles.active : ''}
                 onClick={() => onSwitch('calendar')}
+                aria-label="Kalendarz"
             >
-                🗓
+                ⊞
             </button>
         </nav>
     )

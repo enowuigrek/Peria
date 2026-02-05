@@ -103,11 +103,6 @@ export default function Chat({ onAdd }) {
 
   return (
     <div className={styles.chatWrapper}>
-      {messages.length > 0 && (
-        <button onClick={clearChat} className={styles.clearButton} title="Wyczyść historię czatu">
-          🗑️ Wyczyść czat
-        </button>
-      )}
       <div className={styles.chatMessages}>
         {messages.map((msg, index) => (
           <div
@@ -135,9 +130,14 @@ export default function Chat({ onAdd }) {
           onKeyDown={handleKeyDown}
           disabled={isLoading}
         />
-        <button onClick={handleSend} disabled={isLoading || !input.trim()}>
-          {isLoading ? 'Wysyłam...' : 'Wyślij'}
+        <button onClick={handleSend} disabled={isLoading || !input.trim()} className={styles.sendButton}>
+          {isLoading ? '⏳' : '➤'}
         </button>
+        {messages.length > 0 && (
+          <button onClick={clearChat} className={styles.clearButton} title="Wyczyść czat">
+            ✕
+          </button>
+        )}
       </div>
     </div>
   )

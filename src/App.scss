@@ -1,13 +1,22 @@
 @use './styles/variables' as *;
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: $bg-color;
+  background: linear-gradient(135deg, $bg-gradient-start 0%, $bg-gradient-mid 50%, $bg-gradient-end 100%);
+  background-attachment: fixed;
   font-family: $font-stack;
+  color: $text-primary;
+  overflow: hidden;
 }
 
 #root {
@@ -18,39 +27,65 @@ body {
 .app-wrapper {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
   width: 100%;
-  box-sizing: border-box;
+  padding: 0;
 }
 
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 70vh;
+  height: 100vh;
   width: 100%;
-  max-width: 500px;
-  background: $white;
-  border-radius: $radius;
+  max-width: 100%;
+  background: $card-bg;
+  backdrop-filter: blur(10px);
   box-shadow: $box-shadow;
-  margin: auto;
+  overflow: hidden;
+
+  @media (min-width: 768px) {
+    height: 85vh;
+    max-width: 500px;
+    border-radius: $radius-large;
+  }
 }
 
 .header {
-  padding: 2rem 1rem 0;
+  padding: 1.5rem 1rem 0.5rem;
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  border-bottom: 1px solid $border-color;
 }
 
 .content {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 1rem;
+  overflow-x: hidden;
+  padding: 0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 10px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
 }
 
 .footer {
-  border-top: 1px solid #ddd;
-  padding: 0.5rem 1rem;
+  border-top: 1px solid $border-color;
+  padding: 0;
   margin-top: auto;
-  background: $white;
-  position: static;
-  z-index: 2;
+  background: $card-bg-lighter;
+  backdrop-filter: blur(10px);
+  z-index: 10;
 }
