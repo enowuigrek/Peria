@@ -27,7 +27,11 @@
       "Bash(ls:*)",
       "Bash(grep:*)",
       "Bash(git checkout:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(pkill:*)",
+      "Bash(git reset:*)"
     ]
   }
 }
