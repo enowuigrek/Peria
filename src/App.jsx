@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import TaskInput from './components/TaskInput'
-import TaskList from './components/TaskList'
+import './App.scss'
+import TaskInput from './components/TaskInput/TaskInput.jsx'
+import TaskList from './components/TaskList/TaskList.jsx'
 
 function App() {
     const [tasks, setTasks] = useState(() => {
@@ -33,10 +34,12 @@ function App() {
     }
 
     return (
-        <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-            <h1>🧠 Mój Asystent Dnia</h1>
-            <TaskInput onAdd={addTask} />
-            <TaskList tasks={tasks} onToggle={toggleTask} onRemove={removeTask} onEdit={editTask} />
+        <div className="app-wrapper">
+            <div className="app-container">
+                <h1 className="app-title">🧠 Mój Asystent Dnia</h1>
+                <TaskInput onAdd={addTask} />
+                <TaskList tasks={tasks} onToggle={toggleTask} onRemove={removeTask} onEdit={editTask} />
+            </div>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import styles from './TaskList.module.scss'
 
 export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
     const [editingId, setEditingId] = useState(null)
@@ -18,8 +19,8 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
     return (
         <ul>
             {tasks.map(task => (
-                <li key={task.id} style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center' }}>
-                    <label style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                <li key={task.id} className={styles.taskItem}>
+                    <label className={styles.taskLabel}>
                         <input
                             type="checkbox"
                             checked={task.done}
@@ -41,47 +42,24 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
                                     setEditingId(null)
                                 }}
                                 autoFocus
-                                style={{
-                                    marginLeft: '0.5rem',
-                                    flex: 1,
-                                    border: '1px solid #ccc',
-                                    borderRadius: '4px',
-                                    padding: '0.25rem'
-                                }}
+                                className={styles.editInput}
                             />
                         ) : (
-                            <span
-                                className={task.done ? 'done' : ''}
-                                style={{ marginLeft: '0.5rem', flex: 1 }}
-                            >
-              {task.text}
-            </span>
+                            <span className={`${task.done ? styles.done : ''} ${styles.taskText}`}>
+                                {task.text}
+                            </span>
                         )}
                     </label>
                     <button
                         onClick={() => setEditingId(task.id)}
-                        style={{
-                            marginLeft: '0.5rem',
-                            background: 'none',
-                            border: 'none',
-                            color: '#555',
-                            cursor: 'pointer',
-                            fontSize: '1rem'
-                        }}
+                        className={styles.editButton}
                         title="Edytuj zadanie"
                     >
                         ✏️
                     </button>
                     <button
                         onClick={() => onRemove(task.id)}
-                        style={{
-                            marginLeft: '0.5rem',
-                            background: 'none',
-                            border: 'none',
-                            color: '#c00',
-                            cursor: 'pointer',
-                            fontSize: '1rem'
-                        }}
+                        className={styles.deleteButton}
                         title="Usuń zadanie"
                     >
                         🗑

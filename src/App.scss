@@ -1,0 +1,47 @@
+$bg-color: #f8f9fb;
+$white: #fff;
+$text-color: #333;
+$box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+$radius: 12px;
+$font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: $bg-color;
+  font-family: $font-stack;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.app-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.app-container {
+  background: $white;
+  padding: 2rem;
+  border-radius: $radius;
+  box-shadow: $box-shadow;
+  width: 100%;
+  max-width: 500px;
+}
+
+.app-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
