@@ -140,34 +140,28 @@ export function generateICS(events) {
 }
 
 /**
- * Download .ics file or share via Web Share API
+ * Download .ics file or open in calendar app
+ * iOS rozpoznaje data URI z text/calendar i otwiera w Kalendarzu natychmiast
  * @param {string} icsContent - .ics file content
  * @param {string} filename - Filename (without .ics extension)
  */
 export async function downloadOrShareICS(icsContent, filename = 'event') {
-  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
-  const file = new File([blob], `${filename}.ics`, { type: 'text/calendar' })
+  // Detect iOS (iPhone/iPad)
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-  // Try Web Share API first (works on mobile)
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({
-        files: [file],
-        title: filename,
-        text: 'Dodaj wydarzenie do kalendarza'
-      })
-      return { success: true, method: 'share' }
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        // User cancelled share
-        return { success: false, method: 'share', cancelled: true }
-      }
-      console.warn('Share failed, falling back to download:', error)
-      // Fall through to download
-    }
+  if (isIOS) {
+    // iOS: używamy data URI - natywnie otwiera w Kalendarzu
+    // Tak samo jak PKP, Booksy, bilety lotnicze
+    const dataUri = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`
+
+    // Otwórz w nowej karcie - iOS automatycznie przekieruje do Kalendarza
+    window.open(dataUri, '_blank')
+
+    return { success: true, method: 'ios-calendar' }
   }
 
-  // Fallback: Direct download
+  // Android/Desktop: tradycyjny download
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
