@@ -377,9 +377,14 @@
     border: none;
     background: transparent; // Przezroczyste tło kontenera
     border-radius: 0; // Ostre rogi
+    padding: 0; // Bez paddingu, żeby nie było granatowego tła
 
     .sectionTitle {
       color: $text-primary; // Biały tekst
+    }
+
+    .sectionHeader {
+      padding: 0 0 0.5rem 0; // Padding tylko na dole nagłówka
     }
   }
 }
