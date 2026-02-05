@@ -440,7 +440,7 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
       {(isRecording || showTextInput || showImageInput) && (
         <div className={styles.chatInputBar}>
           {isRecording ? (
-            // Podczas nagrywania: licznik + przycisk X (wraca do menu)
+            // Podczas nagrywania: licznik + czerwony przycisk STOP
             <>
               <div className={styles.recordingIndicator}>
                 <span className={styles.recordingDot}></span>
@@ -451,12 +451,11 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
                   stopRecording()
                   // Menu pozostaje otwarte
                 }}
-                className={styles.closeInputButton}
-                title="Anuluj nagrywanie"
+                className={styles.stopRecordingButton}
+                title="Zatrzymaj nagrywanie"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
                 </svg>
               </button>
             </>

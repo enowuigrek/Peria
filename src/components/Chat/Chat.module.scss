@@ -414,6 +414,40 @@
   }
 }
 
+.stopRecordingButton {
+  padding: 0;
+  border: none;
+  background: $color-red; // Czerwone tło jak przycisk nagrywania
+  color: $text-white; // Biała ikonka
+  border-radius: $button-radius;
+  cursor: pointer;
+  transition: $button-transition;
+  box-shadow: $box-shadow-strong;
+  width: $button-height;
+  min-width: $button-height;
+  max-width: $button-height;
+  height: $button-height;
+  min-height: $button-height;
+  max-height: $button-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:hover {
+    background: darken($color-red, 5%);
+  }
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
