@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Checklists.module.scss'
+import { exportToReminders as exportReminders } from '../../utils/remindersExporter'
 
 export default function Checklists() {
   const [checklists, setChecklists] = useState(() => {
@@ -118,29 +119,9 @@ export default function Checklists() {
     }
   }
 
-  const exportToReminders = async (checklist) => {
-    const content = Array.isArray(checklist.content)
-      ? checklist.content.map(item => `${item.completed ? '✓' : '□'} ${item.text}`).join('\n')
-      : checklist.content
-
-    const exportText = `${checklist.title}\n\n${content}`
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: checklist.title,
-          text: exportText
-        })
-        alert('✅ Wyeksportowano checklistę')
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Share error:', error)
-          fallbackCopyToClipboard(exportText)
-        }
-      }
-    } else {
-      fallbackCopyToClipboard(exportText)
-    }
+  const exportToReminders = (checklist) => {
+    // Use dedicated reminders exporter
+    exportReminders(checklist)
   }
 
   const fallbackCopyToClipboard = (text) => {

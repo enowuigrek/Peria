@@ -12,6 +12,9 @@ export default function Events() {
   const [editTitleText, setEditTitleText] = useState('')
   const [editingItemId, setEditingItemId] = useState(null) // eventId-itemIndex
   const [editItemData, setEditItemData] = useState({ title: '', date: '', time: '', endTime: '' })
+  const [showCalendarTip, setShowCalendarTip] = useState(() => {
+    return !localStorage.getItem('peria_calendar_tip_seen')
+  })
 
   useEffect(() => {
     localStorage.setItem('peria_events', JSON.stringify(events))
@@ -109,6 +112,13 @@ export default function Events() {
   }
 
   const exportSingleEvent = async (item) => {
+    // Pokaż tip przy pierwszym eksporcie
+    if (showCalendarTip) {
+      alert('💡 Wskazówka: Wybierz swój domyślny kalendarz – następnym razem będzie szybciej!')
+      localStorage.setItem('peria_calendar_tip_seen', 'true')
+      setShowCalendarTip(false)
+    }
+
     // Generate .ics file for single event
     const icsContent = generateICS(item)
     const filename = `${item.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
@@ -129,6 +139,13 @@ export default function Events() {
     if (eventItems.length === 0) {
       alert('❌ Brak wydarzeń do eksportu')
       return
+    }
+
+    // Pokaż tip przy pierwszym eksporcie
+    if (showCalendarTip) {
+      alert('💡 Wskazówka: Wybierz swój domyślny kalendarz – następnym razem będzie szybciej!')
+      localStorage.setItem('peria_calendar_tip_seen', 'true')
+      setShowCalendarTip(false)
     }
 
     const icsContent = generateICS(eventItems)
