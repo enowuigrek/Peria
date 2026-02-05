@@ -29,8 +29,8 @@ export default function TaskList({ tasks, onToggle, onRemove, onEdit }) {
                 gap: '1rem'
             }}>
                 <div style={{ fontSize: '3rem', opacity: 0.3 }}>✓</div>
-                <p style={{ fontSize: '1.1rem', margin: 0 }}>Brak zadań</p>
-                <p style={{ fontSize: '0.9rem', opacity: 0.6, margin: 0 }}>Dodaj nowe zadanie, aby rozpocząć</p>
+                <p style={{ fontSize: '1.1rem', margin: 0 }}>Cisza między krokami</p>
+                <p style={{ fontSize: '0.9rem', opacity: 0.6, margin: 0 }}>Schwytaj pierwszą myśl w czacie</p>
             </div>
         )
     }

@@ -51,7 +51,7 @@ export default function Chat({ onAdd }) {
         setMessages((prev) => {
           const updated = [...prev]
           updated.pop()
-          return [...updated, { from: 'bot', text: 'Nie udało się wygenerować zadań.' }]
+          return [...updated, { from: 'bot', text: 'Nie udało się uporządkować myśli.' }]
         })
         return
       }
@@ -124,7 +124,7 @@ export default function Chat({ onAdd }) {
       <div className={styles.chatInputBar}>
         <input
           type="text"
-          placeholder="Napisz wiadomość..."
+          placeholder="Schwytaj myśl, zanim przeminie..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}

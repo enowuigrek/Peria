@@ -10,10 +10,11 @@
     align-items: center;
     flex: 1;
     cursor: pointer;
+    padding: 0.5rem 0; // Extra padding for larger touch area
 
     input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
+        width: 24px; // Larger for easier thumb targeting
+        height: 24px;
         cursor: pointer;
         accent-color: $primary-gradient-start;
         border-radius: 4px;
@@ -65,8 +66,8 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    min-width: 32px;
-    height: 32px;
+    min-width: 44px; // Minimum touch target for thumb use
+    min-height: 44px; // Minimum touch target for thumb use
 
     &:hover {
         background: rgba(255, 255, 255, 0.1);
