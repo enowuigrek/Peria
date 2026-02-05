@@ -1,0 +1,190 @@
+import { useState, useEffect } from 'react'
+import styles from './MyNotes.module.scss'
+
+export default function MyNotes() {
+  const [notes, setNotes] = useState(() => {
+    const stored = localStorage.getItem('peria_mynotes')
+    return stored ? JSON.parse(stored) : []
+  })
+  const [expandedNotes, setExpandedNotes] = useState(new Set())
+  const [editingId, setEditingId] = useState(null)
+  const [editContent, setEditContent] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('peria_mynotes', JSON.stringify(notes))
+  }, [notes])
+
+  const toggleExpand = (id) => {
+    setExpandedNotes(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
+
+  const deleteNote = (id) => {
+    if (window.confirm('Usunąć tę notatkę?')) {
+      setNotes(prev => prev.filter(n => n.id !== id))
+    }
+  }
+
+  const startEdit = (note) => {
+    setEditingId(note.id)
+    setEditContent(note.content)
+  }
+
+  const saveEdit = (id) => {
+    setNotes(prev => prev.map(n =>
+      n.id === id ? { ...n, content: editContent } : n
+    ))
+    setEditingId(null)
+    setEditContent('')
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditContent('')
+  }
+
+  const exportToAppleNotes = async (note) => {
+    const exportText = `${note.title}\n\n${note.content}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: note.title,
+          text: exportText
+        })
+        alert('✅ Wyeksportowano notatkę')
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error)
+          fallbackCopyToClipboard(exportText)
+        }
+      }
+    } else {
+      fallbackCopyToClipboard(exportText)
+    }
+  }
+
+  const fallbackCopyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ Skopiowano do schowka!')
+    }).catch((error) => {
+      console.error('Clipboard error:', error)
+      alert('❌ Błąd kopiowania.')
+    })
+  }
+
+  if (notes.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>📝</div>
+        <p>Brak zapisanych notatek</p>
+        <p className={styles.emptyHint}>Notatki z Inbox pojawią się tutaj</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.notesWrapper}>
+      <div className={styles.notesList}>
+        {notes.map((note) => {
+          const isExpanded = expandedNotes.has(note.id)
+          const isEditing = editingId === note.id
+
+          return (
+            <div key={note.id} className={styles.noteCard}>
+              <div
+                className={styles.noteHeader}
+                onClick={() => !isEditing && toggleExpand(note.id)}
+                style={{ cursor: isEditing ? 'default' : 'pointer' }}
+              >
+                <div className={styles.noteHeaderLeft}>
+                  <div className={styles.noteTitle}>{note.title}</div>
+                  <div className={styles.noteDate}>
+                    {new Date(note.createdAt).toLocaleDateString('pl-PL', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+                <div className={styles.noteHeaderRight}>
+                  {!isEditing && <span className={styles.expandIcon}>{isExpanded ? '▼' : '▶'}</span>}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteNote(note.id)
+                    }}
+                    className={styles.deleteButton}
+                    title="Usuń"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {isExpanded && (
+                <div className={styles.noteBody}>
+                  {isEditing ? (
+                    <div className={styles.editContainer}>
+                      <textarea
+                        className={styles.editTextarea}
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        autoFocus
+                      />
+                      <div className={styles.editActions}>
+                        <button
+                          onClick={() => saveEdit(note.id)}
+                          className={styles.saveButton}
+                        >
+                          ✓ Zapisz
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className={styles.cancelButton}
+                        >
+                          ✕ Anuluj
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className={styles.noteContent}>
+                        {note.content}
+                      </div>
+                      <div className={styles.noteActions}>
+                        <button
+                          onClick={() => startEdit(note)}
+                          className={styles.editButton}
+                        >
+                          ✎ Edytuj
+                        </button>
+                        <button
+                          onClick={() => exportToAppleNotes(note)}
+                          className={styles.exportButton}
+                        >
+                          → Apple Notes
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

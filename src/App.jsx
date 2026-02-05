@@ -2,24 +2,28 @@ import { useState, useCallback } from 'react'
 import { nanoid } from 'nanoid'
 import './App.scss'
 import ChatVoiceFirst from './components/Chat/ChatVoiceFirst.jsx'
-import Notes from './components/Notes/Notes.jsx'
+import Inbox from './components/Inbox/Inbox.jsx'
+import MyNotes from './components/MyNotes/MyNotes.jsx'
+import Checklists from './components/Checklists/Checklists.jsx'
+import Events from './components/Events/Events.jsx'
 import NavBar from './components/NavBar/NavBar.jsx'
 
 function App() {
-    const [activeView, setActiveView] = useState('notes')
+    const [activeView, setActiveView] = useState('chat') // Domyślnie ekran nagrywania
 
     const addTask = useCallback((text) => {
-        // Kompatybilność wsteczna - dodaje zadanie jako notatka
+        // Kompatybilność wsteczna
         const note = {
             id: nanoid(),
+            title: "Notatka",
             sourceText: text,
-            detected: { tasks: [{ text }], events: [], creative: null },
+            detected: { note: null, checklist: [{ text }], events: [] },
             createdAt: new Date().toISOString(),
             exported: { reminders: false, notes: false, calendar: false }
         }
-        const notes = JSON.parse(localStorage.getItem('peria_notes') || '[]')
+        const notes = JSON.parse(localStorage.getItem('peria_inbox') || '[]')
         notes.unshift(note)
-        localStorage.setItem('peria_notes', JSON.stringify(notes))
+        localStorage.setItem('peria_inbox', JSON.stringify(notes))
     }, [])
 
     return (
@@ -28,7 +32,10 @@ function App() {
 
                 {/* Sekcja środkowa - główny content */}
                 <div className="content">
-                    {activeView === 'notes' && <Notes />}
+                    {activeView === 'mynotes' && <MyNotes />}
+                    {activeView === 'checklists' && <Checklists />}
+                    {activeView === 'events' && <Events />}
+                    {activeView === 'inbox' && <Inbox />}
                     {activeView === 'chat' && <ChatVoiceFirst onAdd={addTask} />}
                 </div>
 

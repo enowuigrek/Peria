@@ -236,9 +236,9 @@ export default function ChatVoiceFirst({ onAdd }) {
       }
 
       // Zapisz do localStorage
-      const notes = JSON.parse(localStorage.getItem('peria_notes') || '[]')
+      const notes = JSON.parse(localStorage.getItem('peria_inbox') || '[]')
       notes.unshift(result)
-      localStorage.setItem('peria_notes', JSON.stringify(notes))
+      localStorage.setItem('peria_inbox', JSON.stringify(notes))
 
       // Wyświetl potwierdzenie
       let resultText = `✅ "${detected.title || 'Notatka'}" zapisana\n\n`
@@ -252,7 +252,7 @@ export default function ChatVoiceFirst({ onAdd }) {
         resultText += `Zawiera: ${parts.join(', ')}\n`
       }
 
-      resultText += `\n📝 Zobacz w zakładce Notatki`
+      resultText += `\n📥 Zobacz w Inbox`
 
       setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
 
@@ -292,25 +292,39 @@ export default function ChatVoiceFirst({ onAdd }) {
 
       {/* Input bar - VOICE FIRST */}
       <div className={styles.chatInputBar}>
-        {/* Główny przycisk: NAGRYWANIE */}
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          disabled={isLoading}
-          className={isRecording ? styles.recordingButton : styles.micButton}
-          title={isRecording ? 'Zatrzymaj nagrywanie' : 'Nagraj głosem'}
-          style={{ flex: showTextInput ? '0 0 auto' : '1 1 auto' }}
-        >
-          {isRecording ? (
-            <>⏹ {recordingTime}s</>
-          ) : (
+        {/* Podczas nagrywania: licznik + przycisk stop po prawej */}
+        {isRecording ? (
+          <>
+            <div className={styles.recordingIndicator}>
+              <span className={styles.recordingDot}></span>
+              <span className={styles.recordingTime}>{recordingTime}s</span>
+            </div>
+            <button
+              onClick={stopRecording}
+              className={styles.stopButton}
+              title="Zatrzymaj nagrywanie"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+              </svg>
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={startRecording}
+            disabled={isLoading}
+            className={styles.micButton}
+            title="Nagraj głosem"
+            style={{ flex: showTextInput ? '0 0 auto' : '1 1 auto' }}
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
               <line x1="12" y1="19" x2="12" y2="23"/>
               <line x1="8" y1="23" x2="16" y2="23"/>
             </svg>
-          )}
-        </button>
+          </button>
+        )}
 
         {/* Text input (opcjonalny) */}
         {showTextInput && (

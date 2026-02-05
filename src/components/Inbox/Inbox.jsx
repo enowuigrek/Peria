@@ -1,0 +1,208 @@
+import { useState, useEffect } from 'react'
+import styles from './Inbox.module.scss'
+
+export default function Inbox() {
+  const [notes, setNotes] = useState(() => {
+    const stored = localStorage.getItem('peria_inbox')
+    return stored ? JSON.parse(stored) : []
+  })
+  const [expandedNotes, setExpandedNotes] = useState(new Set())
+
+  useEffect(() => {
+    localStorage.setItem('peria_inbox', JSON.stringify(notes))
+  }, [notes])
+
+  const toggleExpand = (id) => {
+    setExpandedNotes(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
+
+  const deleteNote = (id) => {
+    if (window.confirm('Usunąć tę notatkę?')) {
+      setNotes(prev => prev.filter(n => n.id !== id))
+    }
+  }
+
+  const addToSection = (note, section, content) => {
+    // Get existing items from the target section
+    const storageKey = `peria_${section}`
+    const existing = JSON.parse(localStorage.getItem(storageKey) || '[]')
+
+    // Create new item with note's metadata
+    const newItem = {
+      id: note.id + '_' + Date.now(), // Unique ID for section item
+      sourceNoteId: note.id,
+      title: note.title || 'Notatka',
+      content: content,
+      createdAt: new Date().toISOString(),
+      sourceDate: note.createdAt
+    }
+
+    // Add to beginning of array
+    existing.unshift(newItem)
+    localStorage.setItem(storageKey, JSON.stringify(existing))
+
+    // Mark as exported in current note
+    setNotes(prev => prev.map(n =>
+      n.id === note.id
+        ? { ...n, exported: { ...n.exported, [section]: true } }
+        : n
+    ))
+
+    alert(`✅ Dodano do ${section === 'mynotes' ? 'Notatek' : section === 'checklists' ? 'Checklisty' : 'Wydarzeń'}`)
+  }
+
+  if (notes.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>📥</div>
+        <p>Brak nagrań do przeanalizowania</p>
+        <p className={styles.emptyHint}>Nagraj swoją pierwszą myśl</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.notesWrapper}>
+      <div className={styles.notesList}>
+        {notes.map((note) => {
+          const isExpanded = expandedNotes.has(note.id)
+          const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
+
+          return (
+            <div key={note.id} className={styles.noteCard}>
+              {/* Collapsed header - always visible */}
+              <div
+                className={styles.noteHeader}
+                onClick={() => hasContent && toggleExpand(note.id)}
+                style={{ cursor: hasContent ? 'pointer' : 'default' }}
+              >
+                <div className={styles.noteHeaderLeft}>
+                  <div className={styles.noteTitle}>{note.title || 'Notatka'}</div>
+                  <div className={styles.noteDate}>
+                    {new Date(note.createdAt).toLocaleDateString('pl-PL', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+                <div className={styles.noteHeaderRight}>
+                  {hasContent && (
+                    <span className={styles.expandIcon}>{isExpanded ? '▼' : '▶'}</span>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteNote(note.id)
+                    }}
+                    className={styles.deleteButton}
+                    title="Usuń"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Expanded content */}
+              {isExpanded && (
+                <div className={styles.noteBody}>
+                  {/* Notatka (uporządkowana treść) */}
+                  {note.detected?.note && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>📝 Notatka</span>
+                        <button
+                          onClick={() => addToSection(note, 'mynotes', note.detected.note)}
+                          className={styles.exportButton}
+                          disabled={note.exported?.mynotes}
+                        >
+                          {note.exported?.mynotes ? '✓ Dodano' : '→ Notatki'}
+                        </button>
+                      </div>
+                      <div className={styles.sectionContent}>
+                        {note.detected.note}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Checklista */}
+                  {note.detected?.checklist?.length > 0 && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>✅ Checklista ({note.detected.checklist.length})</span>
+                        <button
+                          onClick={() => addToSection(
+                            note,
+                            'checklists',
+                            note.detected.checklist
+                          )}
+                          className={styles.exportButton}
+                          disabled={note.exported?.checklists}
+                        >
+                          {note.exported?.checklists ? '✓ Dodano' : '→ Checklisty'}
+                        </button>
+                      </div>
+                      <ul className={styles.checklist}>
+                        {note.detected.checklist.map((item, idx) => (
+                          <li key={idx}>{item.text}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Wydarzenia */}
+                  {note.detected?.events?.length > 0 && (
+                    <div className={styles.section}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
+                        <button
+                          onClick={() => addToSection(
+                            note,
+                            'events',
+                            note.detected.events
+                          )}
+                          className={styles.exportButton}
+                          disabled={note.exported?.events}
+                        >
+                          {note.exported?.events ? '✓ Dodano' : '→ Wydarzenia'}
+                        </button>
+                      </div>
+                      <ul className={styles.eventList}>
+                        {note.detected.events.map((event, idx) => (
+                          <li key={idx}>
+                            <strong>{event.title}</strong><br />
+                            {event.date} {event.time && `• ${event.time}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Oryginalna wiadomość (ukryta pod przyciskiem) */}
+                  <details className={styles.originalToggle}>
+                    <summary className={styles.originalSummary}>Pokaż oryginał</summary>
+                    <div className={styles.originalText}>
+                      {note.sourceText}
+                    </div>
+                  </details>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

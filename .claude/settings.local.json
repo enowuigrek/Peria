@@ -15,7 +15,8 @@
       "Bash(open:*)",
       "Bash(ls -lh /Users/lukasznowak/Documents/Programowanie/Moje projekty/moj-asystent/public/icon-*.png)",
       "Bash(test:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(cd /Users/lukasznowak/Documents/Programowanie/Moje\\ projekty/peria && npm run dev:*)"
     ]
   }
 }
