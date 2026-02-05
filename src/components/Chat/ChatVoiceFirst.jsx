@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { detectStructure } from '../../agent'
 import styles from './Chat.module.scss'
 
-export default function ChatVoiceFirst({ onAdd }) {
+export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethodsChange }) {
   const [messages, setMessages] = useState(() => {
     const stored = localStorage.getItem('chatMessages')
     return stored ? JSON.parse(stored) : []
@@ -13,10 +13,12 @@ export default function ChatVoiceFirst({ onAdd }) {
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
   const [showTextInput, setShowTextInput] = useState(false)
+  const [showImageInput, setShowImageInput] = useState(false)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const recordingIntervalRef = useRef(null)
   const messagesEndRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages))
@@ -98,16 +100,16 @@ export default function ChatVoiceFirst({ onAdd }) {
 
       mediaRecorder.start()
       setIsRecording(true)
-      setRecordingTime(0)
+      setRecordingTime(60) // Zaczynamy od 60s
 
-      // Timer
+      // Timer - odliczanie od 60 do 0
       recordingIntervalRef.current = setInterval(() => {
         setRecordingTime(prev => {
-          if (prev >= 60) {
-            stopRecording()
-            return 60
+          if (prev <= 1) {
+            stopRecording() // Auto-stop na 0
+            return 0
           }
-          return prev + 1
+          return prev - 1 // Odliczanie w dół
         })
       }, 1000)
 
@@ -210,6 +212,95 @@ export default function ChatVoiceFirst({ onAdd }) {
     }
   }
 
+  const handleImageSelect = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsLoading(true)
+    setShowImageInput(false)
+    setMessages((prev) => [...prev, { from: 'bot', text: '📷 Rozpoznaję tekst z obrazu...' }])
+
+    try {
+      // Konwertuj obraz do base64
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+
+      reader.onload = async () => {
+        const base64Image = reader.result
+
+        // Wywołaj Vision API
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'Proszę wypisz cały tekst widoczny na tym obrazie. Zachowaj oryginalną strukturę i formatowanie.'
+                  },
+                  {
+                    type: 'image_url',
+                    image_url: {
+                      url: base64Image
+                    }
+                  }
+                ]
+              }
+            ],
+            max_tokens: 2000
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        const extractedText = data.choices[0].message.content
+
+        if (!extractedText || !extractedText.trim()) {
+          setMessages((prev) => {
+            const updated = [...prev]
+            updated.pop()
+            return [...updated, { from: 'bot', text: '❌ Nie wykryto tekstu na obrazie.' }]
+          })
+          setIsLoading(false)
+          return
+        }
+
+        // Dodaj rozpoznany tekst jako wiadomość użytkownika
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated.pop()
+          return [...updated, { from: 'user', text: extractedText }]
+        })
+
+        // Przetwórz przez detectStructure
+        await processText(extractedText)
+      }
+
+      reader.onerror = () => {
+        throw new Error('Błąd odczytu pliku')
+      }
+
+    } catch (error) {
+      console.error('❌ Błąd OCR:', error)
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated.pop()
+        return [...updated, { from: 'bot', text: `❌ Błąd OCR:\n${error.message}` }]
+      })
+      setIsLoading(false)
+    }
+  }
+
   const processText = async (text) => {
     setIsLoading(true)
     setMessages((prev) => [...prev, { from: 'bot', text: '🧠 Wykrywam strukturę...' }])
@@ -255,8 +346,6 @@ export default function ChatVoiceFirst({ onAdd }) {
         resultText += `Zawiera: ${parts.join(', ')}\n`
       }
 
-      resultText += `\n[INBOX_BUTTON]`
-
       setMessages((prev) => [...prev, { from: 'bot', text: resultText }])
 
     } catch (error) {
@@ -285,132 +374,177 @@ export default function ChatVoiceFirst({ onAdd }) {
       </div>
 
       <div className={styles.chatMessages}>
-        {messages.map((msg, index) => {
-          const hasInboxButton = msg.text.includes('[INBOX_BUTTON]')
-          const textWithoutButton = msg.text.replace('[INBOX_BUTTON]', '').trim()
-
-          return (
-            <div
-              key={index}
-              className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
-            >
-              {msg.text === '...' ? (
-                <span className={styles.loadingDots}>
-                  <span className={styles.dot}></span>
-                  <span className={styles.dot}></span>
-                  <span className={styles.dot}></span>
-                </span>
-              ) : (
-                <>
-                  {textWithoutButton}
-                  {hasInboxButton && (
-                    <button
-                      onClick={() => window.location.hash = '#/inbox'}
-                      className={styles.inboxButton}
-                      title="Przejdź do Inbox"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-                        <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                      </svg>
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          )
-        })}
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
+          >
+            {msg.text === '...' ? (
+              <span className={styles.loadingDots}>
+                <span className={styles.dot}></span>
+                <span className={styles.dot}></span>
+                <span className={styles.dot}></span>
+              </span>
+            ) : (
+              msg.text
+            )}
+          </div>
+        ))}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input bar - VOICE FIRST, mobile redesign */}
-      <div className={styles.chatInputBar}>
-        {isRecording ? (
-          // Podczas nagrywania: licznik + przycisk stop
-          <>
-            <div className={styles.recordingIndicator}>
-              <span className={styles.recordingDot}></span>
-              <span className={styles.recordingTime}>{recordingTime}s</span>
-            </div>
-            <button
-              onClick={stopRecording}
-              className={styles.stopButton}
-              title="Zatrzymaj nagrywanie"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="6" width="12" height="12" rx="2"/>
-              </svg>
-            </button>
-          </>
-        ) : showTextInput ? (
-          // Tryb tekstowy: input z przyciskiem wewnątrz + X do zamknięcia
-          <>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                placeholder="Wpisz myśl..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={isLoading}
-                autoFocus
-              />
+      {/* Dodatkowy pasek z metodami wprowadzania - wysuwa się z dołu */}
+      {showInputMethods && !isRecording && !showTextInput && !showImageInput && (
+        <div className={styles.inputMethodsBar}>
+          <button
+            onClick={() => {
+              setShowTextInput(true)
+            }}
+            className={styles.methodButton}
+            title="Wpisz tekstem"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+          <button
+            onClick={() => {
+              setShowImageInput(true)
+            }}
+            className={styles.methodButton}
+            title="Dodaj obraz z tekstem"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </button>
+          <button
+            onClick={() => {
+              startRecording()
+            }}
+            disabled={isLoading}
+            className={styles.methodButtonLarge}
+            title="Nagraj głosem"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Input bar - tylko gdy aktywny tryb tekstowy/obrazu/nagrywania */}
+      {(isRecording || showTextInput || showImageInput) && (
+        <div className={styles.chatInputBar}>
+          {isRecording ? (
+            // Podczas nagrywania: licznik + przycisk X (wraca do menu)
+            <>
+              <div className={styles.recordingIndicator}>
+                <span className={styles.recordingDot}></span>
+                <span className={styles.recordingTime}>{recordingTime}s</span>
+              </div>
               <button
-                onClick={handleTextSend}
-                disabled={isLoading || !input.trim()}
-                className={styles.sendButtonInside}
-                title="Wyślij"
+                onClick={() => {
+                  stopRecording()
+                  // Menu pozostaje otwarte
+                }}
+                className={styles.closeInputButton}
+                title="Anuluj nagrywanie"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"/>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
-            </div>
-            <button
-              onClick={() => setShowTextInput(false)}
-              className={styles.closeInputButton}
-              title="Zamknij"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          </>
-        ) : (
-          // Domyślny widok: przycisk pisania PO LEWEJ, nagrywania PO PRAWEJ
-          <>
-            <button
-              onClick={() => setShowTextInput(true)}
-              className={styles.textInputToggle}
-              title="Wpisz tekstem"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-            </button>
-            <button
-              onClick={startRecording}
-              disabled={isLoading}
-              className={styles.micButton}
-              title="Nagraj głosem"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="23"/>
-                <line x1="8" y1="23" x2="16" y2="23"/>
-              </svg>
-            </button>
-          </>
-        )}
-      </div>
+            </>
+          ) : showTextInput ? (
+            // Tryb tekstowy: input z przyciskiem wewnątrz + X do zamknięcia
+            <>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="text"
+                  placeholder="Wpisz myśl..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isLoading}
+                  autoFocus
+                />
+                <button
+                  onClick={handleTextSend}
+                  disabled={isLoading || !input.trim()}
+                  className={styles.sendButtonInside}
+                  title="Wyślij"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTextInput(false)
+                  // Menu pozostaje otwarte
+                }}
+                className={styles.closeInputButton}
+                title="Zamknij"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </>
+          ) : showImageInput ? (
+            // Tryb obrazu: przycisk wyboru + X do zamknięcia
+            <>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className={styles.imageSelectButton}
+                title="Wybierz obraz"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span>Dodaj obraz z tekstem</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                style={{ display: 'none' }}
+              />
+              <button
+                onClick={() => {
+                  setShowImageInput(false)
+                  // Menu pozostaje otwarte
+                }}
+                className={styles.closeInputButton}
+                title="Zamknij"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </>
+          ) : null}
+        </div>
+      )}
     </div>
   )
 }
 
 ChatVoiceFirst.propTypes = {
   onAdd: PropTypes.func.isRequired,
+  showInputMethods: PropTypes.bool.isRequired,
+  onInputMethodsChange: PropTypes.func.isRequired,
 }

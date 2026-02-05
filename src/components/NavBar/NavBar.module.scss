@@ -41,41 +41,53 @@
     color: $text-secondary;
     border-color: rgba(255, 255, 255, 0.15);
 
-    // MyNotes - yellow
+    // MyNotes - yellow with black icon
     &:nth-of-type(1) {
         &.active {
-            background: rgba(253, 208, 59, 0.1);
-            border-color: rgba(253, 208, 59, 0.5);
-            color: $category-mynotes;
+            background: $category-mynotes; // Pełny żółty
+            border-color: $category-mynotes;
+            color: #000000; // Czarna ikonka
+
+            svg {
+                stroke: #000000; // Czarna ikonka
+            }
 
             &::after {
-                background: $category-mynotes;
+                display: none; // Bez podkreślenia
             }
         }
     }
 
-    // Checklists - green
+    // Checklists - green with black icon
     &:nth-of-type(2) {
         &.active {
-            background: rgba(93, 184, 95, 0.15);
-            border-color: rgba(93, 184, 95, 0.5);
-            color: $category-checklists;
+            background: $category-checklists; // Pełny zielony
+            border-color: $category-checklists;
+            color: #000000; // Czarna ikonka
+
+            svg {
+                stroke: #000000; // Czarna ikonka
+            }
 
             &::after {
-                background: $category-checklists;
+                display: none; // Bez podkreślenia
             }
         }
     }
 
-    // Events - teal
+    // Events - blue with black icon
     &:nth-of-type(3) {
         &.active {
-            background: rgba(74, 147, 150, 0.15);
-            border-color: rgba(74, 147, 150, 0.5);
-            color: $category-events;
+            background: $category-events; // Pełny niebieski (teal)
+            border-color: $category-events;
+            color: #000000; // Czarna ikonka
+
+            svg {
+                stroke: #000000; // Czarna ikonka
+            }
 
             &::after {
-                background: $category-events;
+                display: none; // Bez podkreślenia
             }
         }
     }
@@ -88,7 +100,7 @@
     margin: 0.25rem 0.125rem;
 }
 
-// GRUPA 2: Akcje (dzielą przestrzeń po połowie) - stonowane kolory
+// GRUPA 2: Akcje (dzielą przestrzeń po połowie) - czarne z szarym borderem
 .actionButton {
     flex: 1;
     min-width: $button-height;
@@ -96,12 +108,16 @@
     border-color: rgba(255, 255, 255, 0.15);
 
     &.active {
-        background: rgba(100, 150, 170, 0.15);
-        border-color: rgba(100, 150, 170, 0.4);
-        color: #6496aa;
+        background: #000000; // Czarne tło
+        border-color: rgba(255, 255, 255, 0.3); // Szary border
+        color: $text-secondary; // Szara ikonka
+
+        svg {
+            stroke: $text-secondary; // Szara ikonka
+        }
 
         &::after {
-            background: #6496aa;
+            display: none; // Bez podkreślenia
         }
     }
 }
@@ -114,12 +130,16 @@
     background: rgba(255, 255, 255, 0.03);
 
     &.active {
-        background: rgba(150, 180, 150, 0.15);
-        border-color: rgba(150, 180, 150, 0.4);
-        color: #96b496;
+        background: #000000; // Czarne tło
+        border-color: rgba(255, 255, 255, 0.3); // Szary border
+        color: $text-secondary; // Szara ikonka
+
+        svg {
+            stroke: $text-secondary; // Szara ikonka
+        }
 
         &::after {
-            background: #96b496;
+            display: none; // Bez podkreślenia
         }
     }
 }

@@ -29,79 +29,10 @@
   }
 }
 
-// NEW note wrapper - solid color background
+// NEW note wrapper - BEZ kolorowego tła i borderu
 .newNoteWrapper {
-  // Single category backgrounds - całe tło karty
-  &.categoryMyNotes .noteCard {
-    background: $category-mynotes;
-    border-left: 6px solid $category-mynotes;
-    box-shadow: 0 0 15px $category-mynotes, 0 2px 8px rgba(0, 0, 0, 0.2);
-
-    .noteTitle {
-      color: $bg-gradient-start; // Czarny tytuł
-    }
-  }
-
-  &.categoryChecklists .noteCard {
-    background: $category-checklists;
-    border-left: 6px solid $category-checklists;
-    box-shadow: 0 0 15px $category-checklists, 0 2px 8px rgba(0, 0, 0, 0.2);
-
-    .noteTitle {
-      color: $bg-gradient-start; // Czarny tytuł
-    }
-  }
-
-  &.categoryEvents .noteCard {
-    background: $category-events;
-    border-left: 6px solid $category-events;
-    box-shadow: 0 0 15px $category-events, 0 2px 8px rgba(0, 0, 0, 0.2);
-
-    .noteTitle {
-      color: $bg-gradient-start; // Czarny tytuł
-    }
-  }
-
-  // Multi-category gradient (right to left) - całe tło karty
-  &.categoryMulti .noteCard {
-    background: linear-gradient(to left, var(--gradient-colors));
-    border-left: 6px solid $primary-gradient-start;
-    box-shadow: 0 0 15px rgba(74, 147, 150, 0.5), 0 2px 8px rgba(0, 0, 0, 0.2);
-
-    .noteTitle {
-      color: $bg-gradient-start; // Czarny tytuł
-    }
-
-    // Czarne ikony na jasnym tle
-    .expandIcon svg {
-      stroke: $bg-gradient-start;
-    }
-
-    .deleteButton {
-      color: $bg-gradient-start;
-
-      svg {
-        stroke: $bg-gradient-start;
-      }
-    }
-  }
-
-  // Czarne ikony dla wszystkich NEW items na kolorowym tle
-  &.categoryMyNotes .noteCard,
-  &.categoryChecklists .noteCard,
-  &.categoryEvents .noteCard {
-    .expandIcon svg {
-      stroke: $bg-gradient-start;
-    }
-
-    .deleteButton {
-      color: $bg-gradient-start;
-
-      svg {
-        stroke: $bg-gradient-start;
-      }
-    }
-  }
+  // NEW messages nie mają kolorowego tła ani lewego borderu
+  // Normalne szare tło z noteCard
 }
 
 // Completed section (expandable)
@@ -173,26 +104,23 @@
     border-left: 4px solid rgba(255, 255, 255, 0.3);
   }
 
-  // Status: categorized (partial or full)
+  // Status: categorized (partial or full) - tylko lewy border, bez tła
   &.statusCategorizedMynotes {
     border-left: 4px solid $category-mynotes;
-    background: rgba(74, 147, 150, 0.08);
   }
 
   &.statusCategorizedChecklists {
     border-left: 4px solid $category-checklists;
-    background: rgba(253, 208, 59, 0.08);
   }
 
   &.statusCategorizedEvents {
     border-left: 4px solid $category-events;
-    background: rgba(203, 127, 7, 0.08);
   }
 
-  // Multiple categories - cieniowanie zamiast border-image
+  // Multiple categories - gradient border
   &.statusCategorizedMultiple {
-    border-left: 4px solid $category-mynotes;
-    background: linear-gradient(135deg, rgba(74, 147, 150, 0.12) 0%, rgba(253, 208, 59, 0.08) 50%, rgba(203, 127, 7, 0.08) 100%);
+    border-left: 4px solid;
+    border-image: linear-gradient(to bottom, $category-mynotes 0%, $category-checklists 50%, $category-events 100%) 1;
   }
 }
 
@@ -447,7 +375,7 @@
 
 .eventList {
   list-style: none;
-  padding: 0;
+  padding: 0.5rem 0 0 0; // Dodany padding-top żeby ikona nie dotykała górnej kreski
   margin: 0;
   display: flex;
   flex-direction: column;

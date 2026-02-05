@@ -25,7 +25,9 @@
       "Bash(npx expo start:*)",
       "Bash(kill:*)",
       "Bash(ls:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }
