@@ -243,7 +243,7 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
                 content: [
                   {
                     type: 'text',
-                    text: 'Proszę wypisz cały tekst widoczny na tym obrazie. Zachowaj oryginalną strukturę i formatowanie.'
+                    text: 'Extract and transcribe ALL visible text from this image. Include every word, message, and piece of text you can see, even if it appears in multiple sections or bubbles. Preserve the original structure and formatting. Do not summarize or skip anything - provide complete, verbatim transcription of all text content visible in the image.'
                   },
                   {
                     type: 'image_url',
@@ -254,7 +254,7 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
                 ]
               }
             ],
-            max_tokens: 2000
+            max_tokens: 4000
           })
         })
 
