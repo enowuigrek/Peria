@@ -397,8 +397,17 @@ export default function Inbox() {
                       <ul className={styles.eventList}>
                         {note.detected.events.map((event, idx) => (
                           <li key={idx}>
-                            <strong>📅 {event.title}</strong><br />
-                            {event.date} {event.time && `• ${event.time}`}{event.endTime && ` - ${event.endTime}`}
+                            <div><strong>📅 {event.title}</strong></div>
+                            {event.endDate ? (
+                              <>
+                                <div className={styles.eventDateInfo}>Start: {event.date}</div>
+                                <div className={styles.eventDateInfo}>Koniec: {event.endDate}</div>
+                              </>
+                            ) : (
+                              <div className={styles.eventDateInfo}>
+                                {event.date} {event.time && `• ${event.time}`}{event.endTime && ` - ${event.endTime}`}
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>

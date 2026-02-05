@@ -77,13 +77,14 @@ Twoim zadaniem jest:
       - "za tydzień" → ${currentDate} + 7 dni
 
       WAŻNE dla przedziałów czasowych:
-      - Jeśli użytkownik wspomina przedział (np. "podróż do Grecji na dwa tygodnie"):
-        * Ustaw date jako dzień rozpoczęcia (np. jutro)
-        * Oblicz datę końcową i wpisz jako drugi wpis w tablicy events
-        * Pierwszy wpis: "Podróż do Grecji - start", date: "2026-01-11"
-        * Drugi wpis: "Podróż do Grecji - koniec", date: "2026-01-25"
-      - Dla godzin w ciągu dnia (np. "od 16 do 17"): użyj time i endTime
-      - Dla okresów wielodniowych: stwórz dwa oddzielne wydarzenia (start i koniec)
+      - Dla godzin w ciągu dnia (np. "trening od 16 do 17"):
+        * Użyj time i endTime w jednym wydarzeniu
+        * Przykład: { "title": "Trening", "date": "2026-01-11", "time": "16:00", "endTime": "17:00" }
+
+      - Dla okresów wielodniowych (np. "podróż do Grecji na dwa tygodnie"):
+        * Stwórz JEDNO wydarzenie z date (start) i endDate (koniec)
+        * Przykład: { "title": "Podróż do Grecji", "date": "2026-01-11", "endDate": "2026-01-25" }
+        * NIE twórz dwóch osobnych wydarzeń!
 
 ZASADY OGÓLNE:
 - Dla notatek: poprawiaj gramatykę, usuń powtórzenia, dodaj emotikony i akapity
@@ -97,7 +98,13 @@ Zwróć TYLKO JSON (bez markdown):
   "title": "Krótki tytuł notatki",
   "note": "tekst notatki" lub null,
   "checklist": [{ "text": "..." }],
-  "events": [{ "title": "...", "date": "YYYY-MM-DD", "time": "HH:MM" lub null, "endTime": "HH:MM" lub null }]
+  "events": [{
+    "title": "...",
+    "date": "YYYY-MM-DD",
+    "endDate": "YYYY-MM-DD" lub null (dla okresów wielodniowych),
+    "time": "HH:MM" lub null,
+    "endTime": "HH:MM" lub null (dla przedziałów godzinowych w tym samym dniu)
+  }]
 }
 `;
 

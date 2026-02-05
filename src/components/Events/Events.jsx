@@ -223,11 +223,20 @@ export default function Events() {
                         <div className={styles.eventItemContent}>
                           <div className={styles.eventItemTitle}>📅 {item.title}</div>
                           <div className={styles.eventItemDateTime}>
-                            <span className={styles.eventItemDate}>{item.date}</span>
-                            {item.time && (
-                              <span className={styles.eventItemTime}>
-                                {item.time}{item.endTime && ` - ${item.endTime}`}
-                              </span>
+                            {item.endDate ? (
+                              <>
+                                <div className={styles.eventItemDate}>Start: {item.date}</div>
+                                <div className={styles.eventItemDate}>Koniec: {item.endDate}</div>
+                              </>
+                            ) : (
+                              <div className={styles.eventItemDateRow}>
+                                <span className={styles.eventItemDate}>{item.date}</span>
+                                {item.time && (
+                                  <span className={styles.eventItemTime}>
+                                    • {item.time}{item.endTime && ` - ${item.endTime}`}
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>

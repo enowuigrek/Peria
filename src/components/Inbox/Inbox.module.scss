@@ -375,23 +375,11 @@
 
   &.sectionEvents {
     border: none;
-    background: $bg-gradient-start; // Czarne tło
+    background: transparent; // Przezroczyste tło kontenera
     border-radius: 0; // Ostre rogi
 
     .sectionTitle {
-      color: $text-primary; // Biały tekst na czarnym
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      &::before {
-        content: '📅'; // Ikona kalendarza
-      }
-    }
-
-    .eventList li {
-      background: rgba(255, 255, 255, 0.05); // Delikatniejsze tło dla itemów
-      color: $text-primary;
+      color: $text-primary; // Biały tekst
     }
   }
 }
@@ -462,12 +450,21 @@
     background: $bg-gradient-start; // Czarne tło
     border-radius: 0; // Ostre rogi
     line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 
     strong {
       color: $text-primary;
       font-weight: 600;
     }
   }
+}
+
+.eventDateInfo {
+  font-size: 0.85rem;
+  color: $text-secondary;
+  margin-top: 0.125rem;
 }
 
 .exportButton {

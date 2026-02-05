@@ -252,9 +252,14 @@
 
 .eventItemDateTime {
   display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.eventItemDateRow {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .eventItemDate {
