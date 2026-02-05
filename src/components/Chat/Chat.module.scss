@@ -134,12 +134,12 @@
   padding: 0.75rem 1rem;
   border: none;
   background: transparent;
-  color: $danger-color;
+  color: rgba(74, 147, 150, 0.6);
   border-radius: 4px;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.2s ease;
-  border: 1px solid rgba(203, 127, 7, 0.3);
+  border: none;
   min-width: 44px;
   min-height: 44px;
   display: flex;
@@ -148,7 +148,7 @@
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(203, 127, 7, 0.15);
+    background: rgba(74, 147, 150, 0.1);
   }
 }
 
@@ -276,9 +276,9 @@
 
 .clearChatButton {
   padding: 0;
-  border: 1px solid rgba(203, 127, 7, 0.3);
+  border: none;
   background: transparent;
-  color: $danger-color;
+  color: rgba(74, 147, 150, 0.6);
   border-radius: $button-radius;
   cursor: pointer;
   transition: $button-transition;
@@ -298,7 +298,7 @@
   }
 
   &:hover {
-    background: rgba(203, 127, 7, 0.15);
+    background: rgba(74, 147, 150, 0.1);
   }
 }
 
@@ -310,7 +310,7 @@
   padding: 0 1rem;
   background: rgba(203, 127, 7, 0.1);
   border-radius: 8px;
-  border: 1px solid rgba(203, 127, 7, 0.3);
+  border: none;
   animation: fadeIn 0.3s ease;
 }
 
@@ -333,7 +333,7 @@
   padding: 0;
   border: 2px solid rgba(203, 127, 7, 0.4);
   background: rgba(203, 127, 7, 0.2);
-  color: $danger-color;
+  color: rgba(74, 147, 150, 0.6);
   border-radius: $button-radius;
   cursor: pointer;
   transition: $button-transition;
