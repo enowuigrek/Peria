@@ -79,10 +79,8 @@ body {
 }
 
 .footer {
-  border-top: 1px solid $border-color;
   padding: 0;
-  background: $card-bg-lighter;
-  backdrop-filter: blur(10px);
+  background: transparent; // Navbar ma swoje tło
   flex-shrink: 0;
   position: sticky;
   bottom: 0;
