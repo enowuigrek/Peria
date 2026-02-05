@@ -50,6 +50,8 @@ body {
     box-shadow: $box-shadow;
     overflow: hidden;
     position: relative;
+    // Safe area insets dla iPhone z notchem/Dynamic Island
+    padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
 
     @media (min-width: 768px) {
