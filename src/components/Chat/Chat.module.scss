@@ -2,6 +2,26 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
+}
+
+.clearButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #c82333;
+  }
 }
 
 .chatMessages {

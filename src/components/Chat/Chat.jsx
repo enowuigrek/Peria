@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { askAgent } from '../../agent'
 import styles from './Chat.module.scss'
 
 export default function Chat({ onAdd }) {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(() => {
+    const stored = localStorage.getItem('chatMessages')
+    return stored ? JSON.parse(stored) : []
+  })
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages))
+  }, [messages])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -87,8 +94,20 @@ export default function Chat({ onAdd }) {
     }
   }
 
+  const clearChat = () => {
+    if (window.confirm('Czy na pewno chcesz wyczyścić historię czatu?')) {
+      setMessages([])
+      localStorage.removeItem('chatMessages')
+    }
+  }
+
   return (
     <div className={styles.chatWrapper}>
+      {messages.length > 0 && (
+        <button onClick={clearChat} className={styles.clearButton} title="Wyczyść historię czatu">
+          🗑️ Wyczyść czat
+        </button>
+      )}
       <div className={styles.chatMessages}>
         {messages.map((msg, index) => (
           <div
