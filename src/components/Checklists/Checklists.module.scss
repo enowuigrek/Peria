@@ -126,9 +126,22 @@
 }
 
 .expandIcon {
-  font-size: 0.7rem;
-  color: $text-secondary;
-  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    stroke: $text-secondary;
+    stroke-width: 2;
+    fill: none;
+  }
+}
+
+.checklistCard.expanded .expandIcon {
+  transform: rotate(90deg);
 }
 
 .deleteButton {
@@ -159,6 +172,23 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  animation: slideDown 0.3s ease-out;
+  transform-origin: top;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+  }
 }
 
 .itemsList {
@@ -332,18 +362,25 @@
 }
 
 .exportButton {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: linear-gradient(135deg, #fdd03b 0%, #cb7f07 100%);
-  color: #291907;
+  padding: 0.5rem;
+  border: 1px solid rgba(253, 208, 59, 0.4);
+  background: rgba(253, 208, 59, 0.1);
+  color: $category-checklists;
   border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 
   &:hover {
-    background: linear-gradient(135deg, lighten(#fdd03b, 5%) 0%, lighten(#cb7f07, 5%) 100%);
+    background: rgba(253, 208, 59, 0.2);
+    border-color: rgba(253, 208, 59, 0.6);
   }
 }
 
