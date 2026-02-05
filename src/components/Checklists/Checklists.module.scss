@@ -314,12 +314,6 @@
   border-radius: 3px;
   font-size: 0.75rem;
   cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.deleteItemButton:hover {
-  background: $overlay-light;
-  color: $text-muted;
 }
 
 .editContainer {

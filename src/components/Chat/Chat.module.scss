@@ -442,10 +442,6 @@
   &:active {
     transform: scale(0.95);
   }
-
-  &:hover {
-    background: darken($color-red, 5%);
-  }
 }
 
 @keyframes pulse {

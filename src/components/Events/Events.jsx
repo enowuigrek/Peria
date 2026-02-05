@@ -9,6 +9,8 @@ export default function Events() {
   const [expandedEvents, setExpandedEvents] = useState(new Set())
   const [editingTitleId, setEditingTitleId] = useState(null)
   const [editTitleText, setEditTitleText] = useState('')
+  const [editingItemId, setEditingItemId] = useState(null) // eventId-itemIndex
+  const [editItemData, setEditItemData] = useState({ title: '', date: '', time: '', endTime: '' })
 
   useEffect(() => {
     localStorage.setItem('peria_events', JSON.stringify(events))
@@ -74,6 +76,35 @@ export default function Events() {
         return event
       }))
     }
+  }
+
+  const startEditItem = (eventId, itemIndex, item) => {
+    setEditingItemId(`${eventId}-${itemIndex}`)
+    setEditItemData({
+      title: item.title || '',
+      date: item.date || '',
+      time: item.time || '',
+      endTime: item.endTime || ''
+    })
+  }
+
+  const saveEditItem = (eventId, itemIndex) => {
+    setEvents(prev => prev.map(event => {
+      if (event.id === eventId && Array.isArray(event.content)) {
+        const updatedContent = event.content.map((item, idx) =>
+          idx === itemIndex ? { ...item, ...editItemData } : item
+        )
+        return { ...event, content: updatedContent }
+      }
+      return event
+    }))
+    setEditingItemId(null)
+    setEditItemData({ title: '', date: '', time: '', endTime: '' })
+  }
+
+  const cancelEditItem = () => {
+    setEditingItemId(null)
+    setEditItemData({ title: '', date: '', time: '', endTime: '' })
   }
 
   const exportSingleEvent = async (item) => {
@@ -246,50 +277,117 @@ export default function Events() {
               {isExpanded && (
                 <div className={styles.eventBody}>
                   <div className={styles.eventItemsList}>
-                    {eventItems.map((item, idx) => (
-                      <div key={idx} className={styles.eventItem}>
-                        <div className={styles.eventItemContent}>
-                          <div className={styles.eventItemTitle}>📅 {item.title}</div>
-                          <div className={styles.eventItemDateTime}>
-                            {item.endDate ? (
-                              <>
-                                <div className={styles.eventItemDate}>Start: {item.date}</div>
-                                <div className={styles.eventItemDate}>Koniec: {item.endDate}</div>
-                              </>
-                            ) : (
-                              <div className={styles.eventItemDateRow}>
-                                <span className={styles.eventItemDate}>{item.date}</span>
-                                {item.time && (
-                                  <span className={styles.eventItemTime}>
-                                    • {item.time}{item.endTime && ` - ${item.endTime}`}
-                                  </span>
-                                )}
+                    {eventItems.map((item, idx) => {
+                      const isEditingItem = editingItemId === `${event.id}-${idx}`
+
+                      return (
+                        <div key={idx} className={styles.eventItem}>
+                          <div className={styles.eventItemContent}>
+                            {isEditingItem ? (
+                              <div className={styles.editItemForm}>
+                                <input
+                                  type="text"
+                                  placeholder="Tytuł"
+                                  className={styles.editItemInput}
+                                  value={editItemData.title}
+                                  onChange={(e) => setEditItemData(prev => ({ ...prev, title: e.target.value }))}
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Data (np. 2024-01-15)"
+                                  className={styles.editItemInput}
+                                  value={editItemData.date}
+                                  onChange={(e) => setEditItemData(prev => ({ ...prev, date: e.target.value }))}
+                                />
+                                <div className={styles.editItemTimeRow}>
+                                  <input
+                                    type="text"
+                                    placeholder="Czas (np. 14:00)"
+                                    className={styles.editItemInputSmall}
+                                    value={editItemData.time}
+                                    onChange={(e) => setEditItemData(prev => ({ ...prev, time: e.target.value }))}
+                                  />
+                                  <input
+                                    type="text"
+                                    placeholder="Do (np. 16:00)"
+                                    className={styles.editItemInputSmall}
+                                    value={editItemData.endTime}
+                                    onChange={(e) => setEditItemData(prev => ({ ...prev, endTime: e.target.value }))}
+                                  />
+                                </div>
+                                <div className={styles.editItemActions}>
+                                  <button
+                                    onClick={() => saveEditItem(event.id, idx)}
+                                    className={styles.saveEditButton}
+                                  >
+                                    ✓ Zapisz
+                                  </button>
+                                  <button
+                                    onClick={cancelEditItem}
+                                    className={styles.cancelEditButton}
+                                  >
+                                    ✕ Anuluj
+                                  </button>
+                                </div>
                               </div>
+                            ) : (
+                              <>
+                                <div className={styles.eventItemTitle}>📅 {item.title}</div>
+                                <div className={styles.eventItemDateTime}>
+                                  {item.endDate ? (
+                                    <>
+                                      <div className={styles.eventItemDate}>Start: {item.date}</div>
+                                      <div className={styles.eventItemDate}>Koniec: {item.endDate}</div>
+                                    </>
+                                  ) : (
+                                    <div className={styles.eventItemDateRow}>
+                                      <span className={styles.eventItemDate}>{item.date}</span>
+                                      {item.time && (
+                                        <span className={styles.eventItemTime}>
+                                          • {item.time}{item.endTime && ` - ${item.endTime}`}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </>
                             )}
                           </div>
+                          {!isEditingItem && (
+                            <div className={styles.eventItemActions}>
+                              <button
+                                onClick={() => startEditItem(event.id, idx, item)}
+                                className={styles.editItemButton}
+                                title="Edytuj"
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => exportSingleEvent(item)}
+                                className={styles.exportItemButton}
+                                title="Eksportuj"
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                  <polyline points="7 10 12 15 17 10" />
+                                  <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => deleteEventItem(event.id, idx)}
+                                className={styles.deleteItemButton}
+                                title="Usuń"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        <div className={styles.eventItemActions}>
-                          <button
-                            onClick={() => exportSingleEvent(item)}
-                            className={styles.exportItemButton}
-                            title="Eksportuj"
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="7 10 12 15 17 10" />
-                              <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => deleteEventItem(event.id, idx)}
-                            className={styles.deleteItemButton}
-                            title="Usuń"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
 
                   <div className={styles.eventActions}>

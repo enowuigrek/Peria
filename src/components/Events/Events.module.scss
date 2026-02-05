@@ -300,6 +300,22 @@
   flex-shrink: 0;
 }
 
+.editItemButton {
+  flex-shrink: 0;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: $text-secondary;
+  cursor: pointer;
+  border-radius: 3px;
+  opacity: 1; // Zawsze widoczny
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .exportItemButton {
   flex-shrink: 0;
   padding: 0.25rem 0.5rem;
@@ -307,18 +323,12 @@
   background: transparent;
   color: $text-secondary;
   cursor: pointer;
-  transition: all 0.2s ease;
-  opacity: 0;
   border-radius: 3px;
+  opacity: 1; // Zawsze widoczny
 
   svg {
     width: 14px;
     height: 14px;
-  }
-
-  &:hover {
-    background: $overlay-light;
-    color: $category-events;
   }
 }
 
@@ -331,13 +341,70 @@
   border-radius: 3px;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.2s ease;
-  opacity: 0;
+  opacity: 1; // Zawsze widoczny
 }
 
-.eventItem:hover .deleteItemButton,
-.eventItem:hover .exportItemButton {
-  opacity: 1;
+// Formularz edycji itemu
+.editItemForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.editItemInput {
+  padding: 0.5rem;
+  background: $overlay-dark;
+  border: 1px solid $border-color;
+  border-radius: 0;
+  color: $text-primary;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.editItemTimeRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editItemInputSmall {
+  padding: 0.5rem;
+  background: $overlay-dark;
+  border: 1px solid $border-color;
+  border-radius: 0;
+  color: $text-primary;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.editItemActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.saveEditButton {
+  flex: 1;
+  padding: 0.5rem;
+  background: $category-events;
+  border: none;
+  border-radius: 0;
+  color: $bg-black;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.cancelEditButton {
+  flex: 1;
+  padding: 0.5rem;
+  background: $overlay-dark;
+  border: 1px solid $border-color;
+  border-radius: 0;
+  color: $text-secondary;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 
 .eventActions {
