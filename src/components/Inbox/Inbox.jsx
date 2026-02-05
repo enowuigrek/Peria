@@ -135,6 +135,7 @@ export default function Inbox() {
       content: content,
       createdAt: new Date().toISOString(),
       sourceDate: note.createdAt,
+      sourceText: note.sourceText, // Oryginalna transkrypcja
       isNew: true  // Flag for newly exported items
     }
 
