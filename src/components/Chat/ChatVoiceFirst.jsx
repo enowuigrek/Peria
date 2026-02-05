@@ -48,7 +48,6 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
     if (window.confirm('Czy na pewno chcesz wyczyścić historię czatu?')) {
       setMessages([])
       localStorage.removeItem('chatMessages')
-      setLastResult(null)
     }
   }
 
@@ -236,14 +235,14 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4o',
             messages: [
               {
                 role: 'user',
                 content: [
                   {
                     type: 'text',
-                    text: 'Extract and transcribe ALL visible text from this image. Include every word, message, and piece of text you can see, even if it appears in multiple sections or bubbles. Preserve the original structure and formatting. Do not summarize or skip anything - provide complete, verbatim transcription of all text content visible in the image.'
+                    text: 'You are an OCR system. Extract ALL text visible in this image. Include every single word, message, name, date, and any other text you see. If there are multiple messages or text bubbles, transcribe them all in order from top to bottom. Preserve line breaks and structure. Output ONLY the extracted text with no additional commentary.'
                   },
                   {
                     type: 'image_url',
