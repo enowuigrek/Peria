@@ -62,7 +62,7 @@
   color: $text-primary;
   margin: 0;
   letter-spacing: 0.05em;
-  background: linear-gradient(135deg, $category-mynotes 0%, $category-checklists 50%, $category-events 100%);
+  background: linear-gradient(135deg, $category-events 0%, $category-checklists 50%, $category-mynotes 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -121,7 +121,7 @@
 .gradient1 {
   width: 300px;
   height: 300px;
-  background: $category-mynotes;
+  background: $category-events;
   top: 20%;
   left: 10%;
   animation: float1 4s ease-in-out infinite;
@@ -130,7 +130,7 @@
 .gradient2 {
   width: 250px;
   height: 250px;
-  background: $category-checklists;
+  background: $category-mynotes;
   top: 50%;
   right: 15%;
   animation: float2 5s ease-in-out infinite;
@@ -139,7 +139,7 @@
 .gradient3 {
   width: 200px;
   height: 200px;
-  background: $category-events;
+  background: $category-checklists;
   bottom: 20%;
   left: 30%;
   animation: float3 6s ease-in-out infinite;

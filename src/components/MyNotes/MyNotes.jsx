@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { groupByDate } from '../../utils/dateHelpers'
 import styles from './MyNotes.module.scss'
 
 export default function MyNotes() {
@@ -7,6 +8,7 @@ export default function MyNotes() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedNotes, setExpandedNotes] = useState(new Set())
+  const [expandedDays, setExpandedDays] = useState(new Set(['Dzisiaj', 'Wczoraj'])) // Auto-expand recent days
   const [editingId, setEditingId] = useState(null)
   const [editContent, setEditContent] = useState('')
   const [editingTitleId, setEditingTitleId] = useState(null)
