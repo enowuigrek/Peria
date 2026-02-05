@@ -1,449 +1,520 @@
-# PERIA — ARCHITEKTURA
+# PERIA - ARCHITECTURE
 
-## MODEL DANYCH: "JEDNA NOTATKA = ŹRÓDŁO PRAWDY"
-
-### Stary model (tasks-based):
-```js
-tasks: [
-  { id: "1", text: "Kupić mleko", done: false },
-  { id: "2", text: "Spotkanie o 15", done: false }
-]
-```
-**Problem:** Brak kontekstu, brak źródła, nie wiadomo skąd to się wzięło.
+> **Dokumentacja techniczna dla AI asystenta**
+>
+> Ten dokument wyjaśnia jak działa aplikacja pod maską. W nowym chacie przeczytaj to aby wiedzieć gdzie szukać kodu i jak aplikacja działa.
 
 ---
 
-### Nowy model (note-based):
+## 🏗️ STRUKTURA PROJEKTU
 
+```
+peria/
+├── public/
+│   ├── manifest.json          # PWA manifest (name, icons, shortcuts)
+│   ├── icon-192.png           # App icon (192x192)
+│   ├── icon-512.png           # App icon (512x512)
+│   └── sw.js                  # Service Worker (offline support)
+│
+├── src/
+│   ├── main.jsx               # Entry point (React root)
+│   ├── App.jsx                # Main app component (routing + layout)
+│   ├── App.scss               # Global styles
+│   ├── agent.js               # OpenAI API integration (2 functions)
+│   │
+│   ├── components/
+│   │   ├── Chat/
+│   │   │   ├── ChatVoiceFirst.jsx    # GŁÓWNY ekran nagrywania 🎙️
+│   │   │   └── Chat.module.scss
+│   │   │
+│   │   ├── Inbox/
+│   │   │   ├── Inbox.jsx             # GŁÓWNY widok Inbox (wszystkie notatki)
+│   │   │   └── Inbox.module.scss
+│   │   │
+│   │   ├── MyNotes/
+│   │   │   ├── MyNotes.jsx           # Sekcja Notatek
+│   │   │   └── MyNotes.module.scss
+│   │   │
+│   │   ├── Checklists/
+│   │   │   ├── Checklists.jsx        # Sekcja Checklistów
+│   │   │   └── Checklists.module.scss
+│   │   │
+│   │   ├── Events/
+│   │   │   ├── Events.jsx            # Sekcja Wydarzeń
+│   │   │   └── Events.module.scss
+│   │   │
+│   │   ├── NavBar/
+│   │   │   ├── NavBar.jsx            # Bottom navigation (5 tabs)
+│   │   │   └── NavBar.module.scss
+│   │   │
+│   │   ├── SplashScreen/
+│   │   │   ├── SplashScreen.jsx      # Splash screen (2s intro)
+│   │   │   └── SplashScreen.module.scss
+│   │   │
+│   │   └── [deprecated]/              # Stare komponenty (nie używane)
+│   │       ├── TaskInput/
+│   │       ├── TaskList/
+│   │       ├── TaskItem/
+│   │       ├── Notes/
+│   │       └── Calendar/
+│   │
+│   ├── utils/
+│   │   └── chaosToStructure.js       # DEPRECATED (stary prompt, nie używany)
+│   │
+│   └── styles/
+│       └── _variables.scss           # SCSS variables
+│
+├── .env                        # Environment variables (API keys)
+├── .env.example                # Template for .env
+├── .gitignore                  # Git ignore rules
+├── vite.config.js              # Vite configuration
+├── package.json                # Dependencies
+│
+└── [DOCUMENTATION]/
+    ├── README.md               # Project intro + quick start
+    ├── ROADMAP.md              # Development plan + status
+    ├── CHANGELOG.md            # Version history
+    ├── DESIGN-SYSTEM.md        # UI/UX patterns (colors, typography)
+    ├── AI_PROMPTS.md           # AI prompts documentation
+    └── ARCHITECTURE.md         # ← Ten plik (techniczna dokumentacja)
+```
+
+---
+
+## 🎯 KLUCZOWE PLIKI - Quick Reference
+
+### 1. **App.jsx** - Główny router
+**Lokalizacja:** `src/App.jsx`
+
+**Co robi:**
+- Zarządza routingiem (5 widoków: chat, inbox, mynotes, checklists, events)
+- Pokazuje SplashScreen na starcie (2s)
+- Renderuje NavBar i aktywny widok
+
+**Kluczowy kod:**
+```jsx
+const [activeView, setActiveView] = useState('chat') // Domyślnie ekran nagrywania
+
+// Routing
+{activeView === 'chat' && <ChatVoiceFirst onAdd={addTask} />}
+{activeView === 'inbox' && <Inbox />}
+{activeView === 'mynotes' && <MyNotes />}
+{activeView === 'checklists' && <Checklists />}
+{activeView === 'events' && <Events />}
+```
+
+---
+
+### 2. **agent.js** - OpenAI API Integration
+**Lokalizacja:** `src/agent.js`
+
+**Co robi:**
+- Komunikacja z OpenAI API (Whisper + GPT)
+- Dwie funkcje:
+  1. `askAgent()` - DEPRECATED (stara funkcja, nie używana)
+  2. `detectStructure(sourceText)` - **AKTYWNA** (chaos → struktura)
+
+**Kluczowy kod:**
 ```js
-notes: [
-  {
-    id: "uuid",
-    sourceText: "Jutro kupić mleko i chleb, potem spotkanie o 15, a wieczorem pomysł na rapowy tekst o bezsenności",
-    createdAt: "2025-01-07T14:30:00Z",
-    updatedAt: "2025-01-07T14:30:00Z",
+export async function detectStructure(sourceText) {
+  // Wykrywa w chaotycznej wypowiedzi:
+  // - title (krótki tytuł)
+  // - note (treść notatki)
+  // - checklist (zadania)
+  // - events (daty/godziny)
 
-    // AI wykrywa strukturę:
-    detected: {
-      tasks: [
-        { id: "uuid", text: "Kupić mleko", done: false, accepted: false },
-        { id: "uuid", text: "Kupić chleb", done: false, accepted: false }
-      ],
-      events: [
-        {
-          id: "uuid",
-          title: "Spotkanie",
-          date: "2025-01-08",
-          time: "15:00",
-          accepted: false
-        }
-      ],
-      creative: "Pomysł na rapowy tekst o bezsenności"
-    },
+  // Używa: GPT-4o-mini, temperature: 0.3
+  // Zwraca: { title, note, checklist: [], events: [] }
+}
+```
 
-    // Użytkownik może zaakceptować:
-    accepted: {
-      tasks: ["uuid1", "uuid2"],  // zaakceptowane zadania
-      events: ["uuid3"]             // zaakceptowane eventy
-    },
+**Environment:**
+- API Key: `import.meta.env.VITE_OPENAI_API_KEY`
+- Plik `.env`: `VITE_OPENAI_API_KEY=sk-...`
 
-    // Status eksportu:
-    exported: {
-      reminders: false,
-      notes: false,
-      calendar: false
-    }
+---
+
+### 3. **ChatVoiceFirst.jsx** - Główny ekran nagrywania
+**Lokalizacja:** `src/components/Chat/ChatVoiceFirst.jsx`
+
+**Co robi:**
+- Voice recording (Web Audio API)
+- Wysyła audio do Whisper API (transkrypcja)
+- Wysyła transkrypcję do `detectStructure()` (AI analiza)
+- Zapisuje notatkę do `peria_inbox` w localStorage
+
+**Flow:**
+```
+User clicks mic 🎙️
+  → startRecording()
+  → MediaRecorder captures audio
+  → stopRecording()
+  → processAudioBlob(blob)
+    → Whisper API → transcript
+    → detectStructure(transcript) → { title, note, checklist, events }
+    → createNote({ sourceText: transcript, detected: {...} })
+    → save to localStorage['peria_inbox']
+```
+
+**Kluczowe funkcje:**
+- `startRecording()` - rozpoczyna nagrywanie (MediaRecorder)
+- `stopRecording()` - kończy nagrywanie
+- `processAudioBlob(blob)` - wysyła audio do Whisper
+- `processText(text)` - wysyła tekst do detectStructure
+- `createNote()` - tworzy obiekt Note i zapisuje do Inbox
+
+---
+
+### 4. **Inbox.jsx** - Widok wszystkich notatek
+**Lokalizacja:** `src/components/Inbox/Inbox.jsx`
+
+**Co robi:**
+- Wyświetla wszystkie notatki z localStorage['peria_inbox']
+- Pokazuje wykryte elementy (note/checklist/events) w kolorowych sekcjach
+- Przyciski eksportu do MyNotes/Checklists/Events
+- Smart tracking: auto-hide export button jeśli już wyeksportowano
+
+**Data model:**
+```js
+{
+  id: string (nanoid),
+  title: string,
+  sourceText: string,           // raw transkrypcja
+  detected: {
+    note: string | null,        // wykryta notatka
+    checklist: [{ text: string }],
+    events: [{ title, date, time }]
+  },
+  createdAt: ISO timestamp,
+  read: boolean,                // czy user otworzył (expanded)
+  exported: {
+    notes: boolean,
+    reminders: boolean,
+    calendar: boolean
   }
-]
+}
+```
+
+**Kluczowe funkcje:**
+- `addToSection(note, section, content)` - eksportuje do sekcji (mynotes/checklists/events)
+- `toggleExpand(id)` - expand/collapse + mark as read
+- `deleteNote(id)` - usuwa notatkę
+- Auto-restore export buttons (jeśli usunięto z sekcji)
+
+---
+
+### 5. **MyNotes.jsx** - Sekcja Notatek
+**Lokalizacja:** `src/components/MyNotes/MyNotes.jsx`
+
+**Co robi:**
+- Wyświetla notatki wyeksportowane z Inbox
+- localStorage key: `peria_mynotes`
+- Edycja tytułu + treści
+- Export do Apple Notes (Share API)
+- Delete
+
+**Data model:**
+```js
+{
+  id: string,
+  title: string,
+  content: string,              // treść notatki
+  createdAt: ISO timestamp,
+  sourceNoteId: string          // ID z Inbox (dla tracking)
+}
 ```
 
 ---
 
-## FLOW DANYCH
+### 6. **Checklists.jsx** - Sekcja Checklistów
+**Lokalizacja:** `src/components/Checklists/Checklists.jsx`
 
-### 1. Użytkownik pisze/mówi
-```
-Input: "Jutro kupić mleko, spotkanie o 15, pomysł na tekst rapowy"
-```
+**Co robi:**
+- Wyświetla checklisty wyeksportowane z Inbox
+- localStorage key: `peria_checklists`
+- Toggle completed items
+- Progress badge (3/5)
+- Edit items, delete items
+- Export do Apple Reminders (Share API)
 
-### 2. Zapisujemy jako notatka
+**Data model:**
 ```js
 {
-  id: "n1",
-  sourceText: "Jutro kupić mleko, spotkanie o 15, pomysł na tekst rapowy",
-  createdAt: "2025-01-07T14:30:00Z",
-  detected: null,  // jeszcze nie przetworzono
-  accepted: { tasks: [], events: [] },
-  exported: { reminders: false, notes: false, calendar: false }
+  id: string,
+  title: string,
+  items: [
+    { id: string, text: string, completed: boolean }
+  ],
+  createdAt: ISO timestamp,
+  sourceNoteId: string
 }
 ```
 
-### 3. AI wykrywa strukturę (w tle)
+---
+
+### 7. **Events.jsx** - Sekcja Wydarzeń
+**Lokalizacja:** `src/components/Events/Events.jsx`
+
+**Co robi:**
+- Wyświetla wydarzenia wyeksportowane z Inbox
+- localStorage key: `peria_events`
+- Grupuje eventy pod wspólnym tytułem
+- Edit title
+- Delete individual events
+- Export do Apple Calendar (Share API)
+
+**Data model:**
 ```js
-detected: {
-  tasks: [
-    { id: "t1", text: "Kupić mleko", done: false, accepted: false }
-  ],
+{
+  id: string,
+  title: string,
   events: [
-    { id: "e1", title: "Spotkanie", date: "2025-01-08", time: "15:00", accepted: false }
+    { id: string, title: string, date: "YYYY-MM-DD", time: "HH:MM" | null }
   ],
-  creative: "Pomysł na tekst rapowy"
-}
-```
-
-### 4. UI pokazuje propozycje
-```
-┌─────────────────────────────────────────┐
-│ Notatka: "Jutro - zakupy i spotkanie"   │
-│ ────────────────────────────────────── │
-│ [Pełny tekst źródłowy]                  │
-│                                         │
-│ AI wykryło:                             │
-│ ✓ 1 zadanie                             │
-│   [ ] Kupić mleko                       │
-│   [Dodaj do Reminders]                  │
-│                                         │
-│ ✓ 1 wydarzenie                          │
-│   Spotkanie - jutro 15:00               │
-│   [Dodaj do Calendar]                   │
-│                                         │
-│ ✓ Pomysł kreatywny                      │
-│   "Pomysł na tekst rapowy"              │
-│   [Pozostaje w notatce]                 │
-└─────────────────────────────────────────┘
-```
-
-### 5. Użytkownik akceptuje/odrzuca
-- Klik "Dodaj do Reminders" → `accepted.tasks.push("t1")`
-- Klik "Dodaj do Calendar" → `accepted.events.push("e1")`
-
-### 6. Export
-- Export do Reminders → `exported.reminders = true`
-- Export do Notes → `exported.notes = true`
-- Export do Calendar → `exported.calendar = true`
-
----
-
-## SCHEMAT BAZY DANYCH (LocalStorage / Core Data)
-
-```js
-// LocalStorage key: "peria_notes"
-{
-  notes: [
-    {
-      id: string,
-      sourceText: string,           // surowy tekst (pełna transkrypcja)
-      createdAt: ISO timestamp,
-      updatedAt: ISO timestamp,
-
-      detected: {
-        tasks: [
-          { id, text, done, accepted }
-        ],
-        events: [
-          { id, title, date, time, accepted }
-        ],
-        creative: string | null     // pozostałe pomysły/notatki
-      },
-
-      accepted: {
-        tasks: string[],            // ID zaakceptowanych zadań
-        events: string[]            // ID zaakceptowanych eventów
-      },
-
-      exported: {
-        reminders: boolean,
-        notes: boolean,
-        calendar: boolean
-      }
-    }
-  ]
+  createdAt: ISO timestamp,
+  sourceNoteId: string
 }
 ```
 
 ---
 
-## LOGIKA AI (Prompt)
+## 🔄 DATA FLOW - Jak działa cały system
 
-### Input:
+### 1. **Voice Recording → Note Creation**
+
 ```
-User said: "Jutro kupić mleko, spotkanie o 15, pomysł na tekst rapowy"
-```
-
-### Prompt do GPT-4o-mini:
-```
-Użytkownik nagrał chaotyczną myśl:
-"{sourceText}"
-
-Twoim zadaniem jest wykryć:
-1. ZADANIA (konkretne akcje do zrobienia)
-2. WYDARZENIA (daty, godziny, spotkania)
-3. POMYSŁY KREATYWNE (wszystko inne)
-
-Zwróć TYLKO JSON:
-{
-  "tasks": [
-    { "text": "Kupić mleko" }
-  ],
-  "events": [
-    { "title": "Spotkanie", "date": "2025-01-08", "time": "15:00" }
-  ],
-  "creative": "Pomysł na tekst rapowy"
-}
-
-ZASADY:
-- Nie zmieniaj treści, tylko kategoryzuj
-- Date/time zawsze w formacie ISO
-- Jeśli nie ma zadań/eventów/creative → zwróć []
-- Jeśli "jutro" → policz datę na podstawie dzisiaj
+User
+  ↓ (taps mic)
+ChatVoiceFirst.jsx
+  ↓ startRecording()
+MediaRecorder (Web Audio API)
+  ↓ audio blob
+processAudioBlob()
+  ↓ FormData upload
+OpenAI Whisper API
+  ↓ transcript (text)
+detectStructure(transcript)   [agent.js]
+  ↓ GPT-4o-mini analysis
+{ title, note, checklist: [], events: [] }
+  ↓ createNote()
+localStorage['peria_inbox']
+  ↓
+Inbox.jsx (auto-refresh)
 ```
 
-### Output:
+### 2. **Export do Sekcji**
+
+```
+Inbox.jsx
+  ↓ user clicks "→ Notatki" button
+addToSection(note, 'mynotes', content)
+  ↓
+localStorage['peria_mynotes'].push({
+  id, title, content, sourceNoteId, createdAt
+})
+  ↓
+note.exported.notes = true
+  ↓
+localStorage['peria_inbox'] updated
+  ↓
+Export button hidden (smart tracking)
+```
+
+### 3. **Auto-restore Export Button**
+
+```
+User deletes item from MyNotes
+  ↓
+localStorage['peria_mynotes'] updated (item removed)
+  ↓
+Inbox.jsx (useEffect listener)
+  ↓ checkExportedItems()
+Check if sourceNoteId still exists in mynotes
+  ↓ NO → not found
+note.exported.notes = false
+  ↓
+localStorage['peria_inbox'] updated
+  ↓
+Export button re-appears in Inbox
+```
+
+---
+
+## 📦 STORAGE - Co jest gdzie w localStorage
+
+| Key | Co zawiera | Struktura |
+|-----|------------|-----------|
+| `peria_inbox` | Wszystkie notatki z nagrań | `Note[]` |
+| `peria_mynotes` | Wyeksportowane notatki | `MyNote[]` |
+| `peria_checklists` | Wyeksportowane checklisty | `Checklist[]` |
+| `peria_events` | Wyeksportowane wydarzenia | `Event[]` |
+| `chatMessages` | Historia czatu (deprecated) | `Message[]` |
+
+**Przykład Note w Inbox:**
 ```json
 {
-  "tasks": [
-    { "text": "Kupić mleko" }
-  ],
-  "events": [
-    { "title": "Spotkanie", "date": "2025-01-08", "time": "15:00" }
-  ],
-  "creative": "Pomysł na tekst rapowy o bezsenności"
-}
-```
-
----
-
-## KOMPONENTY UI
-
-### 1. NoteView (główny ekran)
-```jsx
-<NoteView note={note}>
-  <SourceText>{note.sourceText}</SourceText>
-
-  {note.detected && (
-    <DetectedItems>
-      {/* Zadania */}
-      <TasksSection tasks={note.detected.tasks} />
-
-      {/* Wydarzenia */}
-      <EventsSection events={note.detected.events} />
-
-      {/* Pomysły kreatywne */}
-      <CreativeSection text={note.detected.creative} />
-    </DetectedItems>
-  )}
-
-  <ExportButtons note={note} />
-</NoteView>
-```
-
-### 2. TasksSection
-```jsx
-<TasksSection>
-  <h3>AI wykryło zadania:</h3>
-  {tasks.map(task => (
-    <TaskItem key={task.id}>
-      <Checkbox checked={task.done} />
-      <Text>{task.text}</Text>
-      {!task.accepted && (
-        <Button onClick={() => acceptTask(task.id)}>
-          Dodaj do Reminders
-        </Button>
-      )}
-    </TaskItem>
-  ))}
-</TasksSection>
-```
-
-### 3. EventsSection
-```jsx
-<EventsSection>
-  <h3>AI wykryło wydarzenia:</h3>
-  {events.map(event => (
-    <EventItem key={event.id}>
-      <Title>{event.title}</Title>
-      <DateTime>{event.date} {event.time}</DateTime>
-      {!event.accepted && (
-        <Button onClick={() => acceptEvent(event.id)}>
-          Dodaj do Calendar
-        </Button>
-      )}
-    </EventItem>
-  ))}
-</EventsSection>
-```
-
----
-
-## HOOKS
-
-### useNote (zarządzanie notatką)
-```js
-const useNote = (noteId) => {
-  const [note, setNote] = useState(null)
-
-  const saveNote = async (sourceText) => {
-    // 1. Zapisz surowy tekst
-    const newNote = {
-      id: nanoid(),
-      sourceText,
-      createdAt: new Date().toISOString(),
-      detected: null,
-      accepted: { tasks: [], events: [] },
-      exported: { reminders: false, notes: false, calendar: false }
-    }
-
-    // 2. Zapisz do localStorage
-    saveToStorage(newNote)
-
-    // 3. Wyślij do AI (w tle)
-    const detected = await detectStructure(sourceText)
-
-    // 4. Update z wykrytą strukturą
-    updateNote(newNote.id, { detected })
-  }
-
-  const acceptTask = (taskId) => {
-    // Dodaj do accepted.tasks
-  }
-
-  const acceptEvent = (eventId) => {
-    // Dodaj do accepted.events
-  }
-
-  const exportToReminders = () => {
-    // Export zaakceptowanych zadań
-  }
-
-  return { note, saveNote, acceptTask, acceptEvent, exportToReminders }
-}
-```
-
----
-
-## MIGRACJA Z OBECNEGO KODU
-
-### Krok 1: Zmiana modelu danych
-```diff
-- const [tasks, setTasks] = useState([])
-+ const [notes, setNotes] = useState([])
-```
-
-### Krok 2: Zmiana struktury
-```diff
-- localStorage.setItem('myTasks', JSON.stringify(tasks))
-+ localStorage.setItem('peria_notes', JSON.stringify(notes))
-```
-
-### Krok 3: Nowy flow czatu
-```diff
-// Stary:
-askAgent(message) → tasks[] → dodaj do listy
-
-// Nowy:
-askAgent(message) → { sourceText, detected } → zapisz jako nota
-```
-
-### Krok 4: UI
-```diff
-- <TaskList tasks={tasks} />
-+ <NotesList notes={notes} />
-+ <NoteView note={selectedNote} />
-```
-
----
-
-## PRZYKŁADY UŻYCIA
-
-### Scenariusz 1: Proste zadanie
-```
-Input: "Kupić mleko"
-
-Note:
-{
-  sourceText: "Kupić mleko",
-  detected: {
-    tasks: [{ text: "Kupić mleko" }],
-    events: [],
-    creative: null
-  }
-}
-
-UI: Propozycja → "Dodaj do Reminders"
-```
-
-### Scenariusz 2: Chaos
-```
-Input: "Jutro spotkanie o 10, lunch 13, siłownia 18,
-        a jeszcze pomysł na startup - app do nagrywania myśli"
-
-Note:
-{
-  sourceText: "[pełny tekst]",
-  detected: {
-    tasks: [],
-    events: [
-      { title: "Spotkanie", date: "2025-01-08", time: "10:00" },
-      { title: "Lunch", date: "2025-01-08", time: "13:00" },
-      { title: "Siłownia", date: "2025-01-08", time: "18:00" }
+  "id": "abc123",
+  "title": "Zakupy i plan dnia",
+  "sourceText": "Jutro kupić mleko, potem spotkanie o 15",
+  "detected": {
+    "note": null,
+    "checklist": [
+      { "text": "Kupić mleko" }
     ],
-    creative: "Pomysł na startup - app do nagrywania myśli"
+    "events": [
+      { "title": "Spotkanie", "date": "2026-01-10", "time": "15:00" }
+    ]
+  },
+  "createdAt": "2026-01-09T12:30:00.000Z",
+  "read": true,
+  "exported": {
+    "notes": false,
+    "reminders": true,
+    "calendar": false
   }
 }
-
-UI:
-- 3 propozycje eventów → "Dodaj do Calendar"
-- Pomysł kreatywny → pozostaje w notatce
-```
-
-### Scenariusz 3: Tekst rapowy (aktualizacja notatki)
-```
-Dzień 1: "Bezsenność, nocne myśli, krążą wokół głowy"
-Dzień 2: "Dodaj zwrotkę o samotności"
-Dzień 3: "Refrén: 'Kiedy noc zapada, myśli się budzą'"
-
-Note:
-{
-  sourceText: "[akumulacja wszystkich wpisów]",
-  detected: {
-    tasks: [],
-    events: [],
-    creative: "[pełny tekst rapowy - wszystkie wpisy]"
-  },
-  updatedAt: "2025-01-09T20:00:00Z"  // ostatnia aktualizacja
-}
-
-UI: Jedna notatka rośnie w czasie
 ```
 
 ---
 
-## PYTANIA DO ROZWAŻENIA
+## 🎨 STYLING - Jak działają style
 
-1. **Czy notatka może być aktualizowana?**
-   - TAK: Użytkownik może dodawać do istniejącej notatki (np. tekst rapowy)
-   - Wtedy: `updatedAt` się zmienia, `sourceText` rośnie
+### SCSS Modules
+Każdy komponent ma własny `.module.scss`:
+- `Inbox.module.scss`
+- `MyNotes.module.scss`
+- `Checklists.module.scss`
+- itp.
 
-2. **Jak rozpoznać że to kontynuacja notatki?**
-   - Opcja A: Użytkownik wybiera "Dodaj do notatki #X"
-   - Opcja B: AI wykrywa podobieństwo tematyczne
-   - **REKOMENDACJA:** Opcja A (prostsze, mniej błędów)
+**Import:**
+```jsx
+import styles from './Inbox.module.scss'
+<div className={styles.container}>...</div>
+```
 
-3. **Co jeśli AI się pomyli?**
-   - Użytkownik MOŻE odrzucić propozycje
-   - Wszystko pozostaje w `sourceText` (źródło prawdy)
-   - Można ręcznie edytować wykryte elementy
+### Design System
+Wszystkie kolory, typography, spacing są w:
+- **DESIGN-SYSTEM.md** (dokumentacja)
+- **src/styles/_variables.scss** (SCSS variables)
 
-4. **Czy można edytować źródłowy tekst?**
-   - TAK, ale z ostrzeżeniem: "To zmieni wykryte elementy"
-   - Po edycji: ponowne wywołanie AI
+**Kluczowe kolory:**
+- `#4a9396` - Teal (MyNotes)
+- `#fdd03b` - Yellow (Checklists)
+- `#cb7f07` - Orange (Events)
 
 ---
 
-## NASTĘPNE KROKI
+## 🔧 KONFIGURACJA
 
-1. ✅ Dokument architektury
-2. [ ] Zmiana modelu danych w kodzie
-3. [ ] Nowy prompt AI (chaos → struktura)
-4. [ ] UI dla pojedynczej notatki
-5. [ ] Flow akceptacji zadań/eventów
+### Environment Variables
+```bash
+# .env (nie commituj!)
+VITE_OPENAI_API_KEY=sk-...
+
+# .env.example (template)
+VITE_OPENAI_API_KEY=your-key-here
+```
+
+### Vite Config
+- Port: 5173 (default)
+- Build: `npm run build` → `dist/`
+- Preview: `npm run preview`
+
+### PWA
+- **manifest.json** - app metadata
+- **sw.js** - service worker (offline support)
+- Wymagane HTTPS dla PWA features
+
+---
+
+## 🚀 DEPLOYMENT
+
+### Flow:
+```
+Local changes
+  ↓ git push
+GitHub repo
+  ↓ auto-deploy (webhook)
+Netlify
+  ↓ build command: npm run build
+  ↓ publish dir: dist
+Production (https://...)
+```
+
+### Environment variables w Netlify:
+- `VITE_OPENAI_API_KEY` - set in Netlify dashboard
+
+---
+
+## 🧪 TESTOWANIE
+
+### Jak user testuje:
+- Spacery z iPhone (PWA installed)
+- Nagrywanie głosem
+- Sprawdzanie czy AI poprawnie wykrywa strukturę
+- Eksport do Apple apps
+
+### Gdzie szukać bugów:
+1. **Console errors** (F12)
+2. **localStorage** (Application → Local Storage)
+3. **Network tab** (OpenAI API calls)
+4. **Service Worker** (Application → Service Workers)
+
+---
+
+## 🔍 DEBUGGING - Kluczowe punkty
+
+### Gdy nagrywanie nie działa:
+- Sprawdź Console: `mediaDevices.getUserMedia()` errors
+- Sprawdź permissions (mikrofon)
+- Sprawdź MIME type support: `MediaRecorder.isTypeSupported()`
+
+### Gdy AI nie wykrywa poprawnie:
+- Sprawdź Console: `detectStructure()` output
+- Zobacz raw prompt w `agent.js:49-85`
+- Sprawdź API key: `import.meta.env.VITE_OPENAI_API_KEY`
+
+### Gdy export nie działa:
+- Sprawdź `localStorage['peria_mynotes']` itp.
+- Sprawdź `note.exported` status
+- Zobacz `addToSection()` w Inbox.jsx
+
+---
+
+## 🎯 NAJWAŻNIEJSZE DO ZAPAMIĘTANIA
+
+1. **Jedna notatka = źródło prawdy**
+   - Wszystko zaczyna się w Inbox
+   - AI wykrywa strukturę automatycznie
+   - User może wyeksportować do sekcji
+
+2. **Główne komponenty:**
+   - `ChatVoiceFirst.jsx` - nagrywanie
+   - `Inbox.jsx` - przeglądanie notatek
+   - `agent.js` - OpenAI integration
+
+3. **Data flow:**
+   - Voice → Whisper → GPT → localStorage → UI
+
+4. **Storage:**
+   - Wszystko w localStorage (4 keys)
+   - Smart tracking: exported status
+
+5. **Deprecated:**
+   - `chaosToStructure.js` (stary prompt)
+   - `askAgent()` (stara funkcja)
+   - Komponenty: TaskInput, TaskList, Notes, Calendar
+
+---
+
+## 📚 LINKI DO DOKUMENTACJI
+
+- **Roadmap:** [ROADMAP.md](./ROADMAP.md) - plan rozwoju
+- **Design System:** [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md) - kolory, typography
+- **AI Prompts:** [AI_PROMPTS.md](./AI_PROMPTS.md) - wszystkie prompty
+- **Changelog:** [CHANGELOG.md](./CHANGELOG.md) - historia zmian
+
+---
+
+**Ostatnia aktualizacja:** 2026-01-09
+**Status projektu:** FAZA 0 COMPLETED ✅ (PWA stable and functional)

@@ -17,7 +17,13 @@
       "Bash(test:*)",
       "Bash(git push:*)",
       "Bash(cd /Users/lukasznowak/Documents/Programowanie/Moje\\ projekty/peria && npm run dev:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(npx expo install:*)",
+      "Bash(npx expo start:*)",
+      "Bash(kill:*)"
     ]
   }
 }

@@ -15,6 +15,13 @@ export default function Events() {
   }, [events])
 
   const toggleExpand = (id) => {
+    // Mark as not new when expanded
+    setEvents(prev => prev.map(e =>
+      e.id === id && e.isNew
+        ? { ...e, isNew: false }
+        : e
+    ))
+
     setExpandedEvents(prev => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -146,7 +153,7 @@ export default function Events() {
           const isEditingTitle = editingTitleId === event.id
 
           return (
-            <div key={event.id} className={`${styles.eventCard} ${isExpanded ? styles.expanded : ''}`}>
+            <div key={event.id} className={`${styles.eventCard} ${isExpanded ? styles.expanded : ''} ${event.isNew ? styles.isNew : ''}`}>
               <div
                 className={styles.eventHeader}
                 onClick={() => !isEditingTitle && toggleExpand(event.id)}
@@ -168,8 +175,20 @@ export default function Events() {
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div className={styles.eventTitle}>
-                      {event.title}
+                    <div className={styles.titleRow}>
+                      <div className={styles.eventTitle}>
+                        {event.title}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          startEditTitle(event)
+                        }}
+                        className={styles.editTitleIcon}
+                        title="Edytuj tytuł"
+                      >
+                        ✎
+                      </button>
                     </div>
                   )}
                   <div className={styles.eventDate}>
@@ -234,12 +253,6 @@ export default function Events() {
                   </div>
 
                   <div className={styles.eventActions}>
-                    <button
-                      onClick={() => startEditTitle(event)}
-                      className={styles.editButton}
-                    >
-                      ✎ Edytuj tytuł
-                    </button>
                     <button
                       onClick={() => exportToCalendar(event)}
                       className={styles.exportButton}

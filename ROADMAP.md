@@ -1,4 +1,4 @@
-# PERIA — GDZIE MYŚL SIĘ RODZI
+# PERIA — GDY MYŚL POJAWIA SIĘ WTEDY, GDY JEJ NIE SZUKASZ
 
 > **Peria zapisuje. Nie mówi. Nie coachuje. Porządkuje.**
 
@@ -653,6 +653,16 @@ System tworzy JEDNĄ NOTATKĘ:
 
 ---
 
+## 📚 DOKUMENTACJA
+
+### Design System
+Wszystkie kolory, typografia, spacing i komponenty są zdokumentowane w:
+**→ [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)**
+
+Przed wprowadzeniem zmian wizualnych ZAWSZE sprawdź ten dokument!
+
+---
+
 ## AKTUALNY STATUS
 
 ### ✅ Zrobione:
@@ -679,7 +689,7 @@ System tworzy JEDNĄ NOTATKĘ:
 
 **UI/UX Polish** ✅
 - ✅ Dark theme z profesjonalną paletą (navy + teal/yellow/orange accents)
-- ✅ Category color coding: każda sekcja ma swój kolor z palety
+- ✅ Category color coding: każda sekcja ma swój kolor (#4a9396, #fdd03b, #cb7f07)
 - ✅ Navigation buttons light up with category colors when active
 - ✅ Splash screen: "Peria - Gdzie myśl się rodzi" (2s animated intro)
 - ✅ Smooth animations: expand/collapse cards, rotating chevrons (0.3s ease)
@@ -687,9 +697,13 @@ System tworzy JEDNĄ NOTATKĘ:
 - ✅ Colored section headers z left border + subtle background
 - ✅ Status indicators: new/read/categorized (3-state system)
 - ✅ Empty states z hints
+- ✅ Sharp corners (border-radius: 4px zamiast 12px)
+- ✅ Bordered buttons (transparent background + colored border)
+- ✅ Small edit icons (✎) zamiast dużych przycisków "Edytuj tytuł"
+- ✅ Centralna dokumentacja stylów → DESIGN-SYSTEM.md
 
 **Edycja i Zarządzanie** ✅
-- ✅ Inline title editing (click → edit → Enter/Escape)
+- ✅ Small title edit icons (✎) - click icon to edit title
 - ✅ Checklist items: toggle complete, edit text, delete
 - ✅ Event items: delete individual events
 - ✅ Note content: full edit mode
@@ -701,18 +715,26 @@ System tworzy JEDNĄ NOTATKĘ:
 ### 🎯 CO TERAZ?
 
 **FAZA 0 COMPLETED!** 🎉
-Prototyp PWA jest funkcjonalny i zawiera wszystkie kluczowe feature'y:
-- Jedna notatka = źródło prawdy ✅
-- AI auto-detekcja struktury ✅
-- Export do Apple apps ✅
-- Mobile-first UX ✅
+Prototyp PWA jest funkcjonalny, stabilny i zawiera wszystkie kluczowe feature'y:
+- ✅ Jedna notatka = źródło prawdy
+- ✅ AI auto-detekcja struktury (chaotyczna mowa → uporządkowane sekcje)
+- ✅ Export do Apple Notes/Reminders/Calendar (Share API)
+- ✅ Mobile-first UX (sticky nav, large touch targets, viewport lock)
+- ✅ Recording z pulsującą animacją i elapsed time
+- ✅ 3 dedykowane sekcje: MyNotes, Checklists, Events
+- ✅ Edycja tytułów inline (small ✎ icons)
+- ✅ Smart export tracking (auto-restore buttons)
+- ✅ Dark theme + category colors (#4a9396, #fdd03b, #cb7f07)
+- ✅ Splash screen z nowym hasłem
+- ✅ Smooth animations (expand/collapse, rotating chevrons)
+- ✅ Kompletna dokumentacja design systemu (DESIGN-SYSTEM.md)
+- ✅ PWA ready (manifest, service worker, offline support)
+
+**PWA STABILNE I GOTOWE DO UŻYCIA DAILY!**
 
 **NASTĘPNY KROK: FAZA 1 - Natywne iOS**
-⚠️ **KLUCZOWA DECYZJA:** PWA nie obsługuje background audio
-- React Native / Swift native app
-- Background audio recording (warunek sensu!)
-- Nagrywanie przy wygaszonym ekranie
-- Port wszystkich feature'ów z PWA
+iOS będzie rozwijane w osobnym projekcie/folderze (React Native + Expo).
+PWA pozostaje jako funkcjonalny prototyp i testbed dla nowych feature'ów.
 
 ---
 

@@ -17,6 +17,13 @@ export default function Checklists() {
   }, [checklists])
 
   const toggleExpand = (id) => {
+    // Mark as not new when expanded
+    setChecklists(prev => prev.map(c =>
+      c.id === id && c.isNew
+        ? { ...c, isNew: false }
+        : c
+    ))
+
     setExpandedChecklists(prev => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -166,7 +173,7 @@ export default function Checklists() {
           const isEditingTitle = editingTitleId === checklist.id
 
           return (
-            <div key={checklist.id} className={`${styles.checklistCard} ${isExpanded ? styles.expanded : ''}`}>
+            <div key={checklist.id} className={`${styles.checklistCard} ${isExpanded ? styles.expanded : ''} ${checklist.isNew ? styles.isNew : ''}`}>
               <div
                 className={styles.checklistHeader}
                 onClick={() => !isEditingTitle && toggleExpand(checklist.id)}
@@ -188,8 +195,20 @@ export default function Checklists() {
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div className={styles.checklistTitle}>
-                      {checklist.title}
+                    <div className={styles.titleRow}>
+                      <div className={styles.checklistTitle}>
+                        {checklist.title}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          startEditTitle(checklist)
+                        }}
+                        className={styles.editTitleIcon}
+                        title="Edytuj tytuł"
+                      >
+                        ✎
+                      </button>
                     </div>
                   )}
                   <div className={styles.checklistDate}>
@@ -376,12 +395,6 @@ export default function Checklists() {
                   </div>
 
                   <div className={styles.checklistActions}>
-                    <button
-                      onClick={() => startEditTitle(checklist)}
-                      className={styles.editButton}
-                    >
-                      ✎ Edytuj tytuł
-                    </button>
                     <button
                       onClick={() => exportToReminders(checklist)}
                       className={styles.exportButton}

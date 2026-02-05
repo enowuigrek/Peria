@@ -9,6 +9,8 @@ export default function Inbox() {
   const [expandedNotes, setExpandedNotes] = useState(new Set())
   const [editingTitleId, setEditingTitleId] = useState(null)
   const [editTitleText, setEditTitleText] = useState('')
+  const [showCompleted, setShowCompleted] = useState(false)
+  const [flyingColor, setFlyingColor] = useState(null) // { section: 'mynotes', buttonId: 'export-btn-123' }
 
   useEffect(() => {
     localStorage.setItem('peria_inbox', JSON.stringify(notes))
@@ -92,7 +94,35 @@ export default function Inbox() {
     }
   }
 
-  const addToSection = (note, section, content) => {
+  // Check if note is fully categorized (all detected content has been exported)
+  const isFullyCategorized = (note) => {
+    if (!note.detected) return false
+
+    const hasNote = note.detected.note
+    const hasChecklist = note.detected.checklist?.length > 0
+    const hasEvents = note.detected.events?.length > 0
+
+    const noteExported = !hasNote || note.exported?.mynotes
+    const checklistExported = !hasChecklist || note.exported?.checklists
+    const eventsExported = !hasEvents || note.exported?.events
+
+    return noteExported && checklistExported && eventsExported && note.read
+  }
+
+  const addToSection = (note, section, content, event) => {
+    // Trigger color flight animation
+    if (event) {
+      const buttonRect = event.target.getBoundingClientRect()
+      setFlyingColor({
+        section,
+        startX: buttonRect.left + buttonRect.width / 2,
+        startY: buttonRect.top + buttonRect.height / 2
+      })
+
+      // Clear animation after it completes
+      setTimeout(() => setFlyingColor(null), 800)
+    }
+
     // Get existing items from the target section
     const storageKey = `peria_${section}`
     const existing = JSON.parse(localStorage.getItem(storageKey) || '[]')
@@ -104,7 +134,8 @@ export default function Inbox() {
       title: note.title || 'Notatka',
       content: content,
       createdAt: new Date().toISOString(),
-      sourceDate: note.createdAt
+      sourceDate: note.createdAt,
+      isNew: true  // Flag for newly exported items
     }
 
     // Add to beginning of array
@@ -118,7 +149,10 @@ export default function Inbox() {
         : n
     ))
 
-    alert(`✅ Dodano do ${section === 'mynotes' ? 'Notatek' : section === 'checklists' ? 'Checklisty' : 'Wydarzeń'}`)
+    // Show success message after animation starts
+    setTimeout(() => {
+      alert(`✅ Dodano do ${section === 'mynotes' ? 'Notatek' : section === 'checklists' ? 'Checklisty' : 'Wydarzeń'}`)
+    }, 100)
   }
 
   if (notes.length === 0) {
@@ -131,10 +165,12 @@ export default function Inbox() {
     )
   }
 
-  return (
-    <div className={styles.notesWrapper}>
-      <div className={styles.notesList}>
-        {notes.map((note) => {
+  // Separate notes into groups
+  const newNotes = notes.filter(n => !n.read)
+  const pendingNotes = notes.filter(n => n.read && !isFullyCategorized(n))
+  const completedNotes = notes.filter(n => isFullyCategorized(n))
+
+  const renderNote = (note) => {
           const isExpanded = expandedNotes.has(note.id)
           const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
           const isEditingTitle = editingTitleId === note.id
@@ -178,11 +214,20 @@ export default function Inbox() {
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div
-                      className={styles.noteTitle}
-                      onClick={(e) => startEditTitle(note, e)}
-                    >
-                      {note.title || 'Notatka'}
+                    <div className={styles.titleRow}>
+                      <div className={styles.noteTitle}>
+                        {note.title || 'Notatka'}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          startEditTitle(note, e)
+                        }}
+                        className={styles.editTitleIcon}
+                        title="Edytuj tytuł"
+                      >
+                        ✎
+                      </button>
                     </div>
                   )}
                   <div className={styles.noteDate}>
@@ -227,7 +272,7 @@ export default function Inbox() {
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>📝 Notatka</span>
                         <button
-                          onClick={() => addToSection(note, 'mynotes', note.detected.note)}
+                          onClick={(e) => addToSection(note, 'mynotes', note.detected.note, e)}
                           className={styles.exportButton}
                           disabled={note.exported?.mynotes}
                         >
@@ -246,10 +291,11 @@ export default function Inbox() {
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>✅ Checklista ({note.detected.checklist.length})</span>
                         <button
-                          onClick={() => addToSection(
+                          onClick={(e) => addToSection(
                             note,
                             'checklists',
-                            note.detected.checklist
+                            note.detected.checklist,
+                            e
                           )}
                           className={styles.exportButton}
                           disabled={note.exported?.checklists}
@@ -271,10 +317,11 @@ export default function Inbox() {
                       <div className={styles.sectionHeader}>
                         <span className={styles.sectionTitle}>📅 Wydarzenia ({note.detected.events.length})</span>
                         <button
-                          onClick={() => addToSection(
+                          onClick={(e) => addToSection(
                             note,
                             'events',
-                            note.detected.events
+                            note.detected.events,
+                            e
                           )}
                           className={styles.exportButton}
                           disabled={note.exported?.events}
@@ -309,8 +356,58 @@ export default function Inbox() {
               )}
             </div>
           )
-        })}
+  }
+
+  return (
+    <div className={styles.notesWrapper}>
+      <div className={styles.notesList}>
+        {/* NEW Notes - unread */}
+        {newNotes.map((note) => (
+          <div key={note.id} className={styles.newNoteWrapper}>
+            {renderNote(note)}
+          </div>
+        ))}
+
+        {/* PENDING Notes - read but not fully exported */}
+        {pendingNotes.map((note) => renderNote(note))}
+
+        {/* COMPLETED Notes - fully exported (expandable section) */}
+        {completedNotes.length > 0 && (
+          <div className={styles.completedSection}>
+            <div
+              className={styles.completedHeader}
+              onClick={() => setShowCompleted(!showCompleted)}
+            >
+              <span className={styles.completedTitle}>
+                Przydzielone ({completedNotes.length})
+              </span>
+              <div className={`${styles.completedChevron} ${showCompleted ? styles.completedChevronOpen : ''}`}>
+                <svg viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+            </div>
+            {showCompleted && (
+              <div className={styles.completedList}>
+                {completedNotes.map((note) => renderNote(note))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Flying color animation */}
+      {flyingColor && (
+        <div
+          className={styles.flyingDot}
+          style={{
+            left: `${flyingColor.startX}px`,
+            top: `${flyingColor.startY}px`,
+            '--target-section': flyingColor.section
+          }}
+          data-section={flyingColor.section}
+        />
+      )}
     </div>
   )
 }

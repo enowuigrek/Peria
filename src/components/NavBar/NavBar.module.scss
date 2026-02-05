@@ -143,3 +143,115 @@
     width: 50%;
     height: 2px;
 }
+
+// Badge counter
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: $primary-gradient-start;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 10;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+// Flashing animation when new item arrives
+.navButton.flashing {
+    animation: flashButton 0.5s ease-in-out 2;
+
+    // MyNotes - teal flash
+    &[data-section="mynotes"] {
+        animation: flashButtonTeal 0.5s ease-in-out 2;
+    }
+
+    // Checklists - yellow flash
+    &[data-section="checklists"] {
+        animation: flashButtonYellow 0.5s ease-in-out 2;
+    }
+
+    // Events - orange flash
+    &[data-section="events"] {
+        animation: flashButtonOrange 0.5s ease-in-out 2;
+    }
+
+    // Inbox - generic flash
+    &[data-section="inbox"] {
+        animation: flashButton 0.5s ease-in-out 2;
+    }
+}
+
+@keyframes flashButton {
+    0%, 100% {
+        background: rgba(255, 255, 255, 0.03);
+        transform: scale(1);
+    }
+    50% {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+    }
+}
+
+@keyframes flashButtonTeal {
+    0%, 100% {
+        background: rgba(74, 147, 150, 0.15);
+        border-color: rgba(74, 147, 150, 0.5);
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(74, 147, 150, 0.5);
+    }
+    50% {
+        background: rgba(74, 147, 150, 0.4);
+        border-color: rgba(74, 147, 150, 0.8);
+        transform: scale(1.15);
+        box-shadow: 0 0 20px rgba(74, 147, 150, 0.6);
+    }
+}
+
+@keyframes flashButtonYellow {
+    0%, 100% {
+        background: rgba(253, 208, 59, 0.1);
+        border-color: rgba(253, 208, 59, 0.5);
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(253, 208, 59, 0.5);
+    }
+    50% {
+        background: rgba(253, 208, 59, 0.35);
+        border-color: rgba(253, 208, 59, 0.8);
+        transform: scale(1.15);
+        box-shadow: 0 0 20px rgba(253, 208, 59, 0.6);
+    }
+}
+
+@keyframes flashButtonOrange {
+    0%, 100% {
+        background: rgba(203, 127, 7, 0.15);
+        border-color: rgba(203, 127, 7, 0.5);
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(203, 127, 7, 0.5);
+    }
+    50% {
+        background: rgba(203, 127, 7, 0.4);
+        border-color: rgba(203, 127, 7, 0.8);
+        transform: scale(1.15);
+        box-shadow: 0 0 20px rgba(203, 127, 7, 0.6);
+    }
+}

@@ -33,6 +33,83 @@
   }
 }
 
+// NEW note wrapper - pulsing animation
+.newNoteWrapper {
+  animation: pulse 2s ease-in-out infinite;
+
+  .noteCard {
+    border-left: 8px solid $primary-gradient-start;
+    background: rgba(74, 147, 150, 0.15);
+    box-shadow: 0 0 20px rgba(74, 147, 150, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+}
+
+// Completed section (expandable)
+.completedSection {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.5rem;
+}
+
+.completedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.completedTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-secondary;
+}
+
+.completedChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    stroke: $text-secondary;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  &.completedChevronOpen {
+    transform: rotate(90deg);
+  }
+}
+
+.completedList {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0.7;
+}
+
 .noteCard {
   background: $card-bg-lighter;
   border: 1px solid $border-color;
@@ -44,12 +121,6 @@
 
   &.expanded {
     z-index: 10;
-  }
-
-  // Status: new (unread)
-  &.statusNew {
-    border-left: 4px solid $primary-gradient-start;
-    background: rgba(74, 147, 150, 0.15);
   }
 
   // Status: read but not categorized
@@ -94,18 +165,36 @@
   min-width: 0;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
 .noteTitle {
   font-size: 0.95rem;
   font-weight: 600;
   color: $text-primary;
-  margin-bottom: 0.25rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: text;
+  flex: 1;
+  min-width: 0;
+}
+
+.editTitleIcon {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
 
   &:hover {
-    opacity: 0.8;
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -410,4 +499,56 @@ details[open] .originalChevron {
   font-size: 0.85rem;
   margin-top: 0.5rem;
   opacity: 0.7;
+}
+
+// Flying dot animation
+.flyingDot {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 15px currentColor;
+
+  // Color based on target section
+  &[data-section="mynotes"] {
+    background: $category-mynotes;
+    animation: flyToNavBar 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+               fadeOut 0.2s 0.6s forwards;
+  }
+
+  &[data-section="checklists"] {
+    background: $category-checklists;
+    animation: flyToNavBar 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+               fadeOut 0.2s 0.6s forwards;
+  }
+
+  &[data-section="events"] {
+    background: $category-events;
+    animation: flyToNavBar 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+               fadeOut 0.2s 0.6s forwards;
+  }
+}
+
+@keyframes flyToNavBar {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(0, 20vh) scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(0, calc(100vh - 80px)) scale(0.5);
+    opacity: 0.6;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translate(0, calc(100vh - 80px)) scale(0);
+  }
 }

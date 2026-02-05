@@ -1,6 +1,26 @@
-# Peria - Gdzie myśl się rodzi
+# Peria - Gdy myśl pojawia się wtedy, gdy jej nie szukasz
 
 > **Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać.**
+
+---
+
+## 🤖 Quick Reference dla AI
+
+**Jesteś AI asystentem w nowym chacie?** Przeczytaj najpierw:
+1. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - jak działa aplikacja technicznie (data flow, komponenty, storage)
+2. **[ROADMAP.md](./ROADMAP.md)** - aktualny status + fundamenty projektu
+3. **[DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)** - kolory, typography, wzorce UI
+4. **[AI_PROMPTS.md](./AI_PROMPTS.md)** - wszystkie AI prompty używane w projekcie
+
+**Najważniejsze pliki kodu:**
+- `src/agent.js` - OpenAI API (Whisper + GPT)
+- `src/components/Chat/ChatVoiceFirst.jsx` - nagrywanie głosu
+- `src/components/Inbox/Inbox.jsx` - widok notatek
+- `src/App.jsx` - routing + layout
+
+**Storage:** Wszystko w localStorage (`peria_inbox`, `peria_mynotes`, `peria_checklists`, `peria_events`)
+
+---
 
 ## Czym jest Peria?
 
@@ -97,11 +117,9 @@ npm run preview
 
 ## Roadmap
 
-Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju.
+**Status:** FAZA 0 - Prototyp PWA ✅ COMPLETED
 
-### Aktualna faza: #2 PWA - iOS Ready
-
-Cel: Aplikacja działa jak natywna na iPhone, możesz testować tekstowo na spacerach.
+Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju i statusów wszystkich faz.
 
 ---
 

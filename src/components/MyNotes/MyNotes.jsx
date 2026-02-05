@@ -17,6 +17,13 @@ export default function MyNotes() {
   }, [notes])
 
   const toggleExpand = (id) => {
+    // Mark as not new when expanded
+    setNotes(prev => prev.map(n =>
+      n.id === id && n.isNew
+        ? { ...n, isNew: false }
+        : n
+    ))
+
     setExpandedNotes(prev => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -107,7 +114,7 @@ export default function MyNotes() {
           const isEditingTitle = editingTitleId === note.id
 
           return (
-            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''}`}>
+            <div key={note.id} className={`${styles.noteCard} ${isExpanded ? styles.expanded : ''} ${note.isNew ? styles.isNew : ''}`}>
               <div
                 className={styles.noteHeader}
                 onClick={() => !isEditing && toggleExpand(note.id)}
@@ -120,12 +127,49 @@ export default function MyNotes() {
                       className={styles.titleInput}
                       value={editTitleText}
                       onChange={(e) => setEditTitleText(e.target.value)}
+                      onBlur={() => {
+                        if (editTitleText.trim()) {
+                          setNotes(prev => prev.map(n =>
+                            n.id === editingTitleId ? { ...n, title: editTitleText } : n
+                          ))
+                        }
+                        setEditingTitleId(null)
+                        setEditTitleText('')
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          if (editTitleText.trim()) {
+                            setNotes(prev => prev.map(n =>
+                              n.id === editingTitleId ? { ...n, title: editTitleText } : n
+                            ))
+                          }
+                          setEditingTitleId(null)
+                          setEditTitleText('')
+                        }
+                        if (e.key === 'Escape') {
+                          setEditingTitleId(null)
+                          setEditTitleText('')
+                        }
+                      }}
                       autoFocus
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div className={styles.noteTitle}>
-                      {note.title}
+                    <div className={styles.titleRow}>
+                      <div className={styles.noteTitle}>
+                        {note.title}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setEditingTitleId(note.id)
+                          setEditTitleText(note.title)
+                        }}
+                        className={styles.editTitleIcon}
+                        title="Edytuj tytuł"
+                      >
+                        ✎
+                      </button>
                     </div>
                   )}
                   <div className={styles.noteDate}>

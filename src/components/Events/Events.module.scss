@@ -46,6 +46,12 @@
   &.expanded {
     z-index: 10;
   }
+
+  &.isNew {
+    border-left: 6px solid $category-events;
+    background: rgba(203, 127, 7, 0.12);
+    box-shadow: 0 0 15px rgba(203, 127, 7, 0.25), 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .eventHeader {
@@ -65,18 +71,36 @@
   min-width: 0;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
 .eventTitle {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #cb7f07;
-  margin-bottom: 0.25rem;
+  color: #e5e7eb; // Biały zamiast pomarańczowego
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: text;
+  flex: 1;
+  min-width: 0;
+}
+
+.editTitleIcon {
+  background: transparent;
+  border: none;
+  color: rgba(203, 127, 7, 0.6);
+  padding: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
 
   &:hover {
-    opacity: 0.8;
+    color: #cb7f07;
   }
 }
 
