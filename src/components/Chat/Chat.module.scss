@@ -264,6 +264,43 @@
   }
 }
 
+.typeSelectorBar {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: $card-bg-lighter;
+  border-top: 1px solid $border-color;
+  flex-wrap: wrap;
+}
+
+.typeButton {
+  padding: 0.875rem 1.25rem;
+  border: 2px solid $primary-gradient-start;
+  background: transparent;
+  color: $text-primary;
+  border-radius: $radius-small;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+    transform: translateY(-2px);
+    box-shadow: $box-shadow-hover;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 .exportBar {
   display: flex;
   justify-content: center;
