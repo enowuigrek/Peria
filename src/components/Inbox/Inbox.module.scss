@@ -310,7 +310,7 @@
     border: none;
     border-top: 1px solid $border-color;
     background: transparent;
-    padding: 0;
+    padding: 0.75rem 0.75rem 0 0.75rem; // Padding-top dla odstępu od kreski
 
     .sectionTitle {
       color: $text-primary; // Biały tekst
@@ -385,7 +385,7 @@
     font-size: 0.9rem;
     color: $text-primary;
     padding: 0.75rem;
-    background: $bg-gradient-start; // Czarne tło
+    background: #000000; // Czarne tło (nie gradient-start)
     border-radius: 0; // Ostre rogi
     border-left: 4px solid $category-events; // Niebieski pasek z lewej
     line-height: 1.4;
