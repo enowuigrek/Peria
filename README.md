@@ -1,160 +1,104 @@
-# Peria - Gdy myśl pojawia się wtedy, gdy jej nie szukasz
 
-> **Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać.**
+<p align="center">
+  <img src="./src/assets/images/logo.png" width="280" alt="Peria logo" />
+</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-PWA%20Live-brightgreen" />
+  <img src="https://img.shields.io/badge/React-19-blue" />
+  <img src="https://img.shields.io/badge/Vite-?-purple" />
+  <img src="https://img.shields.io/badge/AI-GPT%2FWhisper-orange" />
+  <img src="https://img.shields.io/badge/PWA-Yes-teal" />
+</p>
 
-## 🤖 Quick Reference dla AI
+# Peria
 
-**Jesteś AI asystentem w nowym chacie?** Przeczytaj najpierw:
-1. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - jak działa aplikacja technicznie (data flow, komponenty, storage)
-2. **[ROADMAP.md](./ROADMAP.md)** - aktualny status + fundamenty projektu
-3. **[DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)** - kolory, typography, wzorce UI
-4. **[AI_PROMPTS.md](./AI_PROMPTS.md)** - wszystkie AI prompty używane w projekcie
+**A personal idea capture and reflection app that turns spontaneous thoughts into structured notes using AI.**
 
-**Najważniejsze pliki kodu:**
-- `src/agent.js` - OpenAI API (Whisper + GPT)
-- `src/components/Chat/ChatVoiceFirst.jsx` - nagrywanie głosu
-- `src/components/Inbox/Inbox.jsx` - widok notatek
-- `src/App.jsx` - routing + layout
-
-**Storage:** Wszystko w localStorage (`peria_inbox`, `peria_mynotes`, `peria_checklists`, `peria_events`)
+Peria captures thoughts that emerge while moving — before they disappear — and organizes them into notes, checklists, events, or saved ideas.
 
 ---
 
-## Czym jest Peria?
+## 🚀 Status & Demo
 
-**Peria** to nie tylko nazwa narzędzia — to stan umysłu, który zachodzi między ruchem a refleksją, między ciszą a słowem, między krokiem a życiową ideą.
+**Status:** Fully functional PWA  
+**Live:** Install via browser (Add to Home Screen)
 
-Peria jest tam, gdzie myśl zaczyna się już w trakcie spaceru, zanim jeszcze trafia na papier, zanim zostanie zatrzymana w notatniku, zanim znajdzie swoje miejsce na liście zadań.
-
-**Peria nie narzuca kierunku. Nie każe myśleć. Nie ocenia.**
-Po prostu przechwytuje to, co spontaniczne, zanim przeminie.
-
-### Stan Perypatetyczny
-
-Filozofowie ze szkoły Arystotelesa nauczali, chodząc. Ruch ciała uwalnia umysł.
-
-Peria jest cyfrowym towarzyszem tego stanu — schwytuje iskrę pomysłu w czasie, gdy jesteś w ruchu, a myśl jest najbardziej żywa.
+Peria works as a Progressive Web App — install it to your device and use offline or online.
 
 ---
 
-## Use Case
+## ✨ Core Features
 
-**Spacer → Pomysł → Nagranie → AI porządkuje → Po spacerze gotowa notatka/lista/event**
-
-1. Wyciągasz telefon podczas spaceru
-2. Jedno kliknięcie → mówisz chaotycznie
-3. AI porządkuje chaos w strukturę
-4. Po spacerze masz uporządkowane myśli w aplikacji
-5. Jeden klick: eksport do Reminders/Notes/Calendar
-
----
-
-## Unfair Advantages
-
-**Dedykowany Tryb Spaceru (Walk Mode)**
-- Interfejs obsługiwany kciukiem bez patrzenia
-- Duże pole dotykowe, haptics
-- Giganci (Apple/Google) projektują pod biurko, nie pod spacer
-
-**Inteligentne Wyzwalacze (Action Triggers)**
-- "Kup mleko" → automatycznie checklist
-- "A co jeśli bohater umiera w rozdziale trzecim?" → notatka w folderze Inspiracje
-- "Spotkajmy się we wtorek o 10" → propozycja wpisu do kalendarza
-
-**Filozofia Peryferii**
-- Agregacja myśli z tygodnia
-- Mail: "Oto co krążyło wokół Twojej głowy w tym tygodniu"
-- Budowanie relacji z użytkownikiem
-
-**Chaos → Struktura**
-- Nie surowa transkrypcja
-- AI **porządkuje** chaotyczne myśli w czytelną strukturę
-- Auto-generowane tytuły, akapity, formatowanie
+- Capture thoughts by voice or text
+- AI structure: chaos → notes (GPT-powered)
+- Local storage-first (cloud sync planned)
+- Walk Mode interface optimized for mobile
+- Checklist and events generation
+- Offline support via Service Worker
 
 ---
 
-## Tech Stack
+## 🖼 Screenshots
 
-- **Frontend**: React 19, Vite, SCSS
-- **PWA**: Service Worker, manifest.json, offline support
-- **AI**: OpenAI GPT-4o (chaos→structure), Whisper (transkrypcja)
-- **Storage**: localStorage → cloud sync (przyszłość)
-- **Deploy**: Vercel (HTTPS wymagane dla PWA)
+_Add screenshots here:_
+
+![Home Screen](./screenshots/home.png)
+![Recording](./screenshots/recording.png)
 
 ---
 
-## Development
+## 🛠 Tech Stack
 
-### Installation
+- React 19
+- Vite
+- SCSS
+- OpenAI GPT / Whisper
+- PWA
+
+---
+
+## 🧪 Local Setup
 
 ```bash
+git clone https://github.com/enowuigrek/Peria.git
+cd Peria
 npm install
-```
-
-### Run Development Server
-
-```bash
 npm run dev
 ```
 
-The application will be running at `http://localhost:5173`.
+Runs at http://localhost:5173
 
-### Build for Production
+---
+
+## 📁 Project Structure (simplified)
 
 ```bash
-npm run build
+src/
+components/
+utils/
+agent.js
+App.jsx
 ```
 
-### Preview Production Build
+---
 
-```bash
-npm run preview
-```
+## 🎯 Project Highlights
+
+- Captures ideas before they disappear
+- AI-powered structure from chaos to clarity
+- Designed for mobile spontaneous use
+- Companion app, not just another notes tool
 
 ---
 
-## Status Projektu
+## 👤 Author
 
-**Wersja:** 0.4.0 (2026-01-11)
-**Status:** ✅ PWA w pełni funkcjonalna, gotowa do użytku
-
-**Ostatnie zmiany:**
-- ✅ Kanciaste rogi i cienkie kolorowe bordery (mobile-first design)
-- ✅ Edycja wydarzeń (tytuł, data, czas)
-- ✅ Usunięcie wszystkich hover effects (optymalizacja mobilna)
-- ✅ Refaktoring kolorów (70+ hardcoded → 4 kolory bazowe)
-- ✅ Wspólna infrastruktura (hooks, ikony, komponenty)
-
-Zobacz [CHANGELOG.md](./CHANGELOG.md) dla pełnej historii zmian.
-Zobacz [ROADMAP.md](./ROADMAP.md) dla szczegółowego planu rozwoju.
+Created by Łukasz Nowak  
+GitHub: https://github.com/enowuigrek
 
 ---
 
-## Filozofia
+## 📄 License
 
-**Peria to:**
-- miejsce, w którym pomysł nabiera formy, zanim zostanie wypowiedziany
-- narzędzie, które pozwala zatrzymać ulotne idee bez przerywania stanu kreatywnego
-- towarzysz spacerów, podróży i chwil, w których jesteśmy w ruchu — i w myśli
-
-**Peria traktuje myśl jak światło:**
-nie przywiązujesz jej do sztywnej struktury,
-po prostu pozwalasz jej zaistnieć.
-
----
-
-## Cytaty
-
-_"Peria to pamięć dla myśli, które pojawiają się wtedy, gdy przestajesz ich szukać."_
-
-_"Peria nie tworzy pomysłów. Peria je łapie."_
-
-_"Peria to cisza między krokami — i treść, która z niej wypływa."_
-
----
-
-## License
-
-Private project - All rights reserved
+Private project – All rights reserved
