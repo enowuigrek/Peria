@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import styles from './Checklists.module.scss'
 import { exportToReminders as exportReminders } from '../../utils/remindersExporter'
+import { groupByDate } from '../../utils/dateHelpers'
 
 export default function Checklists() {
   const [checklists, setChecklists] = useState(() => {
@@ -8,6 +9,7 @@ export default function Checklists() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedChecklists, setExpandedChecklists] = useState(new Set())
+  const [expandedDays, setExpandedDays] = useState(new Set(['Dzisiaj', 'Wczoraj']))
   const [editingItemId, setEditingItemId] = useState(null)
   const [editText, setEditText] = useState('')
   const [editingTitleId, setEditingTitleId] = useState(null)
@@ -143,10 +145,35 @@ export default function Checklists() {
     )
   }
 
+  const checklistGroups = groupByDate(checklists)
+
+  const toggleDay = (label) => {
+    setExpandedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
   return (
     <div className={styles.checklistsWrapper}>
       <div className={styles.checklistsList}>
-        {checklists.map((checklist) => {
+        {checklistGroups.map((group) => {
+          const isDayExpanded = expandedDays.has(group.label)
+          return (
+            <div key={group.date} className={styles.dayGroup}>
+              <div className={styles.dayHeader} onClick={() => toggleDay(group.label)}>
+                <span>{group.label} ({group.items.length})</span>
+                <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+              {isDayExpanded && (
+                <div className={styles.dayItems}>
+                  {group.items.map((checklist) => {
           const isExpanded = expandedChecklists.has(checklist.id)
           const items = Array.isArray(checklist.content) ? checklist.content : []
           const completedCount = items.filter(item => item.completed).length
@@ -403,6 +430,11 @@ export default function Checklists() {
                       </div>
                     </details>
                   )}
+                </div>
+              )}
+            </div>
+          )
+        })}
                 </div>
               )}
             </div>

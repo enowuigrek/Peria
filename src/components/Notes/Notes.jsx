@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Notes.module.scss'
+import { groupByDate } from '../../utils/dateHelpers'
 
 export default function Notes() {
   const [notes, setNotes] = useState(() => {
@@ -7,6 +8,7 @@ export default function Notes() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedNotes, setExpandedNotes] = useState(new Set())
+  const [expandedDays, setExpandedDays] = useState(new Set(['Dzisiaj', 'Wczoraj']))
 
   useEffect(() => {
     localStorage.setItem('peria_notes', JSON.stringify(notes))
@@ -78,10 +80,35 @@ export default function Notes() {
     )
   }
 
+  const noteGroups = groupByDate(notes)
+
+  const toggleDay = (label) => {
+    setExpandedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
   return (
     <div className={styles.notesWrapper}>
       <div className={styles.notesList}>
-        {notes.map((note) => {
+        {noteGroups.map((group) => {
+          const isDayExpanded = expandedDays.has(group.label)
+          return (
+            <div key={group.date} className={styles.dayGroup}>
+              <div className={styles.dayHeader} onClick={() => toggleDay(group.label)}>
+                <span>{group.label} ({group.items.length})</span>
+                <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+              {isDayExpanded && (
+                <div className={styles.dayItems}>
+                  {group.items.map((note) => {
           const isExpanded = expandedNotes.has(note.id)
           const hasContent = note.detected?.note || note.detected?.checklist?.length > 0 || note.detected?.events?.length > 0
 
@@ -206,6 +233,11 @@ export default function Notes() {
                       {note.sourceText}
                     </div>
                   </details>
+                </div>
+              )}
+            </div>
+          )
+        })}
                 </div>
               )}
             </div>

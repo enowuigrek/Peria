@@ -112,10 +112,35 @@ export default function MyNotes() {
     )
   }
 
+  const noteGroups = groupByDate(notes)
+
+  const toggleDay = (label) => {
+    setExpandedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
   return (
     <div className={styles.notesWrapper}>
       <div className={styles.notesList}>
-        {notes.map((note) => {
+        {noteGroups.map((group) => {
+          const isDayExpanded = expandedDays.has(group.label)
+          return (
+            <div key={group.date} className={styles.dayGroup}>
+              <div className={styles.dayHeader} onClick={() => toggleDay(group.label)}>
+                <span>{group.label} ({group.items.length})</span>
+                <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+              {isDayExpanded && (
+                <div className={styles.dayItems}>
+                  {group.items.map((note) => {
           const isExpanded = expandedNotes.has(note.id)
           const isEditing = editingId === note.id
           const isEditingTitle = editingTitleId === note.id
@@ -293,6 +318,11 @@ export default function MyNotes() {
                       </div>
                     </>
                   )}
+                </div>
+              )}
+            </div>
+          )
+        })}
                 </div>
               )}
             </div>

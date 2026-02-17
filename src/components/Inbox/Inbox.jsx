@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Inbox.module.scss'
+import { groupByDate } from '../../utils/dateHelpers'
 
 export default function Inbox() {
   const [notes, setNotes] = useState(() => {
@@ -11,6 +12,8 @@ export default function Inbox() {
   const [editTitleText, setEditTitleText] = useState('')
   const [showCompleted, setShowCompleted] = useState(false)
   const [flyingColor, setFlyingColor] = useState(null) // { section: 'mynotes', buttonId: 'export-btn-123' }
+  const [expandedActiveDays, setExpandedActiveDays] = useState(new Set(['Dzisiaj', 'Wczoraj']))
+  const [expandedCompletedDays, setExpandedCompletedDays] = useState(new Set(['Dzisiaj', 'Wczoraj']))
 
   useEffect(() => {
     localStorage.setItem('peria_inbox', JSON.stringify(notes))
@@ -263,10 +266,34 @@ export default function Inbox() {
     )
   }
 
-  // Separate notes into groups
-  const newNotes = notes.filter(n => !n.read)
-  const pendingNotes = notes.filter(n => n.read && !isFullyCategorized(n))
-  const completedNotes = notes.filter(n => isFullyCategorized(n))
+  // Separate notes into groups - active (new + pending) sorted by date, completed separately
+  const activeNotes = notes
+    .filter(n => !isFullyCategorized(n))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  const completedNotes = notes
+    .filter(n => isFullyCategorized(n))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+  const activeGroups = groupByDate(activeNotes)
+  const completedGroups = groupByDate(completedNotes)
+
+  const toggleActiveDay = (label) => {
+    setExpandedActiveDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
+  const toggleCompletedDay = (label) => {
+    setExpandedCompletedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
 
   const renderNote = (note) => {
           const isExpanded = expandedNotes.has(note.id)
@@ -494,24 +521,46 @@ export default function Inbox() {
   return (
     <div className={styles.notesWrapper}>
       <div className={styles.notesList}>
-        {/* NEW Notes - unread */}
-        {newNotes.map((note) => {
-          const categoryStyle = getCategoryStyle(note)
+        {/* ACTIVE Notes (new + pending) grouped by day */}
+        {activeGroups.map((group) => {
+          const isDayExpanded = expandedActiveDays.has(group.label)
           return (
-            <div
-              key={note.id}
-              className={`${styles.newNoteWrapper} ${categoryStyle.className}`}
-              style={categoryStyle.style}
-            >
-              {renderNote(note)}
+            <div key={group.date} className={styles.dayGroup}>
+              <div
+                className={styles.dayHeader}
+                onClick={() => toggleActiveDay(group.label)}
+              >
+                <span>{group.label} ({group.items.length})</span>
+                <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+              {isDayExpanded && (
+                <div className={styles.dayItems}>
+                  {group.items.map((note) => {
+                    const categoryStyle = getCategoryStyle(note)
+                    if (categoryStyle.className) {
+                      return (
+                        <div
+                          key={note.id}
+                          className={`${styles.newNoteWrapper} ${categoryStyle.className}`}
+                          style={categoryStyle.style}
+                        >
+                          {renderNote(note)}
+                        </div>
+                      )
+                    }
+                    return renderNote(note)
+                  })}
+                </div>
+              )}
             </div>
           )
         })}
 
-        {/* PENDING Notes - read but not fully exported */}
-        {pendingNotes.map((note) => renderNote(note))}
-
-        {/* COMPLETED Notes - fully exported (expandable section) - NA KOŃCU */}
+        {/* COMPLETED Notes - fully exported (expandable section) grouped by day */}
         {completedNotes.length > 0 && (
           <div className={styles.completedSection}>
             <div
@@ -529,7 +578,29 @@ export default function Inbox() {
             </div>
             {showCompleted && (
               <div className={styles.completedList}>
-                {completedNotes.map((note) => renderNote(note))}
+                {completedGroups.map((group) => {
+                  const isDayExpanded = expandedCompletedDays.has(group.label)
+                  return (
+                    <div key={group.date} className={styles.dayGroup}>
+                      <div
+                        className={styles.dayHeader}
+                        onClick={() => toggleCompletedDay(group.label)}
+                      >
+                        <span>{group.label} ({group.items.length})</span>
+                        <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                          <svg viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </div>
+                      </div>
+                      {isDayExpanded && (
+                        <div className={styles.dayItems}>
+                          {group.items.map((note) => renderNote(note))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>

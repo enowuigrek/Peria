@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import styles from './Events.module.scss'
 import { generateICS, downloadOrShareICS } from '../../utils/icsGenerator'
+import { groupByDate } from '../../utils/dateHelpers'
 
 export default function Events() {
   const [events, setEvents] = useState(() => {
@@ -8,6 +9,7 @@ export default function Events() {
     return stored ? JSON.parse(stored) : []
   })
   const [expandedEvents, setExpandedEvents] = useState(new Set())
+  const [expandedDays, setExpandedDays] = useState(new Set(['Dzisiaj', 'Wczoraj']))
   const [editingTitleId, setEditingTitleId] = useState(null)
   const [editTitleText, setEditTitleText] = useState('')
   const [editingItemId, setEditingItemId] = useState(null) // eventId-itemIndex
@@ -191,10 +193,35 @@ export default function Events() {
     )
   }
 
+  const eventGroups = groupByDate(sortedEvents)
+
+  const toggleDay = (label) => {
+    setExpandedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
   return (
     <div className={styles.eventsWrapper}>
       <div className={styles.eventsList}>
-        {sortedEvents.map((event) => {
+        {eventGroups.map((group) => {
+          const isDayExpanded = expandedDays.has(group.label)
+          return (
+            <div key={group.date} className={styles.dayGroup}>
+              <div className={styles.dayHeader} onClick={() => toggleDay(group.label)}>
+                <span>{group.label} ({group.items.length})</span>
+                <div className={`${styles.dayChevron} ${isDayExpanded ? styles.dayChevronOpen : ''}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+              {isDayExpanded && (
+                <div className={styles.dayItems}>
+                  {group.items.map((event) => {
           const isExpanded = expandedEvents.has(event.id)
           const eventItems = Array.isArray(event.content) ? event.content : []
           const isEditingTitle = editingTitleId === event.id
@@ -407,6 +434,11 @@ export default function Events() {
                       </div>
                     </details>
                   )}
+                </div>
+              )}
+            </div>
+          )
+        })}
                 </div>
               )}
             </div>
