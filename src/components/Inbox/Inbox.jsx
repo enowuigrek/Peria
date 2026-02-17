@@ -101,6 +101,9 @@ export default function Inbox() {
   const getCategoryStyle = (note) => {
     if (!note.detected) return { className: '', style: {} }
 
+    // Nie koloruj jeśli notatka została przeczytana (kliknięta)
+    if (note.read) return { className: '', style: {} }
+
     // Nie koloruj jeśli cokolwiek zostało już wyeksportowane
     if (note.exported && Object.keys(note.exported).some(k => note.exported[k])) {
       return { className: '', style: {} }
