@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { detectStructure } from '../../agent'
 import styles from './Chat.module.scss'
+import SkeletonLoader from '../shared/SkeletonLoader'
 
 export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethodsChange }) {
   const [messages, setMessages] = useState(() => {
@@ -51,7 +52,14 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
     }
   }
 
+  const vibrate = (pattern) => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(pattern)
+    }
+  }
+
   const startRecording = async () => {
+    vibrate([30, 20, 60]) // krótkie podwójne stuknięcie na start
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
@@ -120,6 +128,7 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
+      vibrate(40) // krótkie stuknięcie na stop
       mediaRecorderRef.current.stop()
       setIsRecording(false)
       if (recordingIntervalRef.current) {
@@ -302,7 +311,7 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
 
   const processText = async (text) => {
     setIsLoading(true)
-    setMessages((prev) => [...prev, { from: 'bot', text: '🧠 Wykrywam strukturę...' }])
+    setMessages((prev) => [...prev, { from: 'bot', text: '__skeleton__', type: 'skeleton' }])
 
     try {
       const detected = await detectStructure(text)
@@ -317,14 +326,15 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
         sourceText: text,
         detected: {
           note: detected.note || null,
-          checklist: detected.checklist || [],
+          // checklist jest teraz obiektem: { isShoppingList, listName, items: [{text, qty}] } | null
+          checklist: detected.checklist || null,
           events: detected.events || []
         },
         createdAt: new Date().toISOString(),
         exported: {
-          notes: false,
-          reminders: false,
-          calendar: false
+          mynotes: false,
+          checklists: false,
+          events: false
         }
       }
 
@@ -338,7 +348,12 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
 
       const parts = []
       if (detected.note) parts.push('Notatka')
-      if (detected.checklist?.length > 0) parts.push(`Checklista (${detected.checklist.length})`)
+      if (detected.checklist?.items?.length > 0) {
+        const label = detected.checklist.isShoppingList
+          ? `Lista zakupów (${detected.checklist.items.length} pozycji)`
+          : `Checklista (${detected.checklist.items.length})`
+        parts.push(label)
+      }
       if (detected.events?.length > 0) parts.push(`Wydarzenia (${detected.events.length})`)
 
       if (parts.length > 0) {
@@ -373,22 +388,31 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
       </div>
 
       <div className={styles.chatMessages}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
-          >
-            {msg.text === '...' ? (
-              <span className={styles.loadingDots}>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-              </span>
-            ) : (
-              msg.text
-            )}
-          </div>
-        ))}
+        {messages.map((msg, index) => {
+          if (msg.type === 'skeleton') {
+            return (
+              <div key={index} className={styles.botBubble}>
+                <SkeletonLoader />
+              </div>
+            )
+          }
+          return (
+            <div
+              key={index}
+              className={msg.from === 'user' ? styles.userBubble : styles.botBubble}
+            >
+              {msg.text === '...' ? (
+                <span className={styles.loadingDots}>
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                </span>
+              ) : (
+                msg.text
+              )}
+            </div>
+          )
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -418,21 +442,24 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
               <circle cx="12" cy="13" r="4"/>
             </svg>
           </button>
-          <button
-            onClick={() => {
-              startRecording()
-            }}
-            disabled={isLoading}
-            className={styles.methodButtonLarge}
-            title="Nagraj głosem"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
-          </button>
+          <div className={styles.recordButtonWrapper}>
+            <button
+              onClick={() => {
+                startRecording()
+              }}
+              disabled={isLoading}
+              className={styles.methodButtonLarge}
+              title="Nagraj głosem"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+            <span className={styles.pingRing}></span>
+          </div>
         </div>
       )}
 

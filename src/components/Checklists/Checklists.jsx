@@ -14,6 +14,10 @@ export default function Checklists() {
   const [editText, setEditText] = useState('')
   const [editingTitleId, setEditingTitleId] = useState(null)
   const [editTitleText, setEditTitleText] = useState('')
+  // Dodawanie nowej pozycji do listy zakupów / checklisty
+  const [addingToId, setAddingToId] = useState(null)
+  const [newItemText, setNewItemText] = useState('')
+  const [newItemQty, setNewItemQty] = useState('')
 
   useEffect(() => {
     localStorage.setItem('peria_checklists', JSON.stringify(checklists))
@@ -122,8 +126,31 @@ export default function Checklists() {
   }
 
   const exportToReminders = (checklist) => {
-    // Use dedicated reminders exporter
     exportReminders(checklist)
+  }
+
+  // Dodawanie nowej pozycji
+  const startAddItem = (checklistId) => {
+    setAddingToId(checklistId)
+    setNewItemText('')
+    setNewItemQty('')
+    setExpandedChecklists(prev => new Set([...prev, checklistId]))
+  }
+
+  const confirmAddItem = (checklistId) => {
+    if (!newItemText.trim()) { setAddingToId(null); return }
+    const isShopping = checklists.find(c => c.id === checklistId)?.isShoppingList
+    const displayText = isShopping && newItemQty.trim()
+      ? `${newItemText.trim()} — ${newItemQty.trim()}`
+      : newItemText.trim()
+    setChecklists(prev => prev.map(c => {
+      if (c.id !== checklistId) return c
+      const items = Array.isArray(c.content) ? c.content : []
+      return { ...c, content: [...items, { text: displayText, completed: false }] }
+    }))
+    setNewItemText('')
+    setNewItemQty('')
+    setAddingToId(null)
   }
 
   const fallbackCopyToClipboard = (text) => {
@@ -179,9 +206,13 @@ export default function Checklists() {
           const completedCount = items.filter(item => item.completed).length
           const totalCount = items.length
           const isEditingTitle = editingTitleId === checklist.id
+          const isShopping = checklist.isShoppingList === true
+          const displayTitle = isShopping
+            ? `🛒 ${checklist.listName || checklist.title}`
+            : checklist.title
 
           return (
-            <div key={checklist.id} className={`${styles.checklistCard} ${isExpanded ? styles.expanded : ''} ${checklist.isNew ? styles.isNew : ''}`}>
+            <div key={checklist.id} className={`${styles.checklistCard} ${isShopping ? styles.shoppingCard : ''} ${isExpanded ? styles.expanded : ''} ${checklist.isNew ? styles.isNew : ''}`}>
               <div
                 className={styles.checklistHeader}
                 onClick={() => !isEditingTitle && toggleExpand(checklist.id)}
@@ -191,7 +222,7 @@ export default function Checklists() {
                   {isEditingTitle ? (
                     <input
                       type="text"
-                      className={styles.titleInput}
+                      className={`${styles.titleInput} ${isShopping ? styles.titleInputShopping : ''}`}
                       value={editTitleText}
                       onChange={(e) => setEditTitleText(e.target.value)}
                       onBlur={() => saveTitle()}
@@ -204,8 +235,8 @@ export default function Checklists() {
                     />
                   ) : (
                     <div className={styles.titleRow}>
-                      <div className={styles.checklistTitle}>
-                        {checklist.title}
+                      <div className={`${styles.checklistTitle} ${isShopping ? styles.shoppingTitle : ''}`}>
+                        {displayTitle}
                       </div>
                       <button
                         onClick={(e) => {
@@ -226,7 +257,7 @@ export default function Checklists() {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
-                    <span className={styles.progressBadge}>
+                    <span className={`${styles.progressBadge} ${isShopping ? styles.progressBadgeShopping : ''}`}>
                       {completedCount}/{totalCount}
                     </span>
                   </div>
@@ -401,6 +432,49 @@ export default function Checklists() {
                       )
                     })}
                   </div>
+
+                  {/* Formularz dodawania pozycji */}
+                  {addingToId === checklist.id ? (
+                    <div className={styles.addItemRow}>
+                      <input
+                        type="text"
+                        className={styles.addItemInput}
+                        value={newItemText}
+                        onChange={(e) => setNewItemText(e.target.value)}
+                        placeholder={isShopping ? 'Nazwa produktu...' : 'Nowa pozycja...'}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') confirmAddItem(checklist.id)
+                          if (e.key === 'Escape') setAddingToId(null)
+                        }}
+                      />
+                      {isShopping && (
+                        <input
+                          type="text"
+                          className={styles.addQtyInput}
+                          value={newItemQty}
+                          onChange={(e) => setNewItemQty(e.target.value)}
+                          placeholder="Ilość"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') confirmAddItem(checklist.id)
+                            if (e.key === 'Escape') setAddingToId(null)
+                          }}
+                        />
+                      )}
+                      <button className={styles.addConfirmBtn} onClick={() => confirmAddItem(checklist.id)}>✓</button>
+                      <button className={styles.addCancelBtn} onClick={() => setAddingToId(null)}>✕</button>
+                    </div>
+                  ) : (
+                    <button
+                      className={`${styles.addItemBtn} ${isShopping ? styles.addItemBtnShopping : ''}`}
+                      onClick={(e) => { e.stopPropagation(); startAddItem(checklist.id) }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                      {isShopping ? 'Dodaj produkt' : 'Dodaj pozycję'}
+                    </button>
+                  )}
 
                   <div className={styles.checklistActions}>
                     <button

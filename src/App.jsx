@@ -8,6 +8,7 @@ import Checklists from './components/Checklists/Checklists.jsx'
 import Events from './components/Events/Events.jsx'
 import NavBar from './components/NavBar/NavBar.jsx'
 import SplashScreen from './components/SplashScreen/SplashScreen.jsx'
+import periaVideo from './assets/peria-intro.mp4'
 
 function App() {
     const [showSplash, setShowSplash] = useState(true)
@@ -45,7 +46,7 @@ function App() {
 
     return (
         <div className="app-wrapper">
-            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} videoSrc={periaVideo} />}
             <div className="app-container">
 
                 {/* Sekcja środkowa - główny content */}

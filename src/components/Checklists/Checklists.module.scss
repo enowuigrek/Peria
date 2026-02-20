@@ -96,6 +96,27 @@
   &.isNew {
     background: $category-checklists;
   }
+
+  // Lista zakupów — pomarańczowy motyw
+  &.shoppingCard {
+    border: 1px solid #f97316;
+    border-top: 3px solid #f97316;
+  }
+}
+
+// Lista zakupów — tytuł
+.shoppingTitle {
+  color: #fb923c !important;
+}
+
+.titleInputShopping {
+  border-color: #f97316 !important;
+  color: #fb923c !important;
+}
+
+.progressBadgeShopping {
+  background: #f97316 !important;
+  color: white !important;
 }
 
 .checklistHeader {
@@ -475,6 +496,91 @@
   font-size: 0.85rem;
   margin-top: 0.5rem;
   opacity: 0.7;
+}
+
+// ─── Dodawanie nowych pozycji ────────────────────────────
+.addItemRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.addItemInput {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.5rem 0.625rem;
+  background: $overlay-dark;
+  border: 1px solid $category-checklists;
+  border-radius: 3px;
+  color: $text-primary;
+  font-family: inherit;
+  font-size: 0.9rem;
+
+  &:focus { outline: none; background: $overlay-darker; }
+}
+
+.addQtyInput {
+  width: 80px;
+  flex-shrink: 0;
+  padding: 0.5rem 0.625rem;
+  background: $overlay-dark;
+  border: 1px solid #f97316;
+  border-radius: 3px;
+  color: #fb923c;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  &:focus { outline: none; background: $overlay-darker; }
+}
+
+.addConfirmBtn {
+  padding: 0.4rem 0.75rem;
+  background: rgba(100, 200, 100, 0.25);
+  border: 1px solid rgba(100, 200, 100, 0.4);
+  border-radius: 3px;
+  color: $text-primary;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.addCancelBtn {
+  padding: 0.4rem 0.75rem;
+  background: $overlay-light;
+  border: 1px solid $border-color;
+  border-radius: 3px;
+  color: $text-muted;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.addItemBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.875rem;
+  background: rgba(93, 184, 95, 0.12);
+  border: 1px dashed rgba(93, 184, 95, 0.4);
+  border-radius: 3px;
+  color: $category-checklists;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:active { background: rgba(93, 184, 95, 0.22); }
+
+  &.addItemBtnShopping {
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.35);
+    color: #fb923c;
+
+    &:active { background: rgba(249, 115, 22, 0.2); }
+  }
 }
 
 // Pokaż oryginał

@@ -245,6 +245,17 @@
   flex-shrink: 0;
 }
 
+.categoryBadgeShopping {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $text-white;
+  background: #f97316;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
 .editTitleIcon {
   background: transparent;
   border: none;
@@ -407,6 +418,22 @@
 
     .sectionHeader {
       padding: 0 0 0.5rem 0; // Padding tylko na dole nagłówka
+    }
+  }
+
+  &.sectionShopping {
+    border: none;
+    border-top: 3px solid #f97316;
+    background: rgba(249, 115, 22, 0.08);
+    border-radius: 0 0 4px 4px;
+    padding: 0.75rem;
+    margin-top: 0;
+
+    .sectionTitle {
+      color: #fb923c;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
   }
 }
@@ -574,6 +601,65 @@
     background: $category-events;
     transform: scale(0.95);
   }
+}
+
+.exportButtonShopping {
+  @extend .exportButton;
+  background: #c2410c;
+  border-color: #c2410c;
+  color: $text-white;
+
+  &:active:not(:disabled) {
+    background: #f97316;
+    transform: scale(0.95);
+  }
+}
+
+// ─── Lista zakupów ────────────────────────────────────────
+.shoppingList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.shoppingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: $text-primary;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+  border-left: 3px solid #f97316;
+
+  &::before {
+    content: '○';
+    color: #f97316;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-right: 0.25rem;
+  }
+}
+
+.shoppingName {
+  flex: 1;
+  font-weight: 500;
+}
+
+.shoppingQty {
+  font-size: 0.82rem;
+  color: #fb923c;
+  font-weight: 700;
+  background: rgba(249, 115, 22, 0.18);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .originalToggle {
@@ -781,6 +867,39 @@ details[open] .originalChevron {
     border: 1px solid rgba(0, 0, 0, 0.2);
 
     // Czarny tekst i ikony dla MAKSYMALNEJ widoczności
+    .noteTitle {
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+
+    .noteDate {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      opacity: 0.85 !important;
+    }
+
+    .editTitleIcon {
+      color: #000000 !important;
+      opacity: 0.7 !important;
+      font-weight: 700 !important;
+    }
+
+    .expandIcon svg,
+    .deleteButton svg {
+      stroke: #000000 !important;
+      stroke-width: 2.5 !important;
+      opacity: 0.8 !important;
+    }
+  }
+}
+
+.categoryShopping {
+  background: #f97316 !important;
+
+  .noteCard {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
     .noteTitle {
       color: #000000 !important;
       font-weight: 700 !important;

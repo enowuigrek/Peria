@@ -97,6 +97,22 @@ export default function Inbox() {
     }
   }
 
+  // ─── Pomocniki dla nowej struktury checklist ─────────────
+  const getChecklistItems = (detected) => {
+    if (!detected?.checklist) return []
+    // Nowa struktura: { isShoppingList, listName, items: [{text, qty}] }
+    if (Array.isArray(detected.checklist?.items)) return detected.checklist.items
+    // Stara struktura (kompatybilność): [{text}]
+    if (Array.isArray(detected.checklist)) return detected.checklist
+    return []
+  }
+
+  const checklistHasItems = (detected) => getChecklistItems(detected).length > 0
+
+  const isShoppingList = (detected) => detected?.checklist?.isShoppingList === true
+
+  const getListName = (detected) => detected?.checklist?.listName || null
+
   // Get category styling for NEW notes (background color)
   const getCategoryStyle = (note) => {
     if (!note.detected) return { className: '', style: {} }
@@ -110,7 +126,7 @@ export default function Inbox() {
     }
 
     const hasNote = note.detected.note
-    const hasChecklist = note.detected.checklist?.length > 0
+    const hasChecklist = checklistHasItems(note.detected)
     const hasEvents = note.detected.events?.length > 0
 
     const categories = []
@@ -125,7 +141,7 @@ export default function Inbox() {
         checklists: styles.categoryChecklists,
         events: styles.categoryEvents
       }
-      return { className: categoryMap[categories[0]], style: {} }
+      return { className: categoryMap[categories[0]] || '', style: {} }
     }
 
     // Multi-category gradient (top to bottom)
@@ -151,7 +167,7 @@ export default function Inbox() {
 
     const categories = []
     if (note.detected.note && !note.exported?.mynotes) categories.push('mynotes')
-    if (note.detected.checklist?.length > 0 && !note.exported?.checklists) categories.push('checklists')
+    if (checklistHasItems(note.detected) && !note.exported?.checklists) categories.push('checklists')
     if (note.detected.events?.length > 0 && !note.exported?.events) categories.push('events')
 
     return categories
@@ -190,11 +206,11 @@ export default function Inbox() {
     if (!note.detected) return false
 
     const hasNote = note.detected.note
-    const hasChecklist = note.detected.checklist?.length > 0
+    const hasChecklistItems = checklistHasItems(note.detected)
     const hasEvents = note.detected.events?.length > 0
 
     const noteExported = !hasNote || note.exported?.mynotes
-    const checklistExported = !hasChecklist || note.exported?.checklists
+    const checklistExported = !hasChecklistItems || note.exported?.checklists
     const eventsExported = !hasEvents || note.exported?.events
 
     return noteExported && checklistExported && eventsExported && note.read
@@ -235,12 +251,18 @@ export default function Inbox() {
     const storageKey = `peria_${section}`
     const existing = JSON.parse(localStorage.getItem(storageKey) || '[]')
 
+    // Dla list zakupów: dodaj metadane isShoppingList
+    const isShopping = section === 'checklists' && isShoppingList(note.detected)
+    const shoppingListName = isShopping ? getListName(note.detected) : null
+
     // Create new item with note's metadata
     const newItem = {
       id: note.id + '_' + Date.now(), // Unique ID for section item
       sourceNoteId: note.id,
-      title: note.title || 'Notatka',
+      title: isShopping ? (shoppingListName || note.title || 'Lista zakupów') : (note.title || 'Notatka'),
       content: content,
+      isShoppingList: isShopping,
+      listName: shoppingListName,
       createdAt: new Date().toISOString(),
       sourceDate: note.createdAt,
       sourceText: note.sourceText, // Oryginalna transkrypcja
@@ -359,9 +381,15 @@ export default function Inbox() {
                     {note.detected?.note && (
                       <span className={styles.categoryBadgeMyNotes}>1</span>
                     )}
-                    {note.detected?.checklist?.length > 0 && (
-                      <span className={styles.categoryBadgeChecklists}>{note.detected.checklist.length}</span>
-                    )}
+                    {checklistHasItems(note.detected) && (() => {
+                      const items = getChecklistItems(note.detected)
+                      const isShopping = isShoppingList(note.detected)
+                      return (
+                        <span className={isShopping ? styles.categoryBadgeShopping : styles.categoryBadgeChecklists}>
+                          {items.length}
+                        </span>
+                      )
+                    })()}
                     {note.detected?.events?.length > 0 && (
                       <span className={styles.categoryBadgeEvents}>{note.detected.events.length}</span>
                     )}
@@ -423,38 +451,65 @@ export default function Inbox() {
                     </div>
                   )}
 
-                  {/* Checklista */}
-                  {note.detected?.checklist?.length > 0 && (
-                    <div className={`${styles.section} ${styles.sectionChecklists}`}>
-                      <div className={styles.sectionHeader}>
-                        <span className={styles.sectionTitle}>✅ Checklista ({note.detected.checklist.length})</span>
-                        <button
-                          onClick={(e) => addToSection(
-                            note,
-                            'checklists',
-                            note.detected.checklist,
-                            e
-                          )}
-                          className={styles.exportButtonChecklists}
-                          title={note.exported?.checklists ? 'Cofnij przydzielenie' : 'Dodaj do Checklist'}
-                        >
-                          {note.exported?.checklists ? (
-                            <span>✓</span>
-                          ) : (
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M9 11l3 3L22 4"/>
-                              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                            </svg>
-                          )}
-                        </button>
+                  {/* Checklista (zwykła lub lista zakupów) */}
+                  {checklistHasItems(note.detected) && (() => {
+                    const items = getChecklistItems(note.detected)
+                    const isShopping = isShoppingList(note.detected)
+                    const listName = getListName(note.detected)
+                    const sectionIcon = isShopping ? '🛒' : '✅'
+                    const sectionLabel = isShopping
+                      ? `${listName || 'Lista zakupów'} (${items.length})`
+                      : `Checklista (${items.length})`
+                    // Eksport do checklisty — konwertuj na stary format [{text, completed}]
+                    const exportContent = items.map(item => ({
+                      text: item.qty ? `${item.text} — ${item.qty}` : item.text,
+                      completed: false
+                    }))
+                    return (
+                      <div className={`${styles.section} ${isShopping ? styles.sectionShopping : styles.sectionChecklists}`}>
+                        <div className={styles.sectionHeader}>
+                          <span className={styles.sectionTitle}>{sectionIcon} {sectionLabel}</span>
+                          <button
+                            onClick={(e) => addToSection(note, 'checklists', exportContent, e)}
+                            className={isShopping ? styles.exportButtonShopping : styles.exportButtonChecklists}
+                            title={note.exported?.checklists ? 'Cofnij przydzielenie' : 'Dodaj do Checklisty'}
+                          >
+                            {note.exported?.checklists ? (
+                              <span>✓</span>
+                            ) : isShopping ? (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                              </svg>
+                            ) : (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        {isShopping ? (
+                          <ul className={styles.shoppingList}>
+                            {items.map((item, idx) => (
+                              <li key={idx} className={styles.shoppingItem}>
+                                <span className={styles.shoppingName}>{item.text}</span>
+                                {item.qty && (
+                                  <span className={styles.shoppingQty}>{item.qty}</span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <ul className={styles.checklist}>
+                            {items.map((item, idx) => (
+                              <li key={idx}>{item.text}</li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                      <ul className={styles.checklist}>
-                        {note.detected.checklist.map((item, idx) => (
-                          <li key={idx}>{item.text}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                    )
+                  })()}
 
                   {/* Wydarzenia */}
                   {note.detected?.events?.length > 0 && (

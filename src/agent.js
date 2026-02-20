@@ -44,105 +44,122 @@ export async function askAgent(message) {
 export async function detectStructure(sourceText) {
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-  const dayOfWeek = now.toLocaleDateString('pl-PL', { weekday: 'long' }); // np. "środa"
+  const currentTime = now.toTimeString().slice(0, 5);   // HH:MM
+  const dayOfWeek = now.toLocaleDateString('pl-PL', { weekday: 'long' });
+
+  const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+  const dayAfterTomorrow = new Date(now); dayAfterTomorrow.setDate(now.getDate() + 2);
+  const nextWeek = new Date(now); nextWeek.setDate(now.getDate() + 7);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const dayAfterTomorrowStr = dayAfterTomorrow.toISOString().split('T')[0];
+  const nextWeekStr = nextWeek.toISOString().split('T')[0];
 
   const prompt = `
 Użytkownik nagrał chaotyczną myśl:
 "${sourceText}"
 
-Dzisiaj jest: ${currentDate} (${dayOfWeek})
+Dzisiaj jest: ${currentDate} (${dayOfWeek}), godzina: ${currentTime}
+Jutro: ${tomorrowStr} | Pojutrze: ${dayAfterTomorrowStr} | Za tydzień: ${nextWeekStr}
 
 Twoim zadaniem jest:
-1. Wymyślić krótki, sensowny TYTUŁ dla tej notatki (2-6 słów)
-2. Wykryć i sklasyfikować zawartość:
+1. Wymyślić krótki, sensowny TYTUŁ (2-6 słów)
+2. Wykryć i sklasyfikować zawartość
 
-   a) NOTATKA (note) - uporządkowana treść notatki, pomysły, teksty, myśli
-      Przykłady: "pomysł na startup X", "zwrotka rapowa o Y", "refleksja o Z"
-      ZASADY dla notatek:
-      - Zachowaj DOKŁADNY tekst dyktowany przez użytkownika
-      - Popraw błędy gramatyczne i ortograficzne
-      - Usuń ewidentne powtórzenia słów
-      - Podziel tekst na akapity (używaj \n\n między akapitami)
-      - Dodaj emotikony tam, gdzie pasują do treści
-      - Zadbaj o to, aby tekst był przyjemny do czytania
+═══════════════════════════════════════════════════
+KATEGORIE (możliwe kombinacje):
 
-   b) CHECKLISTA (checklist) - konkretne akcje do zrobienia
-      Przykłady: "kupić mleko", "zadzwonić do lekarza", "napisać email"
+a) NOTATKA (note) — tekstowa myśl, pomysł, refleksja, cytat, tekst
+   ► ZASADY:
+      - Zachowaj tekst SŁOWO W SŁOWO — NIE streszczaj, NIE interpretuj
+      - Popraw TYLKO błędy gramatyczne i ortograficzne
+      - Podziel na akapity (\\n\\n) gdy tekst jest długi
+      - Dodaj emotikony pasujące do kontekstu (z umiarem)
+      - NIE zmieniaj sensu ani kolejności myśli
 
-   c) WYDARZENIA (events) - daty, godziny, spotkania, okresy czasowe
-      Przykłady: "spotkanie jutro o 15", "dentysta w piątek 10:00", "trening od 16 do 17"
-      OBLICZ konkretną datę:
-      - "jutro" → ${currentDate} + 1 dzień
-      - "w przyszłą środę" → oblicz najbliższą środę po dzisiejszym dniu
-      - "za tydzień" → ${currentDate} + 7 dni
+b) CHECKLISTA (checklist) — lista do odhaczenia
+   ► Dwa podtypy — rozróżnij precyzyjnie:
 
-      WAŻNE dla przedziałów czasowych:
-      - Dla godzin w ciągu dnia (np. "trening od 16 do 17"):
-        * Użyj time i endTime w jednym wydarzeniu
-        * Przykład: { "title": "Trening", "date": "2026-01-11", "time": "16:00", "endTime": "17:00" }
+   1) LISTA ZAKUPÓW — gdy użytkownik mówi o produktach do kupienia:
+      Kluczowe słowa: kupić, ze sklepu, do domu, produkty (mleko, chleb, jabłka, szampon...)
+      → isShoppingList: true
+      → listName: kontekstowa nazwa listy (np. "Zakupy na weekend", "Do apteki", "Lista spożywcza")
+      → items: [{ "text": "Mleko", "qty": "2 litry" }]
+         * W "text" wpisuj sam produkt BEZ słowa "Kupić"
+         * W "qty" wpisuj ilość/jednostkę jeśli podano, inaczej ""
 
-      - Dla okresów wielodniowych (np. "podróż do Grecji na dwa tygodnie"):
-        * Stwórz JEDNO wydarzenie z date (start) i endDate (koniec)
-        * Przykład: { "title": "Podróż do Grecji", "date": "2026-01-11", "endDate": "2026-01-25" }
-        * NIE twórz dwóch osobnych wydarzeń!
+   2) ZWYKŁA CHECKLISTA — zadania do wykonania (działania, nie produkty):
+      → isShoppingList: false
+      → listName: null
+      → items: [{ "text": "Zadzwonić do lekarza", "qty": "" }]
 
-ZASADY OGÓLNE:
-- Dla notatek: poprawiaj gramatykę, usuń powtórzenia, dodaj emotikony i akapity
-- Dla checklist i events: przepisz dokładnie bez zmian
-- Date/time w formacie: "YYYY-MM-DD" i "HH:MM"
-- Jeśli brak elementów danego typu → zwróć [] lub null
-- Tytuł ma być krótki i opisowy
+c) WYDARZENIA (events) — daty, godziny, spotkania
+   ► JEDNOSTKI CZASU (zawsze przelicz na ISO):
+      - "jutro" → ${tomorrowStr}
+      - "pojutrze" → ${dayAfterTomorrowStr}
+      - "za tydzień" → ${nextWeekStr}
+      - "za kwadrans" → ${currentDate}, ${currentTime} + 15 min
+      - "za pół godziny" → ${currentDate}, ${currentTime} + 30 min
+      - "za godzinę" → ${currentDate}, ${currentTime} + 60 min
+      - "w przyszłą [dzień]" → oblicz najbliższy taki dzień tygodnia po dziś
+      - "w ten [dzień]" → oblicz najbliższy taki dzień (może być dziś)
+      - "w weekend" → najbliższa sobota po dziś
 
+   PRZEDZIAŁY GODZINOWE: → JEDNO wydarzenie z time + endTime
+   OKRESY WIELODNIOWE: → JEDNO wydarzenie z date + endDate
+
+═══════════════════════════════════════════════════
 Zwróć TYLKO JSON (bez markdown):
 {
-  "title": "Krótki tytuł notatki",
-  "note": "tekst notatki" lub null,
-  "checklist": [{ "text": "..." }],
+  "title": "Krótki tytuł",
+  "note": "tekst słowo w słowo" | null,
+  "checklist": {
+    "isShoppingList": false,
+    "listName": null,
+    "items": [{ "text": "Zadanie lub produkt", "qty": "" }]
+  } | null,
   "events": [{
-    "title": "...",
+    "title": "Tytuł",
     "date": "YYYY-MM-DD",
-    "endDate": "YYYY-MM-DD" lub null (dla okresów wielodniowych),
-    "time": "HH:MM" lub null,
-    "endTime": "HH:MM" lub null (dla przedziałów godzinowych w tym samym dniu)
-  }]
+    "endDate": "YYYY-MM-DD" | null,
+    "time": "HH:MM" | null,
+    "endTime": "HH:MM" | null
+  }] | []
 }
 `;
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',  // tańszy i szybszy niż gpt-4
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: 'Jesteś asystentem wykrywającym strukturę w chaotycznych myślach. Zwracasz TYLKO JSON bez żadnych dodatkowych wyjaśnień.'
+          content: 'Jesteś asystentem wykrywającym strukturę w chaotycznych myślach. Rozróżniasz listy zakupów (produkty) od zadań do wykonania (działania). Zachowujesz notatki słowo w słowo. Zwracasz TYLKO poprawny JSON bez dodatkowych wyjaśnień.'
         },
         {
           role: 'user',
           content: prompt
         }
       ],
-      temperature: 0.3  // niska temperatura = bardziej deterministyczne
+      temperature: 0.2
     });
 
     const reply = response.choices[0].message.content.trim();
     console.log('🔍 AI detection raw:', reply);
 
-    // Usuń markdown jeśli jest (```json ... ```)
     const jsonStr = reply.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
     const detected = JSON.parse(jsonStr);
     console.log('✅ AI detection parsed:', detected);
 
+    // Normalizuj checklist do starego formatu dla kompatybilności z Inbox
+    // Pola: detected.checklist = { isShoppingList, listName, items: [{text, qty}] } | null
     return detected;
 
   } catch (error) {
     console.error('❌ AI detection error:', error);
-
-    // Fallback: wszystko jako notatka
     return {
       title: "Notatka",
       note: sourceText,
-      checklist: [],
+      checklist: null,
       events: []
     };
   }
