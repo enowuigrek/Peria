@@ -66,9 +66,29 @@ Twoim zadaniem jest:
 2. Wykryć i sklasyfikować zawartość
 
 ═══════════════════════════════════════════════════
-KATEGORIE (możliwe kombinacje):
+PRIORYTET — JAWNE INSTRUKCJE UŻYTKOWNIKA:
 
-a) NOTATKA (note) — tekstowa myśl, pomysł, refleksja, cytat, tekst
+Jeśli użytkownik WPROST mówi co chce zapisać, respektuj to bezwzględnie:
+
+▸ "zrób listę", "dodaj do listy", "lista zadań", "co mam do zrobienia"
+  → ZAWSZE checklist (isShoppingList: false), NIE notatka
+
+▸ "zrób listę zakupów", "kup", "ze sklepu", "do sklepu"
+  → ZAWSZE checklist (isShoppingList: true), NIE notatka
+
+▸ "zrób notatkę", "zapisz", "zapamiętaj", "notatka"
+  → ZAWSZE note, NIE checklist
+
+▸ "dodaj do kalendarza", "umów", "zaplanuj", "spotkanie", "wydarzenie"
+  → ZAWSZE events, NIE notatka
+
+Te frazy mają NAJWYŻSZY priorytet — jeśli użytkownik mówi "zrób listę"
+i wymienia rzeczy, to jest CHECKLISTA nawet jeśli brzmią jak zadania codzienne.
+
+═══════════════════════════════════════════════════
+AUTOMATYCZNE WYKRYWANIE (gdy brak jawnej instrukcji):
+
+a) NOTATKA (note) — myśl, pomysł, refleksja, cytat, tekst narracyjny
    ► ZASADY:
       - Zachowaj tekst SŁOWO W SŁOWO — NIE streszczaj, NIE interpretuj
       - Popraw TYLKO błędy gramatyczne i ortograficzne
@@ -79,15 +99,15 @@ a) NOTATKA (note) — tekstowa myśl, pomysł, refleksja, cytat, tekst
 b) CHECKLISTA (checklist) — lista do odhaczenia
    ► Dwa podtypy — rozróżnij precyzyjnie:
 
-   1) LISTA ZAKUPÓW — gdy użytkownik mówi o produktach do kupienia:
-      Kluczowe słowa: kupić, ze sklepu, do domu, produkty (mleko, chleb, jabłka, szampon...)
+   1) LISTA ZAKUPÓW — produkty do kupienia:
+      Sygnały: kupić, ze sklepu, do domu, nazwy produktów (mleko, chleb, jabłka...)
       → isShoppingList: true
-      → listName: kontekstowa nazwa listy (np. "Zakupy na weekend", "Do apteki", "Lista spożywcza")
+      → listName: kontekstowa nazwa (np. "Zakupy na weekend", "Lista spożywcza")
       → items: [{ "text": "Mleko", "qty": "2 litry" }]
-         * W "text" wpisuj sam produkt BEZ słowa "Kupić"
-         * W "qty" wpisuj ilość/jednostkę jeśli podano, inaczej ""
+         * W "text" sam produkt BEZ słowa "Kupić"
+         * W "qty" ilość/jednostkę jeśli podano, inaczej ""
 
-   2) ZWYKŁA CHECKLISTA — zadania do wykonania (działania, nie produkty):
+   2) ZWYKŁA CHECKLISTA — zadania/działania do wykonania:
       → isShoppingList: false
       → listName: null
       → items: [{ "text": "Zadzwonić do lekarza", "qty": "" }]

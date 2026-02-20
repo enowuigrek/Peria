@@ -6,81 +6,101 @@ import SkeletonLoader from '../shared/SkeletonLoader'
 
 // ─── Text-to-Speech helper ────────────────────────────────────────────────────
 
-// Wybór najlepszego dostępnego głosu żeńskiego PL.
-// Priorytet: Siri > Premium/Enhanced > localService (offline) > pierwszy PL
-const pickBestPolishVoice = (voices) => {
-  const pl = voices.filter((v) => v.lang.startsWith('pl'))
-  if (!pl.length) return null
+// Aktualnie odtwarzany element audio — zatrzymujemy go przed nowym
+let _currentAudio = null
 
-  const name = (v) => v.name.toLowerCase()
-
-  // 1. Głos Siri (iOS/macOS) – najlepszy na urządzeniach Apple
-  const siri = pl.find((v) => name(v).includes('siri'))
-  if (siri) return siri
-
-  // 2. Premium lub Enhanced – wysokiej jakości głosy systemowe
-  const premium = pl.find(
-    (v) => name(v).includes('premium') || name(v).includes('enhanced')
-  )
-  if (premium) return premium
-
-  // 3. Głos offline (localService) – działa bez internetu, zwykle naturalniejszy
-  const local = pl.find((v) => v.localService)
-  if (local) return local
-
-  // 4. Fallback: pierwszy dostępny głos PL
-  return pl[0]
-}
-
-const buildUtterance = (text, voice) => {
-  const utt = new SpeechSynthesisUtterance(text)
-  utt.lang = 'pl-PL'
-  utt.volume = 0.92
-  if (voice) {
-    utt.voice = voice
-    const n = voice.name.toLowerCase()
-    if (n.includes('siri') || n.includes('premium') || n.includes('enhanced')) {
-      utt.rate = 0.96
-      utt.pitch = 1.0
-    } else {
-      utt.rate = 0.90
-      utt.pitch = 0.92
-    }
-  } else {
-    utt.rate = 0.90
-    utt.pitch = 0.92
-  }
-  return utt
-}
-
-const speak = (text) => {
+// Fallback: Web Speech API gdy brak połączenia / klucza
+const speakFallback = (text) => {
   if (!('speechSynthesis' in window)) return
   window.speechSynthesis.cancel()
-
-  const trySpeak = () => {
+  const tryNow = () => {
     const voices = window.speechSynthesis.getVoices()
-    const voice = pickBestPolishVoice(voices)
-    const utt = buildUtterance(text, voice)
+    const pl = voices.filter((v) => v.lang.startsWith('pl'))
+    const voice =
+      pl.find((v) => /siri/i.test(v.name)) ||
+      pl.find((v) => /premium|enhanced/i.test(v.name)) ||
+      pl.find((v) => v.localService) ||
+      pl[0] ||
+      null
+    const utt = new SpeechSynthesisUtterance(text)
+    utt.lang = 'pl-PL'
+    utt.volume = 0.92
+    utt.rate = 0.93
+    utt.pitch = 1.0
+    if (voice) utt.voice = voice
     window.speechSynthesis.speak(utt)
   }
-
-  // Głosy mogą nie być jeszcze załadowane — czekamy na zdarzenie lub działamy od razu
-  const voices = window.speechSynthesis.getVoices()
-  if (voices.length > 0) {
-    trySpeak()
+  // Daj przeglądarce chwilę na załadowanie głosów
+  if (window.speechSynthesis.getVoices().length > 0) {
+    tryNow()
   } else {
-    // Przeglądarka jeszcze ładuje listę głosów
-    const onReady = () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', onReady)
-      trySpeak()
+    window.speechSynthesis.addEventListener('voiceschanged', tryNow, { once: true })
+  }
+}
+
+// Cache blob URL żeby nie generować tego samego dźwięku dwa razy
+const _ttsCache = new Map()
+const TTS_CACHE_MAX = 15
+
+const speak = async (text) => {
+  // Zatrzymaj poprzednie odtwarzanie natychmiast
+  if (_currentAudio) {
+    _currentAudio.pause()
+    _currentAudio.currentTime = 0
+    _currentAudio = null
+  }
+
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  if (!apiKey) { speakFallback(text); return }
+
+  // Cache hit
+  if (_ttsCache.has(text)) {
+    const url = _ttsCache.get(text)
+    const audio = new Audio(url)
+    audio.volume = 0.92
+    _currentAudio = audio
+    audio.play().catch(() => speakFallback(text))
+    return
+  }
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'tts-1',
+        voice: 'nova',   // ciepły, naturalny głos żeński, świetnie po polsku
+        input: text,
+        speed: 0.95,
+      }),
+    })
+    if (!res.ok) throw new Error(`TTS ${res.status}`)
+
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+
+    // Evict najstarszy wpis gdy cache pełny
+    if (_ttsCache.size >= TTS_CACHE_MAX) {
+      const oldest = _ttsCache.keys().next().value
+      URL.revokeObjectURL(_ttsCache.get(oldest))
+      _ttsCache.delete(oldest)
     }
-    window.speechSynthesis.addEventListener('voiceschanged', onReady)
-    // Timeout bezpieczeństwa – jeśli zdarzenie nie przyjdzie, spróbuj z głosem domyślnym
-    setTimeout(() => {
-      window.speechSynthesis.removeEventListener('voiceschanged', onReady)
-      const utt = buildUtterance(text, null)
-      window.speechSynthesis.speak(utt)
-    }, 300)
+    _ttsCache.set(text, url)
+
+    // Jeśli w międzyczasie przyszło kolejne speak() — porzuć to
+    if (_currentAudio !== null) return
+
+    const audio = new Audio(url)
+    audio.volume = 0.92
+    _currentAudio = audio
+    audio.addEventListener('ended', () => { _currentAudio = null })
+    audio.play().catch(() => speakFallback(text))
+  } catch (err) {
+    console.warn('OpenAI TTS error, fallback:', err.message)
+    speakFallback(text)
   }
 }
 
