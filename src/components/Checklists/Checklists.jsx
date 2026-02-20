@@ -165,7 +165,12 @@ export default function Checklists() {
   if (checklists.length === 0) {
     return (
       <div className={styles.emptyState}>
-        <div className={styles.emptyIcon}>✅</div>
+        <div className={styles.emptyIcon}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#5db85f" strokeWidth="1.5" strokeOpacity="0.35">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
         <p>Brak checklisty</p>
         <p className={styles.emptyHint}>Checklisty z Inbox pojawią się tutaj</p>
       </div>

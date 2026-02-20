@@ -113,14 +113,49 @@ const getConfirmationText = (detected) => {
   return 'Zapisałam notatkę.'
 }
 
+// ─── SVG ikony kategorii (te same co w navbar) ────────────────────────────────
+const IconNote = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+    <line x1="10" y1="9" x2="8" y2="9"/>
+  </svg>
+)
+
+const IconChecklist = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 11l3 3L22 4"/>
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+  </svg>
+)
+
+const IconShopping = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="9" cy="21" r="1"/>
+    <circle cx="20" cy="21" r="1"/>
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+  </svg>
+)
+
+const IconCalendar = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+)
+
 // ─── ResultCard – ładna karta potwierdzenia ───────────────────────────────────
-function ResultCard({ detected }) {
+function ResultCard({ detected, onNavigateToInbox }) {
   const items = []
 
   if (detected.note) {
     items.push({
       color: '#fdd03b',
-      icon: '📝',
+      IconComponent: IconNote,
       label: 'Notatka',
       detail: null,
     })
@@ -130,7 +165,7 @@ function ResultCard({ detected }) {
     const isShopping = detected.checklist.isShoppingList
     items.push({
       color: '#5db85f', // zawsze zielony – shopping to podtyp checklisty
-      icon: isShopping ? '🛒' : '✅',
+      IconComponent: isShopping ? IconShopping : IconChecklist,
       label: isShopping
         ? detected.checklist.listName || 'Lista zakupów'
         : detected.checklist.listName || 'Checklista',
@@ -141,17 +176,24 @@ function ResultCard({ detected }) {
   if (detected.events?.length > 0) {
     items.push({
       color: '#4a9396',
-      icon: '📅',
+      IconComponent: IconCalendar,
       label: detected.events.length === 1 ? (detected.events[0].title || 'Wydarzenie') : 'Wydarzenia',
       detail: detected.events.length > 1 ? `${detected.events.length} terminy` : null,
     })
   }
 
   return (
-    <div className={styles.resultCard}>
+    <div
+      className={styles.resultCard}
+      onClick={onNavigateToInbox}
+      role="button"
+      tabIndex={0}
+      title="Przejdź do Inbox"
+    >
       <div className={styles.resultTitle}>
         <span className={styles.resultCheck}>✓</span>
         <span>{detected.title || 'Zapisano'}</span>
+        <span className={styles.resultInboxHint}>→ inbox</span>
       </div>
       {items.length > 0 && (
         <ul className={styles.resultList}>
@@ -161,7 +203,9 @@ function ResultCard({ detected }) {
                 className={styles.resultDot}
                 style={{ background: item.color, boxShadow: `0 0 6px ${item.color}80` }}
               />
-              <span className={styles.resultIcon}>{item.icon}</span>
+              <span className={styles.resultIcon} style={{ color: item.color }}>
+                <item.IconComponent />
+              </span>
               <span className={styles.resultLabel}>{item.label}</span>
               {item.detail && (
                 <span className={styles.resultDetail} style={{ color: item.color }}>
@@ -183,6 +227,7 @@ ResultCard.propTypes = {
     checklist: PropTypes.object,
     events: PropTypes.array,
   }),
+  onNavigateToInbox: PropTypes.func,
 }
 
 // ─── VoiceBars – wizualizator głosu ──────────────────────────────────────────
@@ -290,7 +335,7 @@ VoiceBars.propTypes = {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethodsChange }) {
+export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethodsChange, onNavigate }) {
   const [messages, setMessages] = useState(() => {
     const stored = localStorage.getItem('chatMessages')
     return stored ? JSON.parse(stored) : []
@@ -655,6 +700,11 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
 
       {/* Messages */}
       <div className={styles.chatMessages}>
+        {messages.length === 0 && (
+          <div className={styles.chatEmptyWatermark}>
+            zostaw swoją myśl
+          </div>
+        )}
         {messages.map((msg, index) => {
           if (msg.type === 'skeleton') {
             return (
@@ -666,7 +716,10 @@ export default function ChatVoiceFirst({ onAdd, showInputMethods, onInputMethods
           if (msg.type === 'result') {
             return (
               <div key={index} className={styles.botBubble}>
-                <ResultCard detected={msg.data} />
+                <ResultCard
+                  detected={msg.data}
+                  onNavigateToInbox={() => onNavigate?.('inbox')}
+                />
               </div>
             )
           }
@@ -828,4 +881,5 @@ ChatVoiceFirst.propTypes = {
   onAdd: PropTypes.func.isRequired,
   showInputMethods: PropTypes.bool.isRequired,
   onInputMethodsChange: PropTypes.func.isRequired,
+  onNavigate: PropTypes.func,
 }

@@ -46,11 +46,21 @@ function App() {
 
     return (
         <div className="app-wrapper">
+            {/* Desktop fallback – apka działa tylko na mobile */}
+            <div className="desktop-block">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                    <line x1="12" y1="18" x2="12.01" y2="18"/>
+                </svg>
+                <h2>Peria działa tylko na urządzeniach mobilnych</h2>
+                <p>Otwórz aplikację na telefonie lub tablecie</p>
+            </div>
+
             {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} videoSrc={periaVideo} />}
-            <div className="app-container">
+            <div className="app-container" data-view={activeView}>
 
                 {/* Sekcja środkowa - główny content */}
-                <div className="content">
+                <div className="content" data-view={activeView}>
                     {activeView === 'mynotes' && <MyNotes />}
                     {activeView === 'checklists' && <Checklists />}
                     {activeView === 'events' && <Events />}
@@ -60,6 +70,7 @@ function App() {
                             onAdd={addTask}
                             showInputMethods={showInputMethods}
                             onInputMethodsChange={setShowInputMethods}
+                            onNavigate={setActiveView}
                         />
                     )}
                 </div>

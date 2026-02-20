@@ -3,9 +3,8 @@
 .navBar {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    padding-bottom: 0.25rem; // Mniejszy padding na dole (safe-area jest w .footer)
+    align-items: flex-end; // Przyciski wyrównane do dołu
+    padding: 0 0.5rem 0.25rem 0.5rem; // padding-top=0 → przycisk dotyka border-top footera
     gap: 0.5rem;
     background: $bg-black-overlay; // Prawie czarne tło z przezroczystością
     border-top: none;
@@ -35,6 +34,11 @@
     }
 }
 
+// Wspólna grubość ramki (musi być zgodna z $category-border-width w App.scss)
+$tab-lift: 10px;
+// padding-top navbara – aktywny przycisk podnosi się o tę wartość żeby dotknąć ramki
+$nav-pad: 0.5rem;
+
 // GRUPA 1: Sekcje (małe, kwadratowe przyciski) - każdy ma swój kolor
 .sectionButton {
     flex: 0 0 $button-height;
@@ -42,54 +46,46 @@
     color: $text-secondary;
     border-color: $border-color;
 
+    // Wspólne style aktywnego przycisku kategorii
+    // align-self: stretch → przycisk rośnie do góry i dotyka border-top footera
+    &.active {
+        align-self: stretch;
+        border-top: none; // Bez górnego bordera – styka się z ramką footera
+    }
+
     // MyNotes - yellow with black icon
     &:nth-of-type(1) {
         &.active {
-            background: $category-mynotes; // Pełny żółty
+            background: $category-mynotes;
             border-color: $category-mynotes;
-            color: $bg-black; // Czarna ikonka
+            color: $bg-black;
 
-            svg {
-                stroke: $bg-black; // Czarna ikonka
-            }
-
-            &::after {
-                display: none; // Bez podkreślenia
-            }
+            svg { stroke: $bg-black; }
+            &::after { display: none; }
         }
     }
 
     // Checklists - green with black icon
     &:nth-of-type(2) {
         &.active {
-            background: $category-checklists; // Pełny zielony
+            background: $category-checklists;
             border-color: $category-checklists;
-            color: $bg-black; // Czarna ikonka
+            color: $bg-black;
 
-            svg {
-                stroke: $bg-black; // Czarna ikonka
-            }
-
-            &::after {
-                display: none; // Bez podkreślenia
-            }
+            svg { stroke: $bg-black; }
+            &::after { display: none; }
         }
     }
 
     // Events - blue with black icon
     &:nth-of-type(3) {
         &.active {
-            background: $category-events; // Pełny niebieski (teal)
+            background: $category-events;
             border-color: $category-events;
-            color: $bg-black; // Czarna ikonka
+            color: $bg-black;
 
-            svg {
-                stroke: $bg-black; // Czarna ikonka
-            }
-
-            &::after {
-                display: none; // Bez podkreślenia
-            }
+            svg { stroke: $bg-black; }
+            &::after { display: none; }
         }
     }
 }

@@ -94,4 +94,78 @@ body {
     background: rgba(0, 0, 0, 0.85); // To samo tło co navbar
     flex-shrink: 0;
     z-index: 100;
+    position: relative;
+}
+
+// ─── Kolorowa ramka wokół content + border-top footera ───────────────────────
+// Ramka na .content (góra + boki), border-top na .footer (spód ramki)
+// Razem tworzą ciągłą obwódkę wokół całej treści nad navbarem
+// data-view na .app-container steruje kolorami
+$category-border-width: 10px;
+
+// Ramka content – wszystkie boki z border-bottom żeby zamknąć ramkę
+.content[data-view="mynotes"] {
+    border: $category-border-width solid $category-mynotes;
+    border-bottom: none; // Dół zastępuje border-top footera
+}
+.content[data-view="checklists"] {
+    border: $category-border-width solid $category-checklists;
+    border-bottom: none;
+}
+.content[data-view="events"] {
+    border: $category-border-width solid $category-events;
+    border-bottom: none;
+}
+
+// Border-top footera = zamknięcie ramki od dołu (nad navbarem)
+// Aktywny przycisk kategorii dotyka tego bordera → efekt zakładki
+.app-container[data-view="mynotes"] .footer {
+    border-top: $category-border-width solid $category-mynotes;
+}
+.app-container[data-view="checklists"] .footer {
+    border-top: $category-border-width solid $category-checklists;
+}
+.app-container[data-view="events"] .footer {
+    border-top: $category-border-width solid $category-events;
+}
+
+// ─── Desktop: aplikacja tylko na mobile ──────────────────────────────────────
+.desktop-block {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .app-container {
+        display: none !important;
+    }
+
+    .desktop-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        width: 100%;
+        gap: 1.5rem;
+        color: rgba(255, 255, 255, 0.35);
+        text-align: center;
+        padding: 2rem;
+
+        svg {
+            opacity: 0.2;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 300;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.18);
+            letter-spacing: 0.04em;
+        }
+    }
 }

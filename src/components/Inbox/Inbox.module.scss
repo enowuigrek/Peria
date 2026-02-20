@@ -248,8 +248,8 @@
 .categoryBadgeShopping {
   font-size: 0.7rem;
   font-weight: 700;
-  color: $text-white;
-  background: #f97316;
+  color: $bg-gradient-start;
+  background: $category-checklists;
   padding: 0.15rem 0.4rem;
   border-radius: 3px;
   margin-left: 0.5rem;
@@ -423,14 +423,14 @@
 
   &.sectionShopping {
     border: none;
-    border-top: 3px solid #f97316;
-    background: rgba(249, 115, 22, 0.08);
+    border-top: 3px solid $category-checklists;
+    background: rgba(93, 184, 95, 0.08);
     border-radius: 0 0 4px 4px;
     padding: 0.75rem;
     margin-top: 0;
 
     .sectionTitle {
-      color: #fb923c;
+      color: $category-checklists;
       font-size: 0.95rem;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -605,12 +605,12 @@
 
 .exportButtonShopping {
   @extend .exportButton;
-  background: #c2410c;
-  border-color: #c2410c;
-  color: $text-white;
+  background: darken($category-checklists, 10%);
+  border-color: darken($category-checklists, 10%);
+  color: $bg-gradient-start;
 
   &:active:not(:disabled) {
-    background: #f97316;
+    background: $category-checklists;
     transform: scale(0.95);
   }
 }
@@ -635,11 +635,11 @@
   padding: 0.5rem 0.75rem;
   background: rgba(0, 0, 0, 0.25);
   border-radius: 3px;
-  border-left: 3px solid #f97316;
+  border-left: 3px solid $category-checklists;
 
   &::before {
     content: '○';
-    color: #f97316;
+    color: $category-checklists;
     font-size: 0.75rem;
     flex-shrink: 0;
     margin-right: 0.25rem;
@@ -653,9 +653,9 @@
 
 .shoppingQty {
   font-size: 0.82rem;
-  color: #fb923c;
+  color: $category-checklists;
   font-weight: 700;
-  background: rgba(249, 115, 22, 0.18);
+  background: rgba(93, 184, 95, 0.18);
   padding: 0.15rem 0.5rem;
   border-radius: 3px;
   flex-shrink: 0;
@@ -724,9 +724,11 @@ details[open] .originalChevron {
 }
 
 .emptyIcon {
-  font-size: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
-  opacity: 0.3;
+  line-height: 1;
 }
 
 .emptyHint {
@@ -894,7 +896,7 @@ details[open] .originalChevron {
 }
 
 .categoryShopping {
-  background: #f97316 !important;
+  background: $category-checklists !important;
 
   .noteCard {
     background: transparent;
