@@ -193,7 +193,6 @@ function ResultCard({ detected, onNavigateToInbox }) {
       <div className={styles.resultTitle}>
         <span className={styles.resultCheck}>✓</span>
         <span>{detected.title || 'Zapisano'}</span>
-        <span className={styles.resultInboxHint}>→ inbox</span>
       </div>
       {items.length > 0 && (
         <ul className={styles.resultList}>

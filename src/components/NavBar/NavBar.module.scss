@@ -51,6 +51,7 @@ $nav-pad: 0.5rem;
     &.active {
         align-self: stretch;
         border-top: none; // Bez górnego bordera – styka się z ramką footera
+        border-radius: 0 0 $button-radius $button-radius; // Górne rogi proste (łączą się z ramką)
     }
 
     // MyNotes - yellow with black icon
