@@ -32,36 +32,56 @@ const pickBestPolishVoice = (voices) => {
   return pl[0]
 }
 
-const speak = (text) => {
-  if (!('speechSynthesis' in window)) return
-  window.speechSynthesis.cancel()
-
+const buildUtterance = (text, voice) => {
   const utt = new SpeechSynthesisUtterance(text)
   utt.lang = 'pl-PL'
   utt.volume = 0.92
-
-  const voices = window.speechSynthesis.getVoices()
-  const voice = pickBestPolishVoice(voices)
-
   if (voice) {
     utt.voice = voice
     const n = voice.name.toLowerCase()
-    // Siri i Premium mają naturalny rytm – nie wymuszaj parametrów
     if (n.includes('siri') || n.includes('premium') || n.includes('enhanced')) {
       utt.rate = 0.96
       utt.pitch = 1.0
     } else {
-      // Dla syntetycznych głosów: lekko obniż pitch, zwolnij tempo
       utt.rate = 0.90
       utt.pitch = 0.92
     }
   } else {
-    // Brak głosu PL – domyślny systemowy
     utt.rate = 0.90
     utt.pitch = 0.92
   }
+  return utt
+}
 
-  window.speechSynthesis.speak(utt)
+const speak = (text) => {
+  if (!('speechSynthesis' in window)) return
+  window.speechSynthesis.cancel()
+
+  const trySpeak = () => {
+    const voices = window.speechSynthesis.getVoices()
+    const voice = pickBestPolishVoice(voices)
+    const utt = buildUtterance(text, voice)
+    window.speechSynthesis.speak(utt)
+  }
+
+  // Głosy mogą nie być jeszcze załadowane — czekamy na zdarzenie lub działamy od razu
+  const voices = window.speechSynthesis.getVoices()
+  if (voices.length > 0) {
+    trySpeak()
+  } else {
+    // Przeglądarka jeszcze ładuje listę głosów
+    const onReady = () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', onReady)
+      trySpeak()
+    }
+    window.speechSynthesis.addEventListener('voiceschanged', onReady)
+    // Timeout bezpieczeństwa – jeśli zdarzenie nie przyjdzie, spróbuj z głosem domyślnym
+    setTimeout(() => {
+      window.speechSynthesis.removeEventListener('voiceschanged', onReady)
+      const utt = buildUtterance(text, null)
+      window.speechSynthesis.speak(utt)
+    }, 300)
+  }
 }
 
 // ─── Voice confirmation messages ─────────────────────────────────────────────
@@ -89,7 +109,7 @@ function ResultCard({ detected }) {
   if (detected.checklist?.items?.length > 0) {
     const isShopping = detected.checklist.isShoppingList
     items.push({
-      color: isShopping ? '#f97316' : '#5db85f',
+      color: '#5db85f', // zawsze zielony – shopping to podtyp checklisty
       icon: isShopping ? '🛒' : '✅',
       label: isShopping
         ? detected.checklist.listName || 'Lista zakupów'
@@ -154,44 +174,64 @@ function VoiceBars({ isRecording, analyserNode }) {
   useEffect(() => {
     if (!isRecording) {
       cancelAnimationFrame(animFrameRef.current)
-      setHeights([0.15, 0.15, 0.15, 0.15, 0.15])
+      setHeights([0.08, 0.08, 0.08, 0.08, 0.08])
       return
     }
 
     if (analyserNode) {
       // ── Tryb realny: Web Audio API ──
-      const bufferLength = analyserNode.frequencyBinCount
-      const dataArray = new Uint8Array(bufferLength)
+      // fftSize=256 → frequencyBinCount=128, każdy bin ≈ 86Hz (przy 22kHz)
+      // Głos ludzki: 80Hz – 3kHz → biny 1–35
+      // Dzielimy ten zakres na 5 pasm logarytmicznie (głos ma więcej energii w dole)
+      const sampleRate = 44100
+      const binHz = sampleRate / (analyserNode.fftSize)
+      const voiceMaxHz = 3000
+      const voiceMaxBin = Math.min(Math.floor(voiceMaxHz / binHz), analyserNode.frequencyBinCount - 1)
+      const voiceMinBin = Math.max(1, Math.floor(80 / binHz))
+
+      // 5 granic pasm log-liniowo między voiceMinBin a voiceMaxBin
+      const bands = []
+      for (let i = 0; i < 5; i++) {
+        const t0 = i / 5
+        const t1 = (i + 1) / 5
+        // logarytmiczny podział – więcej rozdzielczości w niskich pasmach
+        const lo = Math.round(voiceMinBin * Math.pow(voiceMaxBin / voiceMinBin, t0))
+        const hi = Math.round(voiceMinBin * Math.pow(voiceMaxBin / voiceMinBin, t1))
+        bands.push([lo, Math.max(lo + 1, hi)])
+      }
+
+      const dataArray = new Uint8Array(analyserNode.frequencyBinCount)
+      // Smoothing już ustawiony na 0.7 w startRecording
 
       const draw = () => {
         animFrameRef.current = requestAnimationFrame(draw)
         analyserNode.getByteFrequencyData(dataArray)
 
-        // Podziel pasmo na 5 zakresów
-        const step = Math.floor(bufferLength / 6)
-        const newHeights = [1, 2, 3, 4, 5].map((i) => {
-          const start = i * step
-          const end = start + step
+        const newHeights = bands.map(([lo, hi]) => {
           let sum = 0
-          for (let j = start; j < end; j++) sum += dataArray[j]
-          const avg = sum / step / 255
-          return Math.max(0.08, Math.min(1, avg * 2.2))
+          for (let j = lo; j < hi; j++) sum += dataArray[j]
+          const avg = sum / (hi - lo) / 255
+          // Wzmocnienie x3 bo głos wypełnia tylko część zakresu
+          return Math.max(0.08, Math.min(1, avg * 3.0))
         })
         setHeights(newHeights)
       }
       draw()
     } else {
-      // ── Tryb fallback: losowa animacja ──
+      // ── Tryb fallback: organiczna animacja sinusoidalna ──
+      // Każdy słupek ma własną fazę i prędkość → niezależny ruch
+      const phases = [0, 1.2, 2.4, 3.6, 4.8]
+      const speeds = [0.06, 0.09, 0.07, 0.10, 0.08]
+      let tick = 0
+
       const animate = () => {
-        animFrameRef.current = requestAnimationFrame(() => {
-          setHeights((prev) =>
-            prev.map((h) => {
-              const delta = (Math.random() - 0.5) * 0.4
-              return Math.max(0.08, Math.min(1, h + delta))
-            })
-          )
-          setTimeout(animate, 80)
-        })
+        tick++
+        setHeights(phases.map((phase, i) => {
+          const s = Math.sin(tick * speeds[i] + phase)
+          // Mapuj [-1,1] → [0.08, 0.85]
+          return 0.08 + (s * 0.5 + 0.5) * 0.77
+        }))
+        animFrameRef.current = requestAnimationFrame(animate)
       }
       animate()
     }
