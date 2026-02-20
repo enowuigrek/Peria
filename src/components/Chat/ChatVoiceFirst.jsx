@@ -5,21 +5,61 @@ import styles from './Chat.module.scss'
 import SkeletonLoader from '../shared/SkeletonLoader'
 
 // ─── Text-to-Speech helper ────────────────────────────────────────────────────
+
+// Wybór najlepszego dostępnego głosu żeńskiego PL.
+// Priorytet: Siri > Premium/Enhanced > localService (offline) > pierwszy PL
+const pickBestPolishVoice = (voices) => {
+  const pl = voices.filter((v) => v.lang.startsWith('pl'))
+  if (!pl.length) return null
+
+  const name = (v) => v.name.toLowerCase()
+
+  // 1. Głos Siri (iOS/macOS) – najlepszy na urządzeniach Apple
+  const siri = pl.find((v) => name(v).includes('siri'))
+  if (siri) return siri
+
+  // 2. Premium lub Enhanced – wysokiej jakości głosy systemowe
+  const premium = pl.find(
+    (v) => name(v).includes('premium') || name(v).includes('enhanced')
+  )
+  if (premium) return premium
+
+  // 3. Głos offline (localService) – działa bez internetu, zwykle naturalniejszy
+  const local = pl.find((v) => v.localService)
+  if (local) return local
+
+  // 4. Fallback: pierwszy dostępny głos PL
+  return pl[0]
+}
+
 const speak = (text) => {
   if (!('speechSynthesis' in window)) return
-  window.speechSynthesis.cancel() // Anuluj poprzedni jeśli trwa
+  window.speechSynthesis.cancel()
+
   const utt = new SpeechSynthesisUtterance(text)
   utt.lang = 'pl-PL'
-  utt.rate = 0.95
-  utt.pitch = 1.05
-  utt.volume = 0.9
+  utt.volume = 0.92
 
-  // Spróbuj wybrać naturalny głos polski
   const voices = window.speechSynthesis.getVoices()
-  const plVoice = voices.find(
-    (v) => v.lang.startsWith('pl') && (v.name.toLowerCase().includes('natural') || v.localService)
-  ) || voices.find((v) => v.lang.startsWith('pl'))
-  if (plVoice) utt.voice = plVoice
+  const voice = pickBestPolishVoice(voices)
+
+  if (voice) {
+    utt.voice = voice
+    const n = voice.name.toLowerCase()
+    // Siri i Premium mają naturalny rytm – nie wymuszaj parametrów
+    if (n.includes('siri') || n.includes('premium') || n.includes('enhanced')) {
+      utt.rate = 0.96
+      utt.pitch = 1.0
+    } else {
+      // Dla syntetycznych głosów: lekko obniż pitch, zwolnij tempo
+      utt.rate = 0.90
+      utt.pitch = 0.92
+    }
+  } else {
+    // Brak głosu PL – domyślny systemowy
+    utt.rate = 0.90
+    utt.pitch = 0.92
+  }
 
   window.speechSynthesis.speak(utt)
 }
